@@ -33,3 +33,12 @@ export function formatRelativeDate(iso: string | undefined, now = Date.now()) {
   const sameYear = date.getFullYear() === new Date(now).getFullYear()
   return (sameYear ? shortDate : longDate).format(date)
 }
+
+/** "Sauvegardé hier", "Sauvegardé il y a 2 h", "Sauvegardé le 12 oct.". */
+export function formatActionDate(verb: string, iso: string | undefined, now = Date.now()) {
+  const relative = formatRelativeDate(iso, now)
+  if (!relative) return null
+  // Beyond a week formatRelativeDate gives a calendar date.
+  if (now - new Date(iso!).getTime() >= 7 * DAY) return `${verb} le ${relative}`
+  return `${verb} ${relative.charAt(0).toLowerCase()}${relative.slice(1)}`
+}

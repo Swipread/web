@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatReadingTime, formatRelativeDate } from './format'
+import { formatActionDate, formatReadingTime, formatRelativeDate } from './format'
 
 describe('formatReadingTime', () => {
   it.each([
@@ -31,5 +31,19 @@ describe('formatRelativeDate', () => {
   it('ignores missing or invalid dates', () => {
     expect(formatRelativeDate(undefined, now)).toBeNull()
     expect(formatRelativeDate('nope', now)).toBeNull()
+  })
+})
+
+describe('formatActionDate', () => {
+  const now = new Date('2026-10-13T12:00:00Z').getTime()
+  const normalize = (text: string | null) => text?.replace(/\s/g, ' ')
+
+  it.each([
+    ['2026-10-13T10:00:00Z', 'Sauvegardé il y a 2 h'],
+    ['2026-10-12T10:00:00Z', 'Sauvegardé hier'],
+    ['2026-09-01T12:00:00Z', 'Sauvegardé le 1 sept.'],
+    ['2025-09-01T12:00:00Z', 'Sauvegardé le 1 sept. 2025'],
+  ])('%s → %s', (iso, label) => {
+    expect(normalize(formatActionDate('Sauvegardé', iso, now))).toBe(label)
   })
 })
