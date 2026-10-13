@@ -1,9 +1,10 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { routes } from '../../app/routes'
 import { session } from '../../lib/session'
 import { me, token, topics } from '../../test/fixtures'
+import { tracker } from '../tracking/tracker'
 import { renderRoutes } from '../../test/render'
 import { apiUrl, server } from '../../test/server'
 
@@ -69,5 +70,122 @@ describe('profile', () => {
     const { user } = renderRoutes(routes, { path: '/profil' })
     await user.click(await screen.findByRole('button', { name: 'Réessayer' }))
     expect(await screen.findByLabelText('Nom affiché')).toHaveValue('Léa')
+  })
+
+  describe('display name', () => {
+    it('saves the new name', async () => {
+      let sent: unknown
+      server.use(
+        http.patch(apiUrl('/v1/me'), async ({ request }) => {
+          sent = await request.json()
+          return HttpResponse.json({ ...me, displayName: 'Léa M.' })
+        }),
+      )
+      const { user, queryClient } = renderRoutes(routes, { path: '/profil' })
+      const name = await screen.findByLabelText('Nom affiché')
+      const save = screen.getByRole('button', { name: 'Enregistrer' })
+      expect(save).toBeDisabled()
+
+      await user.clear(name)
+      await user.type(name, '  Léa M. ')
+      await user.click(save)
+
+      expect(await screen.findByText('Nom enregistré')).toBeInTheDocument()
+      expect(sent).toEqual({ displayName: 'Léa M.' })
+      expect(name).toHaveValue('Léa M.')
+      expect(save).toBeDisabled()
+      expect(queryClient.getQueryData(['me'])).toMatchObject({ displayName: 'Léa M.' })
+    })
+
+    it('validates the name before sending', async () => {
+      const { user } = renderRoutes(routes, { path: '/profil' })
+      const name = await screen.findByLabelText('Nom affiché')
+
+      await user.clear(name)
+      await user.type(name, '   ')
+      await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
+
+      expect(await screen.findByText('Saisissez le nom à afficher.')).toBeInTheDocument()
+      expect(name).toHaveAttribute('aria-invalid', 'true')
+    })
+
+    it('shows the server validation error on the field', async () => {
+      server.use(
+        http.patch(apiUrl('/v1/me'), () =>
+          HttpResponse.json(
+            { title: 'Bad Request', status: 400, errors: [{ field: 'displayName', message: 'ne doit pas être vide' }] },
+            { status: 400, headers: { 'Content-Type': 'application/problem+json' } },
+          ),
+        ),
+      )
+      const { user } = renderRoutes(routes, { path: '/profil' })
+      const name = await screen.findByLabelText('Nom affiché')
+
+      await user.type(name, 'x')
+      await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
+
+      await waitFor(() => expect(name).toHaveAttribute('aria-invalid', 'true'))
+    })
+  })
+
+  describe('account deletion', () => {
+    it('asks for confirmation and can be cancelled', async () => {
+      let deleted = false
+      server.use(
+        http.delete(apiUrl('/v1/me'), () => {
+          deleted = true
+          return new HttpResponse(null, { status: 204 })
+        }),
+      )
+      const { user } = renderRoutes(routes, { path: '/profil' })
+
+      await user.click(await screen.findByRole('button', { name: 'Supprimer mon compte' }))
+      const dialog = screen.getByRole('dialog', { name: 'Supprimer votre compte ?' })
+      expect(within(dialog).getByRole('button', { name: 'Annuler' })).toHaveFocus()
+
+      await user.click(within(dialog).getByRole('button', { name: 'Annuler' }))
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      expect(deleted).toBe(false)
+    })
+
+    it('deletes the account, forgets the session and returns to the login page', async () => {
+      let deleted = false
+      const events: unknown[] = []
+      server.use(
+        http.delete(apiUrl('/v1/me'), () => {
+          deleted = true
+          return new HttpResponse(null, { status: 204 })
+        }),
+        http.post(apiUrl('/v1/events'), () => {
+          events.push('sent')
+          return new HttpResponse(null, { status: 401 })
+        }),
+      )
+      const { user } = renderRoutes(routes, { path: '/profil' })
+      tracker.track({ type: 'save', articleId: 'a_1' })
+
+      await user.click(await screen.findByRole('button', { name: 'Supprimer mon compte' }))
+      await user.click(screen.getByRole('button', { name: 'Supprimer définitivement' }))
+
+      expect(await screen.findByRole('heading', { name: /connexion|connecter/i })).toBeInTheDocument()
+      expect(screen.getByText('Votre compte a été supprimé')).toBeInTheDocument()
+      expect(deleted).toBe(true)
+      expect(session.get()).toBeNull()
+      await tracker.flush()
+      expect(events).toEqual([])
+    })
+
+    it('shows an error in the dialog when the deletion fails', async () => {
+      server.use(http.delete(apiUrl('/v1/me'), () => new HttpResponse(null, { status: 500 })))
+      const { user } = renderRoutes(routes, { path: '/profil' })
+
+      await user.click(await screen.findByRole('button', { name: 'Supprimer mon compte' }))
+      await user.click(screen.getByRole('button', { name: 'Supprimer définitivement' }))
+
+      const dialog = screen.getByRole('dialog')
+      expect(await within(dialog).findByRole('alert')).toBeInTheDocument()
+      expect(session.get()).not.toBeNull()
+    })
   })
 })
