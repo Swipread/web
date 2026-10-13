@@ -1,0 +1,133 @@
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  width: var(--sidebar-width);
+  padding: var(--space-5) var(--space-4);
+  border-right: 1px solid var(--color-border);
+  background: var(--color-bg-subtle);
+  z-index: 10;
+}
+
+.brand {
+  margin-bottom: var(--space-6);
+  padding: 0 var(--space-3);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.groupTitle {
+  margin-bottom: var(--space-2);
+  padding: 0 var(--space-3);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.link,
+.logout {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.link:hover,
+.logout:hover {
+  background: var(--color-fill);
+}
+
+.active {
+  background: var(--color-fill);
+  font-weight: var(--font-weight-semibold);
+}
+
+.logout {
+  margin-top: auto;
+}
+
+/* Mobile: bottom tab bar */
+@media (max-width: 768px) {
+  .sidebar {
+    inset: auto 0 0 0;
+    flex-direction: row;
+    align-items: stretch;
+    width: auto;
+    height: var(--tabbar-height);
+    padding: 0 var(--space-2) env(safe-area-inset-bottom);
+    border-top: 1px solid var(--color-border);
+    border-right: 0;
+  }
+
+  .brand,
+  .groupTitle {
+    display: none;
+  }
+
+  .nav,
+  .list {
+    flex: 1;
+    flex-direction: row;
+    gap: 0;
+  }
+
+  .nav {
+    flex: 1 1 auto;
+  }
+
+  .list > li,
+  .group {
+    flex: 1;
+  }
+
+  .group .list {
+    height: 100%;
+  }
+
+  .link,
+  .logout {
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    height: 100%;
+    padding: var(--space-1);
+    font-size: 0.6875rem;
+  }
+
+  .active {
+    background: none;
+  }
+
+  .logout {
+    width: auto;
+    margin: 0;
+  }
+}

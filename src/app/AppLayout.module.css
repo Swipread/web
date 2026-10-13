@@ -1,0 +1,22 @@
+.main {
+  min-height: 100dvh;
+  margin-left: var(--sidebar-width);
+  padding: var(--space-6) var(--space-8);
+}
+
+.main > * {
+  max-width: var(--content-max-width);
+}
+
+@media (max-width: 1024px) {
+  .main {
+    padding: var(--space-6) var(--space-5);
+  }
+}
+
+@media (max-width: 768px) {
+  .main {
+    margin-left: 0;
+    padding: var(--space-5) var(--space-4) calc(var(--tabbar-height) + var(--space-5));
+  }
+}
