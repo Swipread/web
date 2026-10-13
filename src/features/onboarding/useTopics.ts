@@ -5,7 +5,7 @@ import { meQueryKey } from '../auth/useAuth'
 import { feedPosition } from '../feed/feedPosition'
 import { feedQueryKey } from '../feed/useFeed'
 
-/** US3 requires 3 topics; the API only enforces 1 (docs/demandes-backend.md #9). */
+/** US3: at least 3 topics, also enforced by UpdateTopicsRequest. */
 export const MIN_TOPICS = 3
 
 export function useTopics() {
