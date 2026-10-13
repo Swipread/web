@@ -15,6 +15,8 @@ export function useMe() {
   return useQuery({
     queryKey: meQueryKey,
     queryFn: ({ signal }) => unwrap(api.GET('/v1/me', { signal })),
+    // Mutations on the profile update this cache, no need to refetch on every page.
+    staleTime: 5 * 60_000,
   })
 }
 
