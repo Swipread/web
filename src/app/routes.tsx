@@ -3,11 +3,12 @@ import { LoginPage } from '../features/auth/LoginPage'
 import { RegisterPage } from '../features/auth/RegisterPage'
 import { FeedPage } from '../features/feed/FeedPage'
 import { TopicsPage } from '../features/onboarding/TopicsPage'
-import { PageHeader } from '../ui/PageHeader'
+import { ProfilePage } from '../features/profile/ProfilePage'
+import { SavedPage } from '../features/saved/SavedPage'
 import { AppLayout } from './AppLayout'
+import { NotFoundPage } from './NotFoundPage'
 import { RedirectIfAuthenticated, RequireAuth, RequireOnboarding } from './guards'
 
-// Placeholder pages are replaced as their feature step lands.
 export const routes: RouteObject[] = [
   {
     element: <RedirectIfAuthenticated />,
@@ -27,14 +28,14 @@ export const routes: RouteObject[] = [
             element: <AppLayout />,
             children: [
               { index: true, element: <FeedPage /> },
-              { path: 'sauvegardes', element: <PageHeader title="Sauvegardés" /> },
-              { path: 'historique', element: <PageHeader title="Historique" /> },
-              { path: 'profil', element: <PageHeader title="Profil" /> },
+              { path: 'sauvegardes', element: <SavedPage /> },
+              // '/historique' waits for GET /v1/me/history (docs/demandes-backend.md #3).
+              { path: 'profil', element: <ProfilePage /> },
             ],
           },
         ],
       },
     ],
   },
-  { path: '*', element: <PageHeader title="Page introuvable" /> },
+  { path: '*', element: <NotFoundPage /> },
 ]
