@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { useInfiniteQuery, useQueryClient, type InfiniteData } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient, type InfiniteData, type QueryClient } from '@tanstack/react-query'
 import { api, unwrap } from '../../api/client'
 import type { Schema } from '../../api/types'
 import { getSessionId } from '../../lib/ids'
@@ -10,6 +10,23 @@ export type FeedCard = Schema<'FeedItem'> & { articleId: string; liked: boolean;
 type FeedPage = { items: FeedCard[] }
 
 export const feedQueryKey = ['feed'] as const
+
+function updateFeedPages(queryClient: QueryClient, update: (items: FeedCard[]) => FeedCard[]) {
+  queryClient.setQueryData<InfiniteData<FeedPage>>(feedQueryKey, (data) =>
+    data && { ...data, pages: data.pages.map((page) => ({ items: update(page.items) })) },
+  )
+}
+
+/** Updates a card's reaction state in the cached feed, e.g. after unsaving it from another page. */
+export function patchFeedCard(
+  queryClient: QueryClient,
+  articleId: string,
+  patch: Partial<Pick<FeedCard, 'liked' | 'saved'>>,
+) {
+  updateFeedPages(queryClient, (list) =>
+    list.map((item) => (item.articleId === articleId ? { ...item, ...patch } : item)),
+  )
+}
 
 async function fetchFeedPage(signal: AbortSignal): Promise<FeedPage> {
   const response = await unwrap(
@@ -44,24 +61,16 @@ export function useFeed() {
       .filter((item) => !seen.has(item.articleId) && seen.add(item.articleId))
   }, [query.data])
 
-  const updatePages = useCallback(
-    (update: (items: FeedCard[]) => FeedCard[]) => {
-      queryClient.setQueryData<InfiniteData<FeedPage>>(feedQueryKey, (data) =>
-        data && { ...data, pages: data.pages.map((page) => ({ items: update(page.items) })) },
-      )
-    },
+  const updateCard = useCallback(
+    (articleId: string, patch: Partial<Pick<FeedCard, 'liked' | 'saved'>>) =>
+      patchFeedCard(queryClient, articleId, patch),
     [queryClient],
   )
 
-  const updateCard = useCallback(
-    (articleId: string, patch: Partial<Pick<FeedCard, 'liked' | 'saved'>>) =>
-      updatePages((list) => list.map((item) => (item.articleId === articleId ? { ...item, ...patch } : item))),
-    [updatePages],
-  )
-
   const removeCard = useCallback(
-    (articleId: string) => updatePages((list) => list.filter((item) => item.articleId !== articleId)),
-    [updatePages],
+    (articleId: string) =>
+      updateFeedPages(queryClient, (list) => list.filter((item) => item.articleId !== articleId)),
+    [queryClient],
   )
 
   return { ...query, items, updateCard, removeCard }
