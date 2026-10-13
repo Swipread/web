@@ -1,0 +1,88 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  /* Fill the viewport minus the layout's vertical padding. */
+  height: calc(100dvh - 2 * var(--space-6));
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.hint {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.status {
+  display: grid;
+  flex: 1;
+  place-items: center;
+}
+
+.scroller {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  display: grid;
+  grid-template-columns: minmax(0, var(--card-max-width)) auto;
+  align-items: end;
+  justify-content: center;
+  gap: var(--space-5);
+  height: 100%;
+  padding: var(--space-2) 0 var(--space-5);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.slide:focus {
+  outline: none;
+}
+
+.slide:focus-visible > :first-child {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 4px;
+}
+
+.endSlide {
+  display: grid;
+  grid-template-columns: 1fr;
+  place-items: center;
+}
+
+@media (max-width: 768px) {
+  .page {
+    height: calc(100dvh - 2 * var(--space-5) - var(--tabbar-height));
+  }
+
+  .hint {
+    display: none;
+  }
+
+  .slide {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: var(--space-3);
+    padding-bottom: var(--space-3);
+  }
+}

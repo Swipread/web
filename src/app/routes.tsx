@@ -1,6 +1,7 @@
 import type { RouteObject } from 'react-router'
 import { LoginPage } from '../features/auth/LoginPage'
 import { RegisterPage } from '../features/auth/RegisterPage'
+import { FeedPage } from '../features/feed/FeedPage'
 import { TopicsPage } from '../features/onboarding/TopicsPage'
 import { PageHeader } from '../ui/PageHeader'
 import { AppLayout } from './AppLayout'
@@ -25,7 +26,7 @@ export const routes: RouteObject[] = [
           {
             element: <AppLayout />,
             children: [
-              { index: true, element: <PageHeader title="Pour vous" /> },
+              { index: true, element: <FeedPage /> },
               { path: 'sauvegardes', element: <PageHeader title="Sauvegardés" /> },
               { path: 'historique', element: <PageHeader title="Historique" /> },
               { path: 'profil', element: <PageHeader title="Profil" /> },
