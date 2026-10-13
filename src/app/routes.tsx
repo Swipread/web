@@ -2,6 +2,7 @@ import type { RouteObject } from 'react-router'
 import { LoginPage } from '../features/auth/LoginPage'
 import { RegisterPage } from '../features/auth/RegisterPage'
 import { FeedPage } from '../features/feed/FeedPage'
+import { HistoryPage } from '../features/history/HistoryPage'
 import { TopicsPage } from '../features/onboarding/TopicsPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
 import { SavedPage } from '../features/saved/SavedPage'
@@ -29,7 +30,7 @@ export const routes: RouteObject[] = [
             children: [
               { index: true, element: <FeedPage /> },
               { path: 'sauvegardes', element: <SavedPage /> },
-              // '/historique' waits for GET /v1/me/history (docs/demandes-backend.md #3).
+              { path: 'historique', element: <HistoryPage /> },
               { path: 'profil', element: <ProfilePage /> },
             ],
           },
