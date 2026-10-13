@@ -78,7 +78,7 @@ export function useFeedTracking(items: FeedCard[], activeIndex: number | null) {
   }, [endView])
 
   const trackAction = useCallback(
-    (type: Extract<EventType, 'like' | 'unlike' | 'save' | 'share' | 'hide'>, card: FeedCard, index: number, payload?: Record<string, unknown>) => {
+    (type: Extract<EventType, 'like' | 'unlike' | 'save' | 'unsave' | 'share' | 'hide'>, card: FeedCard, index: number, payload?: Record<string, unknown>) => {
       tracker.track({ type, ...eventBase({ card, index }), payload })
     },
     [],

@@ -114,7 +114,7 @@ describe('feed tracking', () => {
     expect(sent()).toContainEqual({ type: 'read', articleId: items[0].articleId, payload: { readMs: 90_000 } })
   })
 
-  it('records like, unlike, save and hide', async () => {
+  it('records like, unlike, save, unsave and hide', async () => {
     const { user } = await renderFeed()
     setVisible(slide(0))
     const card = screen.getByRole('article', { name: items[0].title })
@@ -122,13 +122,14 @@ describe('feed tracking', () => {
     await user.click(within(card).getByRole('button', { name: "J'aime" }))
     await user.click(within(card).getByRole('button', { name: "J'aime" }))
     await user.click(within(card).getByRole('button', { name: 'Sauvegarder' }))
+    await user.click(within(card).getByRole('button', { name: 'Sauvegarder' }))
     await user.click(within(card).getByRole('button', { name: 'Pas intéressé' }))
     await tracker.flush()
 
     const types = sent()
       .filter((e) => e.articleId === items[0].articleId)
       .map((e) => e.type)
-    expect(types).toEqual(['impression', 'like', 'unlike', 'save', 'hide', 'view'])
+    expect(types).toEqual(['impression', 'like', 'unlike', 'save', 'unsave', 'hide', 'view'])
     // The next card takes the hidden one's place.
     expect(sent().at(-1)).toMatchObject({ type: 'impression', articleId: items[1].articleId })
   })

@@ -14,6 +14,7 @@ export const me: Schema<'MeResponse'> = {
   displayName: 'Léa',
   locale: 'fr-FR',
   createdAt: '2026-10-01T08:00:00Z',
+  role: 'READER',
   topics: topics.slice(0, 3),
 }
 
@@ -40,6 +41,9 @@ export function feedItem(overrides: Partial<Schema<'FeedItem'>> = {}): Schema<'F
     language: 'fr',
     wordCount: 1380,
     publishedAt: new Date(Date.now() - 2 * 3_600_000).toISOString(),
+    topics: [topics[0]],
+    liked: false,
+    saved: false,
     requestId: 'r_1',
     reason: 'similar',
     position: articleSeq,
@@ -51,10 +55,26 @@ export function feedPage(size = 10): Schema<'FeedResponse'> {
   return { items: Array.from({ length: size }, () => feedItem()) }
 }
 
+/** An article as listed in Sauvegardés and Historique. */
+export function article(overrides: Partial<Schema<'ArticleResponse'>> = {}): Schema<'ArticleResponse'> {
+  const { articleId, title, summary, url, imageUrl, author, sourceName, language, wordCount, publishedAt, topics } =
+    feedItem()
+  return { id: articleId, title, summary, url, imageUrl, author, sourceName, language, wordCount, publishedAt, topics, ...overrides }
+}
+
 export function savedItem(overrides: Partial<Schema<'ArticleResponse'>> = {}, savedAt?: string) {
-  const { articleId, ...item } = feedItem()
   return {
-    article: { id: articleId, ...item, ...overrides },
+    article: article(overrides),
     savedAt: savedAt ?? new Date(Date.now() - 26 * 3_600_000).toISOString(),
+    liked: false,
   } satisfies Schema<'SavedArticleResponse'>
+}
+
+export function historyItem(overrides: Partial<Schema<'ArticleResponse'>> = {}, readAt?: string) {
+  return {
+    article: article(overrides),
+    readAt: readAt ?? new Date(Date.now() - 3_600_000).toISOString(),
+    liked: false,
+    saved: false,
+  } satisfies Schema<'HistoryItemResponse'>
 }

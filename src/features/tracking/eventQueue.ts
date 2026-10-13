@@ -3,7 +3,7 @@ import type { Schema } from '../../api/types'
 import { newId } from '../../lib/ids'
 
 /** Event types allowed by `EventRequest.type` (see docs/Contrat backend reco.md). */
-export type EventType = 'impression' | 'view' | 'open' | 'read' | 'like' | 'unlike' | 'save' | 'share' | 'hide'
+export type EventType = 'impression' | 'view' | 'open' | 'read' | 'like' | 'unlike' | 'save' | 'unsave' | 'share' | 'hide'
 
 export type TrackedEvent = Schema<'EventRequest'> & { type: EventType }
 export type TrackInput = Omit<TrackedEvent, 'eventId' | 'occurredAt'>
