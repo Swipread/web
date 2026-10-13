@@ -1,6 +1,7 @@
 import type { RouteObject } from 'react-router'
 import { LoginPage } from '../features/auth/LoginPage'
 import { RegisterPage } from '../features/auth/RegisterPage'
+import { TopicsPage } from '../features/onboarding/TopicsPage'
 import { PageHeader } from '../ui/PageHeader'
 import { AppLayout } from './AppLayout'
 import { RedirectIfAuthenticated, RequireAuth, RequireOnboarding } from './guards'
@@ -17,7 +18,7 @@ export const routes: RouteObject[] = [
   {
     element: <RequireAuth />,
     children: [
-      { path: '/centres-interet', element: <PageHeader title="Qu'est-ce qui vous intéresse ?" /> },
+      { path: '/centres-interet', element: <TopicsPage /> },
       {
         element: <RequireOnboarding />,
         children: [
