@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { routes } from '../../app/routes'
 import { session } from '../../lib/session'
-import { savedItem, token } from '../../test/fixtures'
+import { feedItem, savedItem, token } from '../../test/fixtures'
 import { renderRoutes } from '../../test/render'
 import { apiUrl, server } from '../../test/server'
 import type { TrackedEvent } from '../tracking/eventQueue'
@@ -94,6 +94,57 @@ describe('saved articles', () => {
       { type: 'open', articleId: item.article.id, payload: undefined },
       { type: 'share', articleId: item.article.id, payload: { channel: 'clipboard' } },
     ])
+  })
+
+  it('removes an article with an unsave event and moves focus to the next one', async () => {
+    const [first, second] = [savedItem({ title: 'Les batteries solides' }), savedItem({ title: 'La sonde Juice' })]
+    const events: TrackedEvent[] = []
+    server.use(
+      http.get(apiUrl('/v1/me/saved'), () => HttpResponse.json({ items: [first, second] })),
+      http.post(apiUrl('/v1/events'), async ({ request }) => {
+        events.push(...((await request.json()) as { events: TrackedEvent[] }).events)
+        return HttpResponse.json({ accepted: 1, duplicates: 0 }, { status: 202 })
+      }),
+    )
+    const { user } = renderRoutes(routes, { path: '/sauvegardes' })
+
+    await user.click(await screen.findByRole('button', { name: 'Retirer « Les batteries solides » des sauvegardés' }))
+
+    expect(screen.queryByRole('link', { name: /Les batteries solides/ })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /La sonde Juice/ })).toHaveFocus()
+    expect(screen.getByText('1 article à lire plus tard')).toBeInTheDocument()
+    expect(screen.getByText('Article retiré des sauvegardés')).toBeInTheDocument()
+    await tracker.flush()
+    expect(events).toMatchObject([{ type: 'unsave', articleId: first.article.id }])
+  })
+
+  it('shows the empty state once the last article is removed', async () => {
+    server.use(http.get(apiUrl('/v1/me/saved'), () => HttpResponse.json({ items: [savedItem({ title: 'Seul' })] })))
+    const { user } = renderRoutes(routes, { path: '/sauvegardes' })
+
+    await user.click(await screen.findByRole('button', { name: /^Retirer/ }))
+
+    expect(screen.getByText('Aucun article sauvegardé')).toBeInTheDocument()
+  })
+
+  it('unmarks the article in the cached feed', async () => {
+    const item = feedItem({ title: 'Les batteries solides', saved: true })
+    const { articleId, title, url } = item
+    server.use(
+      http.get(apiUrl('/v1/feed'), () => HttpResponse.json({ items: [item] })),
+      http.get(apiUrl('/v1/me/saved'), () =>
+        HttpResponse.json({ items: [{ ...savedItem(), article: { id: articleId, title, url } }] }),
+      ),
+    )
+    const { user } = renderRoutes(routes)
+    await screen.findByRole('article', { name: title })
+
+    await user.click(screen.getByRole('link', { name: 'Sauvegardés' }))
+    await user.click(await screen.findByRole('button', { name: /^Retirer/ }))
+    await user.click(screen.getByRole('link', { name: 'Pour vous' }))
+
+    const card = await screen.findByRole('article', { name: title })
+    expect(within(card).getByRole('button', { name: 'Sauvegarder' })).toHaveAttribute('aria-pressed', 'false')
   })
 
   it('offers a retry on error', async () => {

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router'
 import { getErrorMessage } from '../../api/problem'
 import type { Schema } from '../../api/types'
@@ -12,7 +13,8 @@ import { LoadingState } from '../../ui/LoadingState'
 import { PageHeader } from '../../ui/PageHeader'
 import { useShare } from '../share/useShare'
 import { tracker } from '../tracking/tracker'
-import { useSaved } from './useSaved'
+import { useToast } from '../../ui/toastContext'
+import { useSaved, useUnsave } from './useSaved'
 import styles from './SavedPage.module.css'
 
 type Article = Schema<'ArticleResponse'>
@@ -20,10 +22,28 @@ type Article = Schema<'ArticleResponse'>
 export function SavedPage() {
   const saved = useSaved()
   const share = useShare()
+  const unsave = useUnsave()
+  const toast = useToast()
+  const listRef = useRef<HTMLDivElement>(null)
+  // Row index to focus once a removed article has left the list.
+  const focusAfterRemove = useRef<number | null>(null)
   const items = saved.data?.pages.flatMap((page) => page.items ?? []) ?? []
   const subtitle = saved.hasNextPage
     ? 'Vos articles à lire plus tard'
     : `${items.length} article${items.length > 1 ? 's' : ''} à lire plus tard`
+
+  useEffect(() => {
+    if (focusAfterRemove.current === null) return
+    const links = listRef.current?.querySelectorAll<HTMLElement>('h2 a')
+    if (links?.length) links[Math.min(focusAfterRemove.current, links.length - 1)].focus()
+    focusAfterRemove.current = null
+  }, [items.length])
+
+  const remove = (articleId: string, index: number) => {
+    focusAfterRemove.current = index
+    unsave(articleId)
+    toast.show('Article retiré des sauvegardés')
+  }
 
   const shareArticle = async (article: Article) => {
     const result = await share(article)
@@ -51,8 +71,8 @@ export function SavedPage() {
         />
       ) : (
         <>
-          <div className={styles.list}>
-            {items.map(({ article, savedAt }) =>
+          <div ref={listRef} className={styles.list}>
+            {items.map(({ article, savedAt }, index) =>
               !article?.id || !article.url ? null : (
                 <ArticleRow
                   key={article.id}
@@ -63,12 +83,20 @@ export function SavedPage() {
                   caption={formatActionDate('Sauvegardé', savedAt)}
                   onOpen={() => tracker.track({ type: 'open', articleId: article.id! })}
                   actions={
-                    // "Retirer" needs an endpoint the API lacks (docs/demandes-backend.md #5).
-                    <IconButton
-                      icon={<ShareIcon />}
-                      label={`Partager « ${article.title} »`}
-                      onClick={() => void shareArticle(article)}
-                    />
+                    <>
+                      <IconButton
+                        icon={<ShareIcon />}
+                        label={`Partager « ${article.title} »`}
+                        onClick={() => void shareArticle(article)}
+                      />
+                      <Button
+                        variant="ghost"
+                        aria-label={`Retirer « ${article.title} » des sauvegardés`}
+                        onClick={() => remove(article.id!, index)}
+                      >
+                        Retirer
+                      </Button>
+                    </>
                   }
                 />
               ),
