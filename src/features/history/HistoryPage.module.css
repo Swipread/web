@@ -1,0 +1,41 @@
+.group + .group {
+  margin-top: var(--space-6);
+}
+
+.groupTitle {
+  padding-bottom: var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.reread {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.reread:hover {
+  background: var(--color-fill);
+}
+
+.more {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-5);
+}
+
+.error {
+  margin-top: var(--space-4);
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
