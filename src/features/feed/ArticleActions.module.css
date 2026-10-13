@@ -1,0 +1,19 @@
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* A pressed but disabled toggle (saved) stays fully readable. */
+.actions button:disabled[aria-pressed='true'] {
+  opacity: 1;
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .actions {
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+  }
+}
