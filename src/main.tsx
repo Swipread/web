@@ -6,10 +6,12 @@ import { setUnauthorizedHandler } from './api/client'
 import { queryClient } from './api/queryClient'
 import { routes } from './app/routes'
 import { createUnauthorizedHandler } from './app/unauthorized'
+import { startTracking } from './features/tracking/tracker'
 import './ui/global.css'
 
 const router = createBrowserRouter(routes)
 setUnauthorizedHandler(createUnauthorizedHandler(router, queryClient))
+startTracking()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

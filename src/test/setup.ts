@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
 import { afterAll, afterEach, beforeAll, vi } from 'vitest'
+import { tracker } from '../features/tracking/tracker'
 import { session } from '../lib/session'
 import { MockIntersectionObserver } from './intersectionObserver'
 import { server } from './server'
@@ -16,6 +17,7 @@ beforeAll(() => {
 afterEach(() => {
   cleanup()
   server.resetHandlers()
+  tracker.clear()
   session.clear()
   localStorage.clear()
   sessionStorage.clear()
