@@ -6,12 +6,15 @@ export const loginSchema = z.object({
   password: z.string().min(1, 'Saisissez votre mot de passe.'),
 })
 
+/** Also used to edit the profile (UpdateMeRequest). */
+export const displayNameSchema = z
+  .string()
+  .trim()
+  .min(1, 'Saisissez le nom à afficher.')
+  .max(50, 'Le nom ne doit pas dépasser 50 caractères.')
+
 export const registerSchema = z.object({
-  displayName: z
-    .string()
-    .trim()
-    .min(1, 'Saisissez le nom à afficher.')
-    .max(50, 'Le nom ne doit pas dépasser 50 caractères.'),
+  displayName: displayNameSchema,
   email: z
     .string()
     .trim()
