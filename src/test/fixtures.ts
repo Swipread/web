@@ -50,3 +50,11 @@ export function feedItem(overrides: Partial<Schema<'FeedItem'>> = {}): Schema<'F
 export function feedPage(size = 10): Schema<'FeedResponse'> {
   return { items: Array.from({ length: size }, () => feedItem()) }
 }
+
+export function savedItem(overrides: Partial<Schema<'ArticleResponse'>> = {}, savedAt?: string) {
+  const { articleId, ...item } = feedItem()
+  return {
+    article: { id: articleId, ...item, ...overrides },
+    savedAt: savedAt ?? new Date(Date.now() - 26 * 3_600_000).toISOString(),
+  } satisfies Schema<'SavedArticleResponse'>
+}
