@@ -1,0 +1,28 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.formError {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-fill);
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+}
+
+.submit {
+  margin-top: var(--space-2);
+}
+
+.switch {
+  margin-top: var(--space-5);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.switch a {
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+}

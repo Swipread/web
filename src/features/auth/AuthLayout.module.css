@@ -1,0 +1,121 @@
+.layout {
+  display: grid;
+  grid-template-columns: 5fr 4fr;
+  min-height: 100dvh;
+}
+
+.presentation {
+  display: flex;
+  align-items: center;
+  padding: var(--space-8);
+  background: var(--color-bg-subtle);
+}
+
+.presentationInner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 40rem;
+}
+
+.brand {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-tight);
+}
+
+.tagline {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
+}
+
+/* Three stacked article cards hinting at the vertical feed. */
+.illustration {
+  position: relative;
+  width: min(100%, 25rem);
+  aspect-ratio: 400 / 260;
+  margin-top: var(--space-4);
+}
+
+.stackCard {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.stackCard:nth-child(1) {
+  transform: translateY(24px) scale(0.88);
+  opacity: 0.5;
+}
+
+.stackCard:nth-child(2) {
+  transform: translateY(12px) scale(0.94);
+  opacity: 0.75;
+}
+
+.stackCard:nth-child(3) {
+  background:
+    linear-gradient(var(--color-fill), var(--color-fill)) top / 100% 55% no-repeat,
+    linear-gradient(var(--color-fill), var(--color-fill)) 24px calc(55% + 24px) / 60% 14px no-repeat,
+    linear-gradient(var(--color-fill), var(--color-fill)) 24px calc(55% + 48px) / 40% 10px no-repeat,
+    var(--color-surface);
+}
+
+.formSide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-7) var(--space-5);
+}
+
+.formInner {
+  width: min(100%, 25rem);
+}
+
+.title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.subtitle {
+  margin: var(--space-3) 0 var(--space-5);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .presentation {
+    padding: var(--space-6) var(--space-5) var(--space-4);
+    background: none;
+  }
+
+  .presentationInner {
+    gap: var(--space-2);
+  }
+
+  .brand {
+    font-size: var(--font-size-xl);
+  }
+
+  .tagline {
+    font-size: var(--font-size-md);
+  }
+
+  .illustration {
+    display: none;
+  }
+
+  .formSide {
+    align-items: flex-start;
+    padding-top: var(--space-4);
+  }
+}
