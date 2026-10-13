@@ -2,7 +2,6 @@ import type { ReactNode } from 'react'
 import { NavLink } from 'react-router'
 import {
   BookmarkIcon,
-  ClockIcon,
   HomeIcon,
   LogoutIcon,
   RssIcon,
@@ -16,7 +15,7 @@ type NavItem = { to: string; label: string; icon: ReactNode }
 const readerItems: NavItem[] = [
   { to: '/', label: 'Pour vous', icon: <HomeIcon /> },
   { to: '/sauvegardes', label: 'Sauvegardés', icon: <BookmarkIcon /> },
-  { to: '/historique', label: 'Historique', icon: <ClockIcon /> },
+  // Historique is hidden until the API exposes reading history (docs/demandes-backend.md #3).
   { to: '/profil', label: 'Profil', icon: <UserIcon /> },
 ]
 
