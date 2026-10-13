@@ -42,3 +42,47 @@ export function formatActionDate(verb: string, iso: string | undefined, now = Da
   if (now - new Date(iso!).getTime() >= 7 * DAY) return `${verb} le ${relative}`
   return `${verb} ${relative.charAt(0).toLowerCase()}${relative.slice(1)}`
 }
+
+export type RecencyGroup = 'today' | 'week' | 'older'
+
+function startOfDay(time: number) {
+  const date = new Date(time)
+  date.setHours(0, 0, 0, 0)
+  return date.getTime()
+}
+
+/** Calendar days between `iso` and `now`, in local time: 0 for today, 1 for yesterday. */
+function daysAgo(iso: string, now: number) {
+  const date = new Date(iso)
+  const today = new Date(startOfDay(now))
+  // Count calendar days rather than 24 h spans, so DST changes do not shift the result.
+  const day = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  return Math.round((today.getTime() - day.getTime()) / DAY)
+}
+
+/** "Aujourd'hui" (today), "Cette semaine" (the 6 previous days) or older. */
+export function recencyGroup(iso: string | undefined, now = Date.now()): RecencyGroup {
+  if (!iso || Number.isNaN(new Date(iso).getTime())) return 'older'
+  const days = daysAgo(iso, now)
+  if (days <= 0) return 'today'
+  return days < 7 ? 'week' : 'older'
+}
+
+const weekday = new Intl.DateTimeFormat('fr', { weekday: 'long' })
+const NBSP = ' '
+
+/** "Lu à 10 h 12" today, "Lu hier", "Lu lundi" within the week, then "Lu le 12 oct.". */
+export function formatReadAt(iso: string | undefined, now = Date.now()) {
+  if (!iso) return null
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return null
+  const days = daysAgo(iso, now)
+  if (days <= 0) {
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    return `Lu à ${date.getHours()}${NBSP}h${NBSP}${minutes}`
+  }
+  if (days === 1) return 'Lu hier'
+  if (days < 7) return `Lu ${weekday.format(date)}`
+  const sameYear = date.getFullYear() === new Date(now).getFullYear()
+  return `Lu le ${(sameYear ? shortDate : longDate).format(date)}`
+}
