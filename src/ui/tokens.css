@@ -1,0 +1,97 @@
+:root {
+  color-scheme: light dark;
+
+  /* Colors — light */
+  --color-bg: #ffffff;
+  --color-bg-subtle: #f5f5f7;
+  --color-surface: #ffffff;
+  --color-fill: #ececf0;
+  --color-fill-hover: #e2e2e7;
+  --color-border: #d9d9de;
+  --color-text: #1d1d1f;
+  --color-text-secondary: #5f5f64;
+  --color-primary: #1d1d1f;
+  --color-primary-hover: #3a3a3c;
+  --color-on-primary: #ffffff;
+  --color-accent: #0066cc;
+  --color-focus: #0071e3;
+  --color-danger: #c4001a;
+  --color-like: #e0244a;
+  --color-success: #1d7d36;
+  --color-overlay: rgb(0 0 0 / 0.4);
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px rgb(0 0 0 / 0.06);
+
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.75rem;
+  --font-size-2xl: 2.5rem;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --line-height-tight: 1.2;
+  --line-height-base: 1.5;
+  --letter-spacing-tight: -0.02em;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* Layout */
+  --sidebar-width: 240px;
+  --content-max-width: 1072px;
+  --card-max-width: 640px;
+  --tabbar-height: 64px;
+
+  /* Motion */
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #000000;
+    --color-bg-subtle: #111113;
+    --color-surface: #1c1c1e;
+    --color-fill: #2c2c2e;
+    --color-fill-hover: #3a3a3c;
+    --color-border: #38383a;
+    --color-text: #f5f5f7;
+    --color-text-secondary: #a1a1a6;
+    --color-primary: #f5f5f7;
+    --color-primary-hover: #d2d2d7;
+    --color-on-primary: #1d1d1f;
+    --color-accent: #2997ff;
+    --color-focus: #2997ff;
+    --color-danger: #ff6961;
+    --color-like: #ff375f;
+    --color-success: #30d158;
+    --color-overlay: rgb(0 0 0 / 0.6);
+    --shadow-card: 0 0 0 1px var(--color-border);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+  }
+}
