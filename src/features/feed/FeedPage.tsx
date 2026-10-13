@@ -5,11 +5,12 @@ import { prefersReducedMotion } from '../../lib/media'
 import { EmptyState } from '../../ui/EmptyState'
 import { ErrorState } from '../../ui/ErrorState'
 import { Spinner } from '../../ui/Spinner'
+import { useFeedTracking } from '../tracking/useFeedTracking'
 import { ArticleActions } from './ArticleActions'
 import { ArticleCard } from './ArticleCard'
 import { feedPosition } from './feedPosition'
 import { useActiveIndex } from './useActiveIndex'
-import { useFeed } from './useFeed'
+import { useFeed, type FeedCard } from './useFeed'
 import { useFeedKeyboard } from './useFeedKeyboard'
 import styles from './FeedPage.module.css'
 
@@ -22,6 +23,7 @@ export function FeedPage() {
   const scrollerRef = useRef<HTMLDivElement>(null)
   const activeIndex = useActiveIndex(scrollerRef, items.length)
   const currentIndex = activeIndex ?? 0
+  const { trackAction, trackOpen } = useFeedTracking(items, activeIndex)
   // Target of an in-flight keyboard scroll, so repeated presses keep moving forward.
   const pendingIndex = useRef<number | null>(null)
   const restored = useRef(false)
@@ -80,9 +82,20 @@ export function FeedPage() {
     focusAfterHide.current = null
   }, [items])
 
-  const hide = (index: number, articleId: string) => {
+  const toggleLike = (card: FeedCard, index: number) => {
+    trackAction(card.liked ? 'unlike' : 'like', card, index)
+    feed.updateCard(card.articleId, { liked: !card.liked })
+  }
+
+  const save = (card: FeedCard, index: number) => {
+    trackAction('save', card, index)
+    feed.updateCard(card.articleId, { saved: true })
+  }
+
+  const hide = (card: FeedCard, index: number) => {
+    trackAction('hide', card, index)
     focusAfterHide.current = index
-    feed.removeCard(articleId)
+    feed.removeCard(card.articleId)
   }
 
   return (
@@ -128,12 +141,17 @@ export function FeedPage() {
               aria-posinset={index + 1}
               aria-setsize={hasNextPage ? -1 : items.length}
             >
-              <ArticleCard card={card} titleId={`card-title-${card.articleId}`} eager={index === 0} />
+              <ArticleCard
+                card={card}
+                titleId={`card-title-${card.articleId}`}
+                eager={index === 0}
+                onOpen={() => trackOpen(card, index)}
+              />
               <ArticleActions
                 card={card}
-                onToggleLike={() => feed.updateCard(card.articleId, { liked: !card.liked })}
-                onSave={() => feed.updateCard(card.articleId, { saved: true })}
-                onHide={() => hide(index, card.articleId)}
+                onToggleLike={() => toggleLike(card, index)}
+                onSave={() => save(card, index)}
+                onHide={() => hide(card, index)}
               />
             </article>
           ))}
