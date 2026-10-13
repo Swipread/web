@@ -29,11 +29,9 @@ Ordinateur d'abord, responsive. React 19 + TypeScript + Vite.
 - Événements : toujours via `useTrack` / `eventQueue`, jamais d'appel direct à `/v1/events` ; `eventId` généré côté client ; envoi final avec `fetch` `keepalive` (pas `sendBeacon`, qui ne transmet pas le JWT)
 - Tests : Vitest + Testing Library, fichier `*.test.tsx` à côté du composant, API mockée avec msw (`src/test/handlers.ts`)
 
-## Endpoints manquants
+## Demandes au backend
 
-Si un endpoint nécessaire est absent de la spec ou ne correspond pas aux user stories : le signaler, ne pas le contourner (pas de fausse API, pas de décodage du JWT pour en tirer des infos).
-
-Manques connus : rôle admin, historique, modification du nom, suppression du compte, retrait d'un sauvegardé, administration sources/thèmes.
+Si un endpoint nécessaire est absent de la spec, ne correspond pas aux user stories, ou si le backend doit changer (CORS, DTO, statut…) : le consigner dans `docs/demandes-backend.md` (transmis à l'équipe backend) et le signaler, sans le contourner (pas de fausse API, pas de décodage du JWT pour en tirer des infos).
 
 ## Git
 
