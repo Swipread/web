@@ -37,3 +37,4 @@ Si un endpoint nécessaire est absent de la spec, ne correspond pas aux user sto
 
 - Commits petits et fréquents, au format Conventional Commits (`feat(feed): …`, `fix(auth): …`, `chore: …`, `test: …`, `docs: …`), scope = nom de la fonctionnalité
 - Pas de ligne `Co-Authored-By` dans les commits
+- Le dossier `docs/` n'est jamais commité (ignoré par git)
