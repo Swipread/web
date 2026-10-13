@@ -10,11 +10,14 @@ type Props = {
   caption?: string | null
   actions?: ReactNode
   onOpen?: () => void
+  /** h3 when rows sit under section headings. */
+  headingLevel?: 2 | 3
 }
 
 /** One article in a list (Sauvegardés, Historique): thumbnail, title linking to the source, actions. */
-export function ArticleRow({ title, url, imageUrl, meta, caption, actions, onOpen }: Props) {
+export function ArticleRow({ title, url, imageUrl, meta, caption, actions, onOpen, headingLevel = 2 }: Props) {
   const [imageFailed, setImageFailed] = useState(false)
+  const Heading = headingLevel === 3 ? 'h3' : 'h2'
   return (
     <article className={styles.row}>
       <div className={styles.thumb} aria-hidden="true">
@@ -37,12 +40,12 @@ export function ArticleRow({ title, url, imageUrl, meta, caption, actions, onOpe
             ))}
           </p>
         )}
-        <h2 className={styles.title}>
+        <Heading className={styles.title}>
           <a href={url} target="_blank" rel="noopener noreferrer" onClick={onOpen}>
             {title}{' '}
             <span className="visually-hidden">(nouvel onglet)</span>
           </a>
-        </h2>
+        </Heading>
         {caption && <p className={styles.caption}>{caption}</p>}
       </div>
       {actions && <div className={styles.actions}>{actions}</div>}
