@@ -26,7 +26,7 @@ Ordinateur d'abord, responsive. React 19 + TypeScript + Vite.
 - Style : CSS Modules (`Component.module.css`) ; couleurs, espacements, rayons et durées uniquement via les variables de `src/ui/tokens.css`. Sobre, inspiré d'Apple : espace, typographie système, peu de couleurs, animations discrètes et désactivées avec `prefers-reduced-motion`. Clair/sombre via `prefers-color-scheme`
 - Chaque écran gère chargement, erreur (avec « Réessayer ») et liste vide
 - Accessibilité : `aria-label` sur tout bouton icône, `aria-pressed` sur les bascules, focus visible, contrastes AA, fil navigable aux flèches ↑/↓
-- Événements : toujours via `useTrack` / `eventQueue`, jamais d'appel direct à `/v1/events` ; `eventId` généré côté client ; envoi final avec `fetch` `keepalive` (pas `sendBeacon`, qui ne transmet pas le JWT)
+- Événements : toujours via `tracker` (`src/features/tracking/tracker.ts`), jamais d'appel direct à `/v1/events` ; `eventId` généré côté client ; envoi final avec `fetch` `keepalive` (pas `sendBeacon`, qui ne transmet pas le JWT)
 - Tests : Vitest + Testing Library, fichier `*.test.tsx` à côté du composant, API mockée avec msw (`src/test/handlers.ts`)
 
 ## Demandes au backend
