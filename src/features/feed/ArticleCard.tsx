@@ -13,6 +13,8 @@ type Props = {
 
 export function ArticleCard({ card, titleId, eager = false, onOpen }: Props) {
   const [imageFailed, setImageFailed] = useState(false)
+  // Topics come most confident first; the list may be empty.
+  const topic = card.topics?.[0]?.label
   const meta = [card.sourceName, formatRelativeDate(card.publishedAt), formatReadingTime(card.wordCount)].filter(
     Boolean,
   )
@@ -44,6 +46,7 @@ export function ArticleCard({ card, titleId, eager = false, onOpen }: Props) {
             ))}
           </p>
         )}
+        {topic && <p className={styles.topic}>{topic}</p>}
         <h2 id={titleId} className={styles.title}>
           {card.title}
         </h2>

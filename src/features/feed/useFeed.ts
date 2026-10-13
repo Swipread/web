@@ -5,10 +5,7 @@ import type { Schema } from '../../api/types'
 import { getSessionId } from '../../lib/ids'
 import { getDevice } from '../../lib/media'
 
-/**
- * A feed item plus reaction state kept for the session only:
- * the API does not return whether an article is liked or saved (docs/demandes-backend.md #8).
- */
+/** A feed item whose reaction state is always set, then updated locally as the reader acts. */
 export type FeedCard = Schema<'FeedItem'> & { articleId: string; liked: boolean; saved: boolean }
 type FeedPage = { items: FeedCard[] }
 
@@ -22,7 +19,7 @@ async function fetchFeedPage(signal: AbortSignal): Promise<FeedPage> {
     }),
   )
   const items = (response.items ?? []).flatMap((item) =>
-    item.articleId ? [{ ...item, articleId: item.articleId, liked: false, saved: false }] : [],
+    item.articleId ? [{ ...item, articleId: item.articleId, liked: item.liked ?? false, saved: item.saved ?? false }] : [],
   )
   return { items }
 }

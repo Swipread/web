@@ -89,9 +89,9 @@ export function FeedPage() {
     feed.updateCard(card.articleId, { liked: !card.liked })
   }
 
-  const save = (card: FeedCard, index: number) => {
-    trackAction('save', card, index)
-    feed.updateCard(card.articleId, { saved: true })
+  const toggleSave = (card: FeedCard, index: number) => {
+    trackAction(card.saved ? 'unsave' : 'save', card, index)
+    feed.updateCard(card.articleId, { saved: !card.saved })
   }
 
   const share = async (card: FeedCard, index: number) => {
@@ -157,7 +157,7 @@ export function FeedPage() {
               <ArticleActions
                 card={card}
                 onToggleLike={() => toggleLike(card, index)}
-                onSave={() => save(card, index)}
+                onToggleSave={() => toggleSave(card, index)}
                 onShare={() => void share(card, index)}
                 onHide={() => hide(card, index)}
               />

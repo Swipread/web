@@ -6,12 +6,12 @@ import styles from './ArticleActions.module.css'
 type Props = {
   card: FeedCard
   onToggleLike: () => void
-  onSave: () => void
+  onToggleSave: () => void
   onShare: () => void
   onHide: () => void
 }
 
-export function ArticleActions({ card, onToggleLike, onSave, onShare, onHide }: Props) {
+export function ArticleActions({ card, onToggleLike, onToggleSave, onShare, onHide }: Props) {
   return (
     <div className={styles.actions} role="group" aria-label="Actions sur l'article">
       <IconButton
@@ -22,14 +22,12 @@ export function ArticleActions({ card, onToggleLike, onSave, onShare, onHide }: 
         pressed={card.liked}
         onClick={onToggleLike}
       />
-      {/* Saving cannot be undone yet: the API has no way to unsave (docs/demandes-backend.md #5). */}
       <IconButton
         icon={<BookmarkIcon filled={card.saved} />}
-        label={card.saved ? 'Sauvegardé' : 'Sauvegarder'}
+        label="Sauvegarder"
         showLabel
         pressed={card.saved}
-        disabled={card.saved}
-        onClick={onSave}
+        onClick={onToggleSave}
       />
       <IconButton icon={<ShareIcon />} label="Partager" showLabel onClick={onShare} />
       <IconButton icon={<CloseIcon />} label="Pas intéressé" showLabel onClick={onHide} />

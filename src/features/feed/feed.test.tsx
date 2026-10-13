@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { routes } from '../../app/routes'
 import { session } from '../../lib/session'
-import { feedItem, token } from '../../test/fixtures'
+import { feedItem, token, topics } from '../../test/fixtures'
 import { setVisible } from '../../test/intersectionObserver'
 import { renderRoutes } from '../../test/render'
 import { apiUrl, server } from '../../test/server'
@@ -109,7 +109,7 @@ describe('feed', () => {
     expect(screen.getByRole('article', { name: second.title })).toHaveFocus()
   })
 
-  it('toggles like and marks the article as saved', async () => {
+  it('toggles like and save', async () => {
     const item = feedItem()
     serveFeed([item])
     const { user } = renderRoutes(routes)
@@ -121,8 +121,26 @@ describe('feed', () => {
     await user.click(like)
     expect(like).toHaveAttribute('aria-pressed', 'false')
 
-    await user.click(within(card).getByRole('button', { name: 'Sauvegarder' }))
-    expect(within(card).getByRole('button', { name: 'Sauvegardé' })).toHaveAttribute('aria-pressed', 'true')
+    const save = within(card).getByRole('button', { name: 'Sauvegarder' })
+    await user.click(save)
+    expect(save).toHaveAttribute('aria-pressed', 'true')
+    await user.click(save)
+    expect(save).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('shows the reaction state and main topic sent by the API', async () => {
+    const item = feedItem({ liked: true, saved: true, topics: [topics[1], topics[0]] })
+    const untagged = feedItem({ topics: [] })
+    serveFeed([item, untagged])
+    renderRoutes(routes)
+    const card = await screen.findByRole('article', { name: item.title })
+
+    expect(within(card).getByRole('button', { name: "J'aime" })).toHaveAttribute('aria-pressed', 'true')
+    expect(within(card).getByRole('button', { name: 'Sauvegarder' })).toHaveAttribute('aria-pressed', 'true')
+    expect(within(card).getByText('Science')).toBeInTheDocument()
+    expect(within(card).queryByText('Technologie')).not.toBeInTheDocument()
+    const other = screen.getByRole('article', { name: untagged.title })
+    expect(within(other).queryByText(/Technologie|Science/)).not.toBeInTheDocument()
   })
 
   it('reopens on the card left last time', async () => {

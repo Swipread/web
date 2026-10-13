@@ -58,6 +58,15 @@
   margin: 0 var(--space-2);
 }
 
+.topic {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-fill);
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
 .title {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
