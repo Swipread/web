@@ -9,5 +9,6 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     css: { modules: { classNameStrategy: 'non-scoped' } },
     restoreMocks: true,
+    env: { VITE_API_BASE_URL: 'http://api.test' },
   },
 })
