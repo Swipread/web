@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router'
 import { api, unwrap } from '../../api/client'
 import { session } from '../../lib/session'
+import { tracker } from '../tracking/tracker'
 import type { LoginValues, RegisterValues } from './schemas'
 
 export const meQueryKey = ['me'] as const
@@ -45,6 +46,9 @@ export function useLogout() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   return useCallback(() => {
+    // Close the current card's view and send pending events while the token is still known.
+    void tracker.flushOnExit()
+    tracker.clear()
     session.clear()
     queryClient.clear()
     void navigate('/connexion', { replace: true })
