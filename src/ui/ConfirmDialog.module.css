@@ -42,6 +42,12 @@
   margin-top: var(--space-5);
 }
 
+@media (max-width: 480px) {
+  .actions {
+    flex-direction: column-reverse;
+  }
+}
+
 @keyframes appear {
   from {
     opacity: 0;
