@@ -7,6 +7,7 @@ import { queryClient } from './api/queryClient'
 import { routes } from './app/routes'
 import { createUnauthorizedHandler } from './app/unauthorized'
 import { startTracking } from './features/tracking/tracker'
+import { ToastProvider } from './ui/ToastProvider'
 import './ui/global.css'
 
 const router = createBrowserRouter(routes)
@@ -16,7 +17,9 @@ startTracking()
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <ToastProvider>
+        <RouterProvider router={router} />
+      </ToastProvider>
     </QueryClientProvider>
   </StrictMode>,
 )

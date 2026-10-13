@@ -144,3 +144,50 @@ describe('feed tracking', () => {
     expect(authorizations).toEqual(['Bearer jwt-test'])
   })
 })
+
+describe('sharing from the feed', () => {
+  const item = feedItem()
+  let events: TrackedEvent[]
+
+  beforeEach(() => {
+    session.save(token)
+    events = []
+    server.use(
+      http.get(apiUrl('/v1/feed'), () => HttpResponse.json({ items: [item] })),
+      http.post(apiUrl('/v1/events'), async ({ request }) => {
+        events.push(...((await request.json()) as Batch).events)
+        return HttpResponse.json({ accepted: 1, duplicates: 0 }, { status: 202 })
+      }),
+    )
+  })
+
+  it('copies the link, confirms it and records the share', async () => {
+    const { user } = renderRoutes(routes)
+    const card = await screen.findByRole('article', { name: item.title })
+
+    await user.click(within(card).getByRole('button', { name: 'Partager' }))
+
+    expect(await screen.findByRole('status', { name: 'Notifications' })).toHaveTextContent('Lien copié')
+    await expect(navigator.clipboard.readText()).resolves.toBe(item.url)
+    await tracker.flush()
+    expect(events).toContainEqual(
+      expect.objectContaining({ type: 'share', articleId: item.articleId, payload: { channel: 'clipboard' } }),
+    )
+  })
+
+  it('records nothing when the share sheet is dismissed', async () => {
+    Object.defineProperty(navigator, 'share', {
+      value: vi.fn().mockRejectedValue(new DOMException('cancelled', 'AbortError')),
+      configurable: true,
+    })
+    const { user } = renderRoutes(routes)
+    const card = await screen.findByRole('article', { name: item.title })
+
+    await user.click(within(card).getByRole('button', { name: 'Partager' }))
+    await tracker.flush()
+
+    expect(events.some((e) => e.type === 'share')).toBe(false)
+    expect(screen.getByRole('status', { name: 'Notifications' })).toBeEmptyDOMElement()
+    delete (navigator as unknown as Record<string, unknown>).share
+  })
+})

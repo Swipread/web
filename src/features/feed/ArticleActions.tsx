@@ -1,5 +1,5 @@
 import { IconButton } from '../../ui/IconButton'
-import { BookmarkIcon, CloseIcon, HeartIcon } from '../../ui/icons'
+import { BookmarkIcon, CloseIcon, HeartIcon, ShareIcon } from '../../ui/icons'
 import type { FeedCard } from './useFeed'
 import styles from './ArticleActions.module.css'
 
@@ -7,10 +7,11 @@ type Props = {
   card: FeedCard
   onToggleLike: () => void
   onSave: () => void
+  onShare: () => void
   onHide: () => void
 }
 
-export function ArticleActions({ card, onToggleLike, onSave, onHide }: Props) {
+export function ArticleActions({ card, onToggleLike, onSave, onShare, onHide }: Props) {
   return (
     <div className={styles.actions} role="group" aria-label="Actions sur l'article">
       <IconButton
@@ -30,6 +31,7 @@ export function ArticleActions({ card, onToggleLike, onSave, onHide }: Props) {
         disabled={card.saved}
         onClick={onSave}
       />
+      <IconButton icon={<ShareIcon />} label="Partager" showLabel onClick={onShare} />
       <IconButton icon={<CloseIcon />} label="Pas intéressé" showLabel onClick={onHide} />
     </div>
   )

@@ -5,6 +5,7 @@ import { prefersReducedMotion } from '../../lib/media'
 import { EmptyState } from '../../ui/EmptyState'
 import { ErrorState } from '../../ui/ErrorState'
 import { Spinner } from '../../ui/Spinner'
+import { useShare } from '../share/useShare'
 import { useFeedTracking } from '../tracking/useFeedTracking'
 import { ArticleActions } from './ArticleActions'
 import { ArticleCard } from './ArticleCard'
@@ -24,6 +25,7 @@ export function FeedPage() {
   const activeIndex = useActiveIndex(scrollerRef, items.length)
   const currentIndex = activeIndex ?? 0
   const { trackAction, trackOpen } = useFeedTracking(items, activeIndex)
+  const shareCard = useShare()
   // Target of an in-flight keyboard scroll, so repeated presses keep moving forward.
   const pendingIndex = useRef<number | null>(null)
   const restored = useRef(false)
@@ -92,6 +94,11 @@ export function FeedPage() {
     feed.updateCard(card.articleId, { saved: true })
   }
 
+  const share = async (card: FeedCard, index: number) => {
+    const result = await shareCard(card)
+    if (result === 'native' || result === 'clipboard') trackAction('share', card, index, { channel: result })
+  }
+
   const hide = (card: FeedCard, index: number) => {
     trackAction('hide', card, index)
     focusAfterHide.current = index
@@ -151,6 +158,7 @@ export function FeedPage() {
                 card={card}
                 onToggleLike={() => toggleLike(card, index)}
                 onSave={() => save(card, index)}
+                onShare={() => void share(card, index)}
                 onHide={() => hide(card, index)}
               />
             </article>
