@@ -1,12 +1,7 @@
+import type { Schema } from './types'
+
 /** RFC 9457 problem details, as returned by the backend (`application/problem+json`). */
-export type ProblemDetail = {
-  type?: string
-  title?: string
-  status?: number
-  detail?: string
-  instance?: string
-  errors?: { field: string; message: string }[]
-}
+export type ProblemDetail = Schema<'ProblemDetail'>
 
 export type FieldErrors = Record<string, string>
 
@@ -59,7 +54,7 @@ export function toApiError(status: number, body: unknown): ApiError {
   const fieldErrors: FieldErrors = {}
   for (const { field, message } of problem?.errors ?? []) {
     // Keep the first message per field.
-    fieldErrors[field] ??= message
+    if (field && message) fieldErrors[field] ??= message
   }
   return new ApiError(status, messageForStatus(status), fieldErrors, problem)
 }
