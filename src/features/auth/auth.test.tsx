@@ -84,13 +84,13 @@ describe('registration', () => {
   it('shows server-side field errors on their field', async () => {
     server.use(
       http.post(apiUrl('/v1/auth/register'), () =>
-        problem(400, { errors: [{ field: 'displayName', message: 'ne doit pas être vide' }] }),
+        problem(400, { errors: [{ field: 'displayName', code: 'NotBlank', message: 'must not be blank' }] }),
       ),
     )
     const { user } = renderRoutes(routes, { path: '/inscription' })
     await fillForm(user)
 
-    expect(await screen.findByText('ne doit pas être vide')).toBeInTheDocument()
+    expect(await screen.findByText('Ce champ est obligatoire.')).toBeInTheDocument()
     expect(screen.getByLabelText('Nom affiché')).toBeInvalid()
   })
 

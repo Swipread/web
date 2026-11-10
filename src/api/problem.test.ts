@@ -8,17 +8,23 @@ describe('toApiError', () => {
       status: 400,
       title: 'Bad Request',
       errors: [
-        { field: 'email', message: 'doit être une adresse électronique syntaxiquement correcte' },
-        { field: 'password', message: 'la taille doit être comprise entre 8 et 72' },
+        { field: 'email', code: 'Email', message: 'must be a well-formed email address' },
+        { field: 'password', code: 'Size', message: 'size must be between 8 and 72' },
+        { field: 'password', code: 'NotBlank', message: 'must not be blank' },
+        { field: 'locale', code: 'Weird', message: 'is weird' },
+        { field: 'displayName', message: 'must not be blank' },
       ],
     })
 
     expect(error).toBeInstanceOf(ApiError)
     expect(error.status).toBe(400)
     expect(error.message).toBe('Certaines informations sont invalides.')
+    // Never the server's English message: a French one from the constraint code, the first one per field.
     expect(error.fieldErrors).toEqual({
-      email: 'doit être une adresse électronique syntaxiquement correcte',
-      password: 'la taille doit être comprise entre 8 et 72',
+      email: 'Saisissez un email valide.',
+      password: "La longueur de ce champ n'est pas acceptée.",
+      locale: "Cette valeur n'est pas acceptée.",
+      displayName: "Cette valeur n'est pas acceptée.",
     })
   })
 

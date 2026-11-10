@@ -232,8 +232,7 @@ function SourceForm({ nameFieldId }: { nameFieldId: string }) {
         if (error.status === 422) return setError('feedUrl', { message: feedCheckMessage(error.problem?.detail) })
         const fields = Object.keys(emptySource) as (keyof SourceValues)[]
         const invalid = fields.filter((field) => error.fieldErrors[field])
-        // The server's validation messages may not be in French: rely on the field only.
-        for (const field of invalid) setError(field, { message: 'Valeur refusée par le serveur.' })
+        for (const field of invalid) setError(field, { message: error.fieldErrors[field] })
         if (invalid.length === 0) setFormError(error.message)
       },
     })

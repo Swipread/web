@@ -113,7 +113,7 @@ describe('profile', () => {
       server.use(
         http.patch(apiUrl('/v1/me'), () =>
           HttpResponse.json(
-            { title: 'Bad Request', status: 400, errors: [{ field: 'displayName', message: 'ne doit pas être vide' }] },
+            { title: 'Bad Request', status: 400, errors: [{ field: 'displayName', code: 'NotBlank', message: 'must not be blank' }] },
             { status: 400, headers: { 'Content-Type': 'application/problem+json' } },
           ),
         ),
@@ -125,6 +125,7 @@ describe('profile', () => {
       await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
 
       await waitFor(() => expect(name).toHaveAttribute('aria-invalid', 'true'))
+      expect(screen.getByText('Ce champ est obligatoire.')).toBeInTheDocument()
     })
   })
 

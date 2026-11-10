@@ -45,6 +45,21 @@ export function messageForStatus(status: number): string {
   }
 }
 
+// The API sends validation messages in English: show a French message chosen from the violated constraint.
+const CONSTRAINT_MESSAGES: Record<string, string> = {
+  NotBlank: 'Ce champ est obligatoire.',
+  NotNull: 'Ce champ est obligatoire.',
+  NotEmpty: 'Ce champ est obligatoire.',
+  Size: "La longueur de ce champ n'est pas acceptée.",
+  Email: 'Saisissez un email valide.',
+  Pattern: "Le format de ce champ n'est pas valide.",
+}
+
+/** French message for a field rejected by the server, from its constraint code (`NotBlank`, `Size`…). */
+export function fieldMessage(code: string | undefined) {
+  return (code && CONSTRAINT_MESSAGES[code]) || "Cette valeur n'est pas acceptée."
+}
+
 function isProblemDetail(body: unknown): body is ProblemDetail {
   return typeof body === 'object' && body !== null && ('status' in body || 'title' in body)
 }
@@ -52,9 +67,9 @@ function isProblemDetail(body: unknown): body is ProblemDetail {
 export function toApiError(status: number, body: unknown): ApiError {
   const problem = isProblemDetail(body) ? body : undefined
   const fieldErrors: FieldErrors = {}
-  for (const { field, message } of problem?.errors ?? []) {
+  for (const { field, code } of problem?.errors ?? []) {
     // Keep the first message per field.
-    if (field && message) fieldErrors[field] ??= message
+    if (field) fieldErrors[field] ??= fieldMessage(code)
   }
   return new ApiError(status, messageForStatus(status), fieldErrors, problem)
 }
