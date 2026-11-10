@@ -5,6 +5,12 @@ const KNOWN_DETAILS: [RegExp, (match: RegExpMatchArray) => string][] = [
   [/^Feed answered HTTP (\d+)$/i, ([, status]) => `Le flux a répondu par une erreur HTTP ${status}.`],
   [/^Not a valid RSS or Atom feed$/i, () => "Ce n'est pas un flux RSS ou Atom valide."],
   [/^Feed has no articles$/i, () => 'Le flux ne contient aucun article.'],
+  [
+    /^Feed address is not allowed$/i,
+    () => 'Adresse refusée : seuls les flux publics en http ou https (ports 80 et 443) sont acceptés.',
+  ],
+  [/^Feed redirects too many times$/i, () => 'Le flux redirige trop de fois.'],
+  [/^Feed is larger than (\d+) MB$/i, ([, size]) => `Le flux dépasse ${size} Mo.`],
 ]
 
 /** Message shown under the feed URL when the API could not validate the feed. */

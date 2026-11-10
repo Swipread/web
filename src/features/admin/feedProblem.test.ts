@@ -7,6 +7,12 @@ describe('feedCheckMessage', () => {
     ['Feed answered HTTP 404', 'Le flux a répondu par une erreur HTTP 404.'],
     ['Not a valid RSS or Atom feed', "Ce n'est pas un flux RSS ou Atom valide."],
     ['Feed has no articles', 'Le flux ne contient aucun article.'],
+    [
+      'Feed address is not allowed',
+      'Adresse refusée : seuls les flux publics en http ou https (ports 80 et 443) sont acceptés.',
+    ],
+    ['Feed redirects too many times', 'Le flux redirige trop de fois.'],
+    ['Feed is larger than 5 MB', 'Le flux dépasse 5 Mo.'],
   ])('translates "%s"', (detail, message) => {
     expect(feedCheckMessage(detail)).toBe(message)
   })
