@@ -6,12 +6,19 @@ import {
   HomeIcon,
   LogoutIcon,
   RssIcon,
+  SlidersIcon,
   TagIcon,
   UserIcon,
 } from '../ui/icons'
 import styles from './Sidebar.module.css'
 
-type NavItem = { to: string; label: string; icon: ReactNode }
+type NavItem = {
+  to: string
+  label: string
+  icon: ReactNode
+  /** Only in the mobile tab bar. */
+  mobileOnly?: boolean
+}
 
 const readerItems: NavItem[] = [
   { to: '/', label: 'Pour vous', icon: <HomeIcon /> },
@@ -19,6 +26,9 @@ const readerItems: NavItem[] = [
   { to: '/historique', label: 'Historique', icon: <ClockIcon /> },
   { to: '/profil', label: 'Profil', icon: <UserIcon /> },
 ]
+
+// The tab bar has no room for both admin links: one entry, the admin pages switch between them.
+const adminTab: NavItem = { to: '/admin', label: 'Admin', icon: <SlidersIcon />, mobileOnly: true }
 
 const adminItems: NavItem[] = [
   { to: '/admin/sources', label: 'Sources', icon: <RssIcon /> },
@@ -35,7 +45,7 @@ export function Sidebar({ showAdmin, onLogout }: Props) {
     <aside className={styles.sidebar}>
       <p className={styles.brand}>Swipread</p>
       <nav aria-label="Navigation principale" className={styles.nav}>
-        <NavList items={readerItems} />
+        <NavList items={showAdmin ? [...readerItems, adminTab] : readerItems} />
         {showAdmin && (
           <div className={styles.group}>
             <p className={styles.groupTitle} id="admin-nav-title">
@@ -59,7 +69,7 @@ function NavList({ items, labelledBy }: { items: NavItem[]; labelledBy?: string 
   return (
     <ul className={styles.list} aria-labelledby={labelledBy}>
       {items.map((item) => (
-        <li key={item.to}>
+        <li key={item.to} className={item.mobileOnly ? styles.mobileOnly : undefined}>
           <NavLink
             to={item.to}
             end={item.to === '/'}

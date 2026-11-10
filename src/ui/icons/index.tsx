@@ -60,6 +60,14 @@ export const TagIcon = (p: IconProps) => (
   </Icon>
 )
 
+export const SlidersIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 7h10M18 7h2M4 17h2M10 17h10" />
+    <circle cx="16" cy="7" r="2" />
+    <circle cx="8" cy="17" r="2" />
+  </Icon>
+)
+
 export const LogoutIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M10 4H6a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h4M15 16l4-4-4-4M19 12H9" />

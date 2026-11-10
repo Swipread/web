@@ -74,6 +74,10 @@
   margin-top: auto;
 }
 
+.mobileOnly {
+  display: none;
+}
+
 /* Mobile: bottom tab bar */
 @media (max-width: 768px) {
   .sidebar {
@@ -88,8 +92,12 @@
   }
 
   .brand,
-  .groupTitle {
+  .group {
     display: none;
+  }
+
+  .list > .mobileOnly {
+    display: block;
   }
 
   .nav,
@@ -103,13 +111,8 @@
     flex: 1 1 auto;
   }
 
-  .list > li,
-  .group {
+  .list > li {
     flex: 1;
-  }
-
-  .group .list {
-    height: 100%;
   }
 
   .link,

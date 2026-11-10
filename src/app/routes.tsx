@@ -1,4 +1,5 @@
 import { Navigate, type RouteObject } from 'react-router'
+import { AdminLayout } from '../features/admin/AdminLayout'
 import { AdminTopicsPage } from '../features/admin/AdminTopicsPage'
 import { SourcesPage } from '../features/admin/SourcesPage'
 import { LoginPage } from '../features/auth/LoginPage'
@@ -39,8 +40,13 @@ export const routes: RouteObject[] = [
                 element: <RequireAdmin />,
                 children: [
                   { index: true, element: <Navigate to="sources" replace /> },
-                  { path: 'sources', element: <SourcesPage /> },
-                  { path: 'themes', element: <AdminTopicsPage /> },
+                  {
+                    element: <AdminLayout />,
+                    children: [
+                      { path: 'sources', element: <SourcesPage /> },
+                      { path: 'themes', element: <AdminTopicsPage /> },
+                    ],
+                  },
                 ],
               },
             ],
