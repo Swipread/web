@@ -1,0 +1,49 @@
+.create {
+  display: grid;
+  grid-template-columns: minmax(0, 25rem) max-content;
+  align-items: start;
+  gap: var(--space-2) var(--space-4);
+}
+
+/* Aligns the button with the input, below the field label. */
+.createButton {
+  justify-self: start;
+  margin-top: calc(var(--font-size-sm) * var(--line-height-base) + var(--space-2));
+}
+
+.fullRow {
+  grid-column: 1 / -1;
+}
+
+.nameColumn {
+  width: 50%;
+}
+
+.rename {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-weight: var(--font-weight-regular);
+}
+
+.renameRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.renameField {
+  flex: 1 1 12rem;
+}
+
+@media (max-width: 768px) {
+  .create {
+    grid-template-columns: 1fr;
+  }
+
+  .createButton {
+    margin-top: 0;
+    justify-self: start;
+  }
+}
