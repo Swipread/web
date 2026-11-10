@@ -1,6 +1,7 @@
 import createClient, { type Middleware } from 'openapi-fetch'
 import { session } from '../lib/session'
 import { networkError, toApiError } from './problem'
+import { expiresSoon, refreshSession } from './refresh'
 import type { paths } from './schema'
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -18,11 +19,13 @@ function isAuthEndpoint(url: string) {
 }
 
 const authMiddleware: Middleware = {
-  onRequest({ request }) {
+  async onRequest({ request }) {
+    if (isAuthEndpoint(request.url) || !session.get()) return request
+    // Renew just before expiry: a keepalive request sent while the tab closes could not be retried.
+    // On failure, go on with the current token: the 401 path below renews or ends the session.
+    if (expiresSoon()) await refreshSession().catch(() => false)
     const current = session.get()
-    if (current && !isAuthEndpoint(request.url)) {
-      request.headers.set('Authorization', `Bearer ${current.accessToken}`)
-    }
+    if (current) request.headers.set('Authorization', `Bearer ${current.accessToken}`)
     return request
   },
   onResponse({ request, response }) {
@@ -34,10 +37,27 @@ const authMiddleware: Middleware = {
   },
 }
 
+/**
+ * Sends the refresh token cookie to /v1/auth, and on a 401 elsewhere renews the access token once and replays
+ * the request. If the refresh is refused, the 401 goes through and the middleware ends the session.
+ */
+async function fetchWithRefresh(request: Request): Promise<Response> {
+  // Resolve fetch at call time so test interceptors and polyfills are picked up.
+  if (isAuthEndpoint(request.url)) return globalThis.fetch(new Request(request, { credentials: 'include' }))
+  const replay = request.clone()
+  const response = await globalThis.fetch(request)
+  if (response.status !== 401 || !session.get()) return response
+  // A network failure while renewing propagates as a network error: the session is kept.
+  const renewed = await refreshSession()
+  const current = session.get()
+  if (!renewed || !current) return response
+  replay.headers.set('Authorization', `Bearer ${current.accessToken}`)
+  return globalThis.fetch(replay)
+}
+
 export const api = createClient<paths>({
   baseUrl: API_BASE_URL,
-  // Resolve fetch at call time so test interceptors and polyfills are picked up.
-  fetch: (request) => globalThis.fetch(request),
+  fetch: fetchWithRefresh,
 })
 api.use(authMiddleware)
 

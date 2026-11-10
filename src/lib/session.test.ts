@@ -17,13 +17,12 @@ describe('session', () => {
     unsubscribe()
   })
 
-  it('drops an expired session', () => {
+  it('keeps the session when the access token expires: the refresh token renews it', () => {
     vi.useFakeTimers()
     session.save({ accessToken: 'jwt', userId: 'u_1', expiresIn: 60 })
     vi.advanceTimersByTime(61_000)
 
-    expect(session.get()).toBeNull()
-    expect(localStorage.getItem('swipread.session')).toBeNull()
+    expect(session.get()).toMatchObject({ accessToken: 'jwt', userId: 'u_1' })
   })
 
   it('clears the session', () => {

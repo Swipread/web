@@ -3,7 +3,7 @@ import type { Schema } from '../api/types'
 export type Session = {
   accessToken: string
   userId: string
-  /** Epoch ms after which the token is considered expired, or null if unknown. */
+  /** Epoch ms after which the access token expires, or null if unknown. It is then renewed, not dropped. */
   expiresAt: number | null
 }
 
@@ -25,17 +25,10 @@ function notify() {
   listeners.forEach((listener) => listener())
 }
 
-function isExpired(value: Session) {
-  return value.expiresAt !== null && value.expiresAt <= Date.now()
-}
-
 export const session = {
+  /** The session outlives its access token: the refresh token cookie renews it (see api/refresh.ts). */
   get(): Session | null {
     if (cached === undefined) cached = readStorage()
-    if (cached && isExpired(cached)) {
-      session.clear()
-      return null
-    }
     return cached
   },
 
