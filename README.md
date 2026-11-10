@@ -1,81 +1,181 @@
-# Swipread web
+# Swipread · web
 
-Swipread is a reading app that works like a short-video feed, but for articles: recommended articles are shown one card per screen, and the reader scrolls to the next one. Every interaction (time spent on a card, opening, reading, liking, saving, sharing, hiding) is sent to the backend, which feeds a recommendation service so the feed adapts to the reader.
+**Read the news one card at a time.** Swipread is a feed of recommended articles you scroll like short videos: one article per screen, and every scroll, read and like teaches the recommender what you want next.
 
-This repository is the **web frontend**: desktop first, responsive down to mobile, with light and dark themes. The UI is in French. It talks to the Swipread API (Spring Boot, separate repository) over REST.
+This repository is the web app: React 19 + TypeScript, desktop first and fully responsive, light and dark themes, French UI.
 
-![The "Pour vous" feed](docs/images/feed.png)
+![React 19](https://img.shields.io/badge/React-19-149eca)
+![TypeScript](https://img.shields.io/badge/TypeScript-6-3178c6)
+![Vite](https://img.shields.io/badge/Vite-8-646cff)
+![Tests](https://img.shields.io/badge/tests-Vitest%20%2B%20msw-6e9f18)
+![License](https://img.shields.io/badge/license-all%20rights%20reserved-lightgrey)
 
-| Dark theme | Mobile | Saved articles |
+![Scrolling through the feed with the keyboard](docs/images/feed-scroll.gif)
+
+## Contents
+
+- [How Swipread fits together](#how-swipread-fits-together)
+- [Screenshots](#screenshots)
+- [Features](#features)
+- [How it works](#how-it-works)
+- [Getting started](#getting-started)
+- [Scripts](#scripts)
+- [Project structure](#project-structure)
+- [Testing](#testing)
+- [Browser support](#browser-support)
+- [Project status](#project-status)
+- [Documentation](#documentation)
+- [License](#license)
+
+## How Swipread fits together
+
+```mermaid
+flowchart LR
+    Web["<b>Web app</b><br/>this repository"] -- "REST + JWT<br/>feed pages, events" --> API["<b>Swipread API</b><br/>Spring Boot"]
+    API --> PG[(PostgreSQL<br/>users, articles, events)]
+    API --> Redis[(Redis<br/>feed stock, events stream)]
+    Redis -- "events stream" --> Reco["<b>Recommender</b><br/>separate service"]
+    Reco -- "ranked articles" --> API
+```
+
+The web app never ranks articles itself. It shows the pages the API serves from a per-reader stock of recommended articles, and reports what the reader does with each card. The API stores these events and streams them to the recommendation service, which refills the stock. The backend lives in the companion **Swipread API** repository.
+
+## Screenshots
+
+| Feed | Dark theme | Mobile |
 | --- | --- | --- |
-| ![Feed in dark mode](docs/images/feed-dark.png) | ![Feed on mobile](docs/images/feed-mobile.png) | ![Saved articles](docs/images/saved.png) |
+| ![The « Pour vous » feed](docs/images/feed.png) | ![The feed in dark mode](docs/images/feed-dark.png) | ![The feed on a phone](docs/images/feed-mobile.png) |
+
+| Saved articles | Administration |
+| --- | --- |
+| ![Saved articles](docs/images/saved.png) | ![Managing article sources](docs/images/admin-sources.png) |
+
+*Articles, sources and photos in these screenshots are fictional demo data (photos from [Lorem Picsum](https://picsum.photos)).*
 
 ## Features
 
-- **Account**: sign up, log in, short-lived access token renewed in the background from an HttpOnly refresh cookie, log out, edit the display name, delete the account.
-- **Onboarding**: pick at least three topics before the first feed.
-- **Feed**: full-screen cards with scroll snapping, ↑/↓ keyboard navigation, prefetching of the next page, position restored when coming back.
-- **Reactions**: like, save, share (Web Share API with clipboard fallback), "not interested".
-- **Saved** and **history** pages; the history is grouped by recency (today, this week, older).
-- **Event tracking**: impressions, dwell time, opens and reading time, sent in batches and flushed with `keepalive` when the tab closes.
-- **Administration** (admin role): manage article sources (the feed URL is checked by the API) and topics.
-- **Accessibility**: keyboard navigation, visible focus, ARIA labels on icon buttons, `prefers-reduced-motion` and `prefers-color-scheme` support.
+| For readers | For administrators | Under the hood |
+| --- | --- | --- |
+| Sign up, pick at least three topics | Add RSS/Atom sources (the API checks the feed first) | Typed API client generated from OpenAPI |
+| Full-screen feed: scroll, swipe or ↑/↓ | Activate, deactivate or delete sources | Batched event tracking with a `keepalive` final flush |
+| Like, save, share, « not interested » | Create and rename topics, with article and reader counts | 15-minute access token renewed silently, across tabs |
+| Saved list and reading history | Admin-only routes and navigation | Light and dark themes, reduced motion, keyboard and screen reader support |
+| Edit name and topics, delete the account | | Every screen handles loading, errors with retry, and empty states |
 
-## Tech stack
+## How it works
 
-| Area | Choice |
-| --- | --- |
-| UI | React 19, TypeScript, CSS Modules with design tokens |
-| Build | Vite |
-| Routing | React Router (data mode) |
-| Server state | TanStack Query |
-| API client | `openapi-fetch` with types generated from the API's OpenAPI spec (`openapi-typescript`) |
-| Forms | React Hook Form + Zod |
-| Tests | Vitest, Testing Library, Mock Service Worker (msw) |
+**One card per screen.** The feed is a CSS `scroll-snap` container. An `IntersectionObserver` tracks the card on screen, the next page is fetched when three cards remain, and the position is restored when you come back. The arrow keys move between cards, with smooth scrolling turned off for readers who prefer reduced motion. → [Feed](docs/features/feed.md)
 
-## Quick start
+**Every interaction is a signal.** Impressions, time spent on each card (excluding hidden-tab time), opens, reading time on the source's site, likes, saves, shares and hides are queued, sent in batches of up to 100 every 5 seconds, retried on failure, and flushed with `fetch(…, { keepalive: true })` when the tab closes. → [Tracking](docs/features/tracking.md)
 
-Requirements: Node.js 20.19+ or 22.12+, and the Swipread API running locally (by default on `http://localhost:8080`, see its README).
+**Sessions that survive.** The access token lasts 15 minutes; the refresh token lives in an HttpOnly cookie that JavaScript never sees. The client renews before expiry and after a 401, replays the failed request, and shares one renewal between concurrent requests and, through the Web Locks API, between tabs. → [Backend integration](docs/backend-integration.md#authentication)
+
+**A typed contract with the backend.** Types are generated from the API's OpenAPI spec; an API change shows up as a compile error. Server errors are mapped to French messages, field by field. → [Decision records](docs/decisions.md)
+
+**Accessible by default.** Visible focus, labelled icon buttons, `aria-pressed` toggles, live regions for counters and toasts, native `<dialog>` confirmations, colours chosen for AA contrast in both themes. Tests query the UI by role and label, so a missing label fails a test. → [Contributing](docs/contributing.md#accessibility-checklist)
+
+## Getting started
+
+### Prerequisites
+
+| Tool | Version | For |
+| --- | --- | --- |
+| Node.js + npm | 20.19+ or 22.12+ | This app |
+| Java | 25 | The Swipread API |
+| Docker | recent | PostgreSQL and Redis, started by the API |
+
+### 1. Start the API
+
+In the Swipread API repository, with Docker running:
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+The `dev` profile starts PostgreSQL and Redis, creates the schema, seeds topics, sample articles and an admin account, and allows the web app's origin. The API listens on <http://localhost:8080>.
+
+### 2. Start the web app
 
 ```bash
 npm install
-cp .env.example .env.local   # VITE_API_BASE_URL=http://localhost:8080
-npm run dev                  # http://localhost:5173
+cp .env.example .env.local
+npm run dev
 ```
 
-The API only accepts browser calls from `http://localhost:5173` in development, so keep that port. In the API's dev profile you can log in with `admin@swipread.dev` / `password123`, or create an account.
+Open <http://localhost:5173>. Keep this port: it is the origin the API accepts in development.
+
+### 3. Log in
+
+Create an account, or use the seeded admin: `admin@swipread.dev` / `password123`.
+
+### Configuration
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `VITE_API_BASE_URL` | `http://localhost:8080` | API base URL, inlined at build time |
+
+More in [Getting started](docs/getting-started.md), including troubleshooting.
 
 ## Scripts
 
 | Command | What it does |
 | --- | --- |
-| `npm run dev` | Start the dev server on port 5173 |
-| `npm test` | Run the test suite once (`npm run test:watch` to watch) |
-| `npm run lint` | Lint with ESLint |
-| `npm run build` | Type-check and build for production into `dist/` |
-| `npm run preview` | Serve the production build locally |
-| `npm run gen:api` | Regenerate `src/api/schema.d.ts` from the API's OpenAPI spec (`OPENAPI_URL` to change the URL) |
+| `npm run dev` | Dev server on port 5173 |
+| `npm test` | Run the test suite (`npm run test:watch` to watch) |
+| `npm run lint` | ESLint |
+| `npm run build` | Type-check and build into `dist/` |
+| `npm run preview` | Serve the production build |
+| `npm run gen:api` | Regenerate API types from the OpenAPI spec (`OPENAPI_URL` to change the URL) |
 
-## Project layout
+## Project structure
 
 ```text
 src/
-  api/        API client, generated types, error mapping, token refresh
-  app/        routes, guards, layout, sidebar
-  features/   one folder per feature: auth, onboarding, feed, tracking, share, saved, history, profile, admin
-  lib/        small helpers (session storage, ids, formatting, media queries)
-  ui/         shared components and design tokens
-  test/       msw server, handlers, fixtures, render helpers
+├── api/        typed client, generated types, error mapping, token renewal
+├── app/        routes, guards, layout and navigation
+├── features/   one folder per feature: auth, onboarding, feed, tracking,
+│               share, saved, history, profile, admin
+├── lib/        session storage, ids, French formatting, media queries
+├── ui/         shared components, icons and design tokens
+└── test/       msw server and handlers, fixtures, render helpers
 ```
+
+Code is organised by feature: each folder holds its pages, components, hooks, validation schemas and tests. → [Architecture](docs/architecture.md)
+
+## Testing
+
+```bash
+npm test
+```
+
+160+ tests with Vitest, Testing Library and Mock Service Worker run in a few seconds, with no API needed: every request is answered by typed handlers. Tests drive the UI like a user, through roles and accessible names. → [Testing](docs/testing.md)
+
+## Browser support
+
+Current versions of Chrome, Edge, Firefox and Safari, on desktop and mobile. The app relies on CSS scroll snapping, `IntersectionObserver` and the native `<dialog>` element; the Web Share API and Web Locks are used when available, with fallbacks (clipboard, in-tab renewal).
+
+## Project status
+
+The reader and admin user stories are implemented and verified against the API: onboarding, feed, reactions, sharing, saved list, history, profile and account deletion, source and topic administration, token renewal.
+
+Known limitations:
+
+- French UI only, without an i18n framework.
+- No offline mode or installable PWA.
+- The recommendation reason (`similar`, `explore`…) is tracked but not displayed.
 
 ## Documentation
 
-The full developer documentation is in [`docs/`](docs/README.md):
+| | |
+| --- | --- |
+| **Guides** | [Getting started](docs/getting-started.md) · [Architecture](docs/architecture.md) · [Backend integration](docs/backend-integration.md) · [Flows](docs/flows.md) · [Testing](docs/testing.md) · [Contributing](docs/contributing.md) · [Deployment](docs/deployment.md) · [Decision records](docs/decisions.md) · [FAQ](docs/faq.md) · [Glossary](docs/glossary.md) |
+| **Features** | [Authentication](docs/features/auth.md) · [Onboarding](docs/features/onboarding.md) · [Feed](docs/features/feed.md) · [Tracking](docs/features/tracking.md) · [Sharing](docs/features/sharing.md) · [Saved](docs/features/saved.md) · [History](docs/features/history.md) · [Profile](docs/features/profile.md) · [Administration](docs/features/admin.md) |
+| **Reference** | [UI components](docs/reference/ui-components.md) · [Hooks and cache](docs/reference/hooks-and-cache.md) · [Design tokens](docs/reference/design-tokens.md) · [Messages](docs/reference/messages.md) · [Endpoints](docs/reference/endpoints.md) |
 
-- **Guides**: [getting started](docs/getting-started.md), [architecture](docs/architecture.md), [backend integration](docs/backend-integration.md), [flows](docs/flows.md), [testing](docs/testing.md), [contributing](docs/contributing.md), [deployment](docs/deployment.md), [decision records](docs/decisions.md), [FAQ](docs/faq.md), [glossary](docs/glossary.md)
-- **Features**: [authentication](docs/features/auth.md), [onboarding](docs/features/onboarding.md), [feed](docs/features/feed.md), [tracking](docs/features/tracking.md), [sharing](docs/features/sharing.md), [saved](docs/features/saved.md), [history](docs/features/history.md), [profile](docs/features/profile.md), [administration](docs/features/admin.md)
-- **Reference**: [UI components](docs/reference/ui-components.md), [hooks and cache](docs/reference/hooks-and-cache.md), [design tokens](docs/reference/design-tokens.md), [messages](docs/reference/messages.md), [endpoints](docs/reference/endpoints.md)
+Start from the [documentation index](docs/README.md).
 
 ## License
 
 All rights reserved. The source is published for reference only; no license is granted to use, copy, modify or distribute it without the author's written permission.
+
+© William Machecourt
