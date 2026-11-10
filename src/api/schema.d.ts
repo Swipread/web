@@ -422,6 +422,9 @@ export interface components {
         };
         FieldError: {
             field?: string;
+            /** @description Violated constraint, e.g. NotBlank, Size, Email, Pattern */
+            code?: string;
+            /** @description Always in English */
             message?: string;
         };
         /** @description Error body (RFC 9457) */
