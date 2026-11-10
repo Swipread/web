@@ -1,4 +1,5 @@
-import type { RouteObject } from 'react-router'
+import { Navigate, type RouteObject } from 'react-router'
+import { SourcesPage } from '../features/admin/SourcesPage'
 import { LoginPage } from '../features/auth/LoginPage'
 import { RegisterPage } from '../features/auth/RegisterPage'
 import { FeedPage } from '../features/feed/FeedPage'
@@ -8,7 +9,7 @@ import { ProfilePage } from '../features/profile/ProfilePage'
 import { SavedPage } from '../features/saved/SavedPage'
 import { AppLayout } from './AppLayout'
 import { NotFoundPage } from './NotFoundPage'
-import { RedirectIfAuthenticated, RequireAuth, RequireOnboarding } from './guards'
+import { RedirectIfAuthenticated, RequireAdmin, RequireAuth, RequireOnboarding } from './guards'
 
 export const routes: RouteObject[] = [
   {
@@ -32,6 +33,14 @@ export const routes: RouteObject[] = [
               { path: 'sauvegardes', element: <SavedPage /> },
               { path: 'historique', element: <HistoryPage /> },
               { path: 'profil', element: <ProfilePage /> },
+              {
+                path: 'admin',
+                element: <RequireAdmin />,
+                children: [
+                  { index: true, element: <Navigate to="sources" replace /> },
+                  { path: 'sources', element: <SourcesPage /> },
+                ],
+              },
             ],
           },
         ],

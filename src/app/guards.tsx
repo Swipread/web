@@ -40,3 +40,14 @@ export function RequireOnboarding() {
   if (!me.data.topics?.length) return <Navigate to="/centres-interet" replace />
   return <Outlet />
 }
+
+/**
+ * Administration pages: only for the ADMIN role from GET /v1/me.
+ * The API answers 403 anyway; this only keeps readers away from screens they cannot use.
+ */
+export function RequireAdmin() {
+  const me = useMe()
+  // RequireOnboarding has already loaded the profile.
+  if (me.data?.role !== 'ADMIN') return <Navigate to="/" replace />
+  return <Outlet />
+}
