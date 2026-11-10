@@ -8,9 +8,11 @@ import { feedQueryKey } from '../feed/useFeed'
 /** US3: at least 3 topics, also enforced by UpdateTopicsRequest. */
 export const MIN_TOPICS = 3
 
+export const topicsQueryKey = ['topics'] as const
+
 export function useTopics() {
   return useQuery({
-    queryKey: ['topics'],
+    queryKey: topicsQueryKey,
     queryFn: ({ signal }) => unwrap(api.GET('/v1/topics', { signal })),
   })
 }
