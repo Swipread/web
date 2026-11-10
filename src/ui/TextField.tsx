@@ -5,10 +5,12 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   label: string
   error?: string
   hint?: string
+  /** Keeps the label for assistive tech only, e.g. inside a table row. */
+  hideLabel?: boolean
   ref?: Ref<HTMLInputElement>
 }
 
-export function TextField({ label, error, hint, id, className, ref, ...props }: Props) {
+export function TextField({ label, error, hint, hideLabel = false, id, className, ref, ...props }: Props) {
   const generatedId = useId()
   const inputId = id ?? generatedId
   const hintId = hint ? `${inputId}-hint` : undefined
@@ -17,7 +19,7 @@ export function TextField({ label, error, hint, id, className, ref, ...props }: 
 
   return (
     <div className={[styles.field, className].filter(Boolean).join(' ')}>
-      <label htmlFor={inputId} className={styles.label}>
+      <label htmlFor={inputId} className={hideLabel ? 'visually-hidden' : styles.label}>
         {label}
       </label>
       <input
