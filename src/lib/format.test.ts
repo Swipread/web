@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { formatActionDate, formatReadAt, formatReadingTime, formatRelativeDate, recencyGroup } from './format'
+import {
+  formatActionDate,
+  formatCount,
+  formatReadAt,
+  formatReadingTime,
+  formatRelativeDate,
+  recencyGroup,
+} from './format'
 
 describe('formatReadingTime', () => {
   it.each([
@@ -72,5 +79,13 @@ describe('history dates', () => {
     [at(2025, 11, 24, 8, 0), 'Lu le 24 déc. 2025'],
   ])('%s → %s', (iso, label) => {
     expect(formatReadAt(iso, now)).toBe(label)
+  })
+})
+
+describe('formatCount', () => {
+  it('groups thousands the French way', () => {
+    expect(formatCount(1284).replace(/\s/g, ' ')).toBe('1 284')
+    expect(formatCount(97)).toBe('97')
+    expect(formatCount(undefined)).toBe('0')
   })
 })

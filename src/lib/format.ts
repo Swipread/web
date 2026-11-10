@@ -86,3 +86,10 @@ export function formatReadAt(iso: string | undefined, now = Date.now()) {
   const sameYear = date.getFullYear() === new Date(now).getFullYear()
   return `Lu le ${(sameYear ? shortDate : longDate).format(date)}`
 }
+
+const count = new Intl.NumberFormat('fr')
+
+/** "1 284" with the French thousands separator. */
+export function formatCount(value: number | undefined) {
+  return count.format(value ?? 0)
+}
