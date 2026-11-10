@@ -5,8 +5,8 @@ Ordinateur d'abord, responsive. React 19 + TypeScript + Vite.
 
 ## Sources de vérité
 
-- Périmètre : `docs/user-stories-taches.md` (tâches [FRONT] uniquement)
-- Événements : `docs/Contrat backend reco.md`
+- Périmètre : `notes/user-stories-taches.md` (tâches [FRONT] uniquement)
+- Événements : `notes/Contrat backend reco.md`
 - API : spec OpenAPI `http://localhost:8080/v3/api-docs`, types dans `src/api/schema.d.ts`
 - Maquettes : Figma `phZjKVJEUmWYWwWByMHaYa` (wireframes : respecter structure et hiérarchie, pas les gris)
 
@@ -31,10 +31,10 @@ Ordinateur d'abord, responsive. React 19 + TypeScript + Vite.
 
 ## Demandes au backend
 
-Si un endpoint nécessaire est absent de la spec, ne correspond pas aux user stories, ou si le backend doit changer (CORS, DTO, statut…) : le consigner dans `docs/demandes-backend.md` (transmis à l'équipe backend) et le signaler, sans le contourner (pas de fausse API, pas de décodage du JWT pour en tirer des infos).
+Si un endpoint nécessaire est absent de la spec, ne correspond pas aux user stories, ou si le backend doit changer (CORS, DTO, statut…) : le consigner dans `notes/demandes-backend.md` (transmis à l'équipe backend) et le signaler, sans le contourner (pas de fausse API, pas de décodage du JWT pour en tirer des infos).
 
 ## Git
 
 - Commits petits et fréquents, au format Conventional Commits (`feat(feed): …`, `fix(auth): …`, `chore: …`, `test: …`, `docs: …`), scope = nom de la fonctionnalité
 - Pas de ligne `Co-Authored-By` dans les commits
-- Le dossier `docs/` n'est jamais commité (ignoré par git)
+- Le dossier `notes/` (documents internes) n'est jamais commité (ignoré par git) ; `docs/` est la documentation développeur publiée, en anglais
