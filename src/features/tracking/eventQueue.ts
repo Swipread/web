@@ -2,7 +2,7 @@ import { ApiError } from '../../api/problem'
 import type { Schema } from '../../api/types'
 import { newId } from '../../lib/ids'
 
-/** Event types allowed by `EventRequest.type` (see docs/Contrat backend reco.md). */
+/** Event types allowed by `EventRequest.type` (see the backend / reco contract). */
 export type EventType = 'impression' | 'view' | 'open' | 'read' | 'like' | 'unlike' | 'save' | 'unsave' | 'share' | 'hide'
 
 export type TrackedEvent = Schema<'EventRequest'> & { type: EventType }

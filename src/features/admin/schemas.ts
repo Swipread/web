@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-// Limits mirror CreateSourceRequest and TopicLabelRequest (docs/api.md, Administration).
+// Limits mirror CreateSourceRequest and TopicLabelRequest (API repository: docs/api.md, Administration).
 
 function isHttpUrl(value: string) {
   try {

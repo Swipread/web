@@ -1,4 +1,4 @@
-// 422 details documented for POST /v1/admin/sources (docs/api.md). They are in English:
+// 422 details documented for POST /v1/admin/sources (API repository: docs/api.md). They are in English:
 // known ones are translated, any other one is shown as sent.
 const KNOWN_DETAILS: [RegExp, (match: RegExpMatchArray) => string][] = [
   [/^Feed is unreachable$/i, () => 'Le flux est injoignable.'],
