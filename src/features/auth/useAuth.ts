@@ -49,6 +49,9 @@ export function useLogout() {
     // Close the current card's view and send pending events while the token is still known.
     void tracker.flushOnExit()
     tracker.clear()
+    // Revoke the refresh token (cookie). Not awaited: the reader leaves at once, a failure only leaves a token
+    // that expires on its own.
+    void api.POST('/v1/auth/logout').catch(() => undefined)
     session.clear()
     queryClient.clear()
     void navigate('/connexion', { replace: true })

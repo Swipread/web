@@ -126,12 +126,20 @@ describe('guards', () => {
     await waitFor(() => expect(router.state.location.pathname).toBe('/'))
   })
 
-  it('logs out', async () => {
+  it('logs out and revokes the refresh token', async () => {
     session.save(token)
+    let revoked = false
+    server.use(
+      http.post(apiUrl('/v1/auth/logout'), () => {
+        revoked = true
+        return new HttpResponse(null, { status: 204 })
+      }),
+    )
     const { user, router } = renderRoutes(routes, { path: '/' })
     await user.click(await screen.findByRole('button', { name: 'Se déconnecter' }))
 
     await waitFor(() => expect(router.state.location.pathname).toBe('/connexion'))
     expect(session.get()).toBeNull()
+    await waitFor(() => expect(revoked).toBe(true))
   })
 })
