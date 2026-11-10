@@ -180,6 +180,6 @@ Start from the [documentation index](docs/README.md).
 
 ## License
 
-All rights reserved. The source is published for reference only; no license is granted to use, copy, modify or distribute it without the author's written permission.
+© 2026 Swipread. All rights reserved.
 
-© William Machecourt
+The source is published for reference only; no license is granted to use, copy, modify or distribute it without written permission from Swipread.
