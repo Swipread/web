@@ -58,7 +58,7 @@ The API only accepts browser calls from `http://localhost:5173` in development, 
 
 ## Project layout
 
-```
+```text
 src/
   api/        API client, generated types, error mapping, token refresh
   app/        routes, guards, layout, sidebar
@@ -70,11 +70,11 @@ src/
 
 ## Documentation
 
-- [Getting started](docs/getting-started.md): setup, environment, running against the API, troubleshooting
-- [Architecture](docs/architecture.md): code organisation, routing, data fetching, the feed, the design system
-- [Backend integration](docs/backend-integration.md): generated types, API client, errors, authentication and token refresh, event tracking
-- [Testing](docs/testing.md): tools, conventions and helpers
-- [Contributing](docs/contributing.md): conventions, commits, accessibility checklist
+The full developer documentation is in [`docs/`](docs/README.md):
+
+- **Guides**: [getting started](docs/getting-started.md), [architecture](docs/architecture.md), [backend integration](docs/backend-integration.md), [flows](docs/flows.md), [testing](docs/testing.md), [contributing](docs/contributing.md), [deployment](docs/deployment.md), [decision records](docs/decisions.md), [FAQ](docs/faq.md), [glossary](docs/glossary.md)
+- **Features**: [authentication](docs/features/auth.md), [onboarding](docs/features/onboarding.md), [feed](docs/features/feed.md), [tracking](docs/features/tracking.md), [sharing](docs/features/sharing.md), [saved](docs/features/saved.md), [history](docs/features/history.md), [profile](docs/features/profile.md), [administration](docs/features/admin.md)
+- **Reference**: [UI components](docs/reference/ui-components.md), [hooks and cache](docs/reference/hooks-and-cache.md), [design tokens](docs/reference/design-tokens.md), [messages](docs/reference/messages.md), [endpoints](docs/reference/endpoints.md)
 
 ## License
 

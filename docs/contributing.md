@@ -39,7 +39,7 @@ All three must pass. `npm run build` also runs the TypeScript compiler.
 
 [Conventional Commits](https://www.conventionalcommits.org/), small and focused, with the feature as scope:
 
-```
+```text
 feat(feed): add share action to feed cards
 fix(api): show French messages for server field errors
 docs: describe the token refresh flow
