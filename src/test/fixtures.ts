@@ -78,3 +78,31 @@ export function historyItem(overrides: Partial<Schema<'ArticleResponse'>> = {}, 
     saved: false,
   } satisfies Schema<'HistoryItemResponse'>
 }
+
+export const admin: Schema<'MeResponse'> = { ...me, id: 'u_admin', displayName: 'Admin', role: 'ADMIN' }
+
+export const sources: Schema<'SourceResponse'>[] = [
+  {
+    id: 1,
+    name: 'Le Journal Tech',
+    siteUrl: 'https://journaltech.fr',
+    feedUrl: 'https://journaltech.fr/rss',
+    language: 'fr',
+    license: 'Résumé + lien',
+    active: true,
+  },
+  {
+    id: 2,
+    name: 'Sport Hebdo',
+    siteUrl: 'https://sporthebdo.fr',
+    feedUrl: 'https://sporthebdo.fr/rss',
+    language: 'fr',
+    active: false,
+  },
+]
+
+export const adminTopics: Schema<'AdminTopicResponse'>[] = [
+  { id: 3, slug: 'culture', label: 'Culture', articleCount: 702, readerCount: 190 },
+  { id: 2, slug: 'science', label: 'Science', articleCount: 956, readerCount: 248 },
+  { id: 1, slug: 'technologie', label: 'Technologie', articleCount: 1284, readerCount: 312 },
+]
