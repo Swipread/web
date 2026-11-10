@@ -1,6 +1,6 @@
 # Backend integration
 
-The API's OpenAPI spec is the source of truth for endpoints and payloads. Its full reference lives in the API repository (`docs/api.md`).
+The API's OpenAPI spec is the source of truth for endpoints and payloads. Its full reference lives in the API repository: [`docs/api.md`](https://github.com/Swipread/api/blob/main/docs/api.md).
 
 ## Generated types
 

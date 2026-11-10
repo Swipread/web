@@ -38,7 +38,7 @@ flowchart LR
     Reco -- "ranked articles" --> API
 ```
 
-The web app never ranks articles itself. It shows the pages the API serves from a per-reader stock of recommended articles, and reports what the reader does with each card. The API stores these events and streams them to the recommendation service, which refills the stock. The backend lives in the companion **Swipread API** repository.
+The web app never ranks articles itself. It shows the pages the API serves from a per-reader stock of recommended articles, and reports what the reader does with each card. The API stores these events and streams them to the recommendation service, which refills the stock. The backend lives in [**Swipread/api**](https://github.com/Swipread/api).
 
 ## Screenshots
 
@@ -86,9 +86,11 @@ The web app never ranks articles itself. It shows the pages the API serves from 
 
 ### 1. Start the API
 
-In the Swipread API repository, with Docker running:
+With Docker running:
 
 ```bash
+git clone https://github.com/Swipread/api.git
+cd api
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
@@ -97,6 +99,8 @@ The `dev` profile starts PostgreSQL and Redis, creates the schema, seeds topics,
 ### 2. Start the web app
 
 ```bash
+git clone https://github.com/Swipread/web.git
+cd web
 npm install
 cp .env.example .env.local
 npm run dev

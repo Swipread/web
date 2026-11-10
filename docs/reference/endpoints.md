@@ -1,6 +1,6 @@
 # Endpoints used
 
-Every API endpoint the frontend calls, and where. Request and response shapes are in the generated `src/api/schema.d.ts` and in the API repository's reference (`docs/api.md`).
+Every API endpoint the frontend calls, and where. Request and response shapes are in the generated `src/api/schema.d.ts` and in the API repository's reference ([`docs/api.md`](https://github.com/Swipread/api/blob/main/docs/api.md)).
 
 | Method | Path | Auth | Called from | Notes |
 | --- | --- | --- | --- | --- |
