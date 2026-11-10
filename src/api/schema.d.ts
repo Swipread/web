@@ -47,8 +47,51 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create an account and return an access token */
+        /**
+         * Create an account and return an access token
+         * @description Also sets the refresh token cookie (`swipread_refresh`, HttpOnly, path /v1/auth).
+         */
         post: operations["register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get a new access token from the refresh token cookie
+         * @description Rotates the refresh token: the cookie is replaced and the presented token can no longer be used. A token replaced less than 10 seconds ago (concurrent tabs) still gets an access token, without a new cookie. A token reused later revokes the whole session (401). Send it with credentials (cookie), without Authorization header.
+         */
+        post: operations["refresh"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Revoke the refresh token and clear its cookie
+         * @description The access token stays valid until it expires (15 minutes): the client must forget it.
+         */
+        post: operations["logout"];
         delete?: never;
         options?: never;
         head?: never;
@@ -64,7 +107,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Exchange credentials for an access token */
+        /**
+         * Exchange credentials for an access token
+         * @description Also sets the refresh token cookie (`swipread_refresh`, HttpOnly, path /v1/auth).
+         */
         post: operations["login"];
         delete?: never;
         options?: never;
@@ -283,7 +329,7 @@ export interface components {
             /**
              * Format: int64
              * @description Lifetime of the access token, in seconds
-             * @example 86400
+             * @example 900
              */
             expiresIn?: number;
             userId?: string;
@@ -564,6 +610,77 @@ export interface operations {
             };
             /** @description Email already registered */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    refresh: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                /** @description Refresh token, set as an HttpOnly cookie by register, login and refresh */
+                swipread_refresh?: string;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenResponse"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Missing, unknown, expired, revoked or reused refresh token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                /** @description Refresh token, set as an HttpOnly cookie by register, login and refresh */
+                swipread_refresh?: string;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Logged out */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
