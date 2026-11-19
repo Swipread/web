@@ -16,7 +16,10 @@ describe('admin access', () => {
     const { router } = renderRoutes(routes, { path: '/admin/sources' })
     // <Navigate> redirects in an effect: wait for it before checking the active link.
     await waitFor(() => expect(router.state.location.pathname).toBe('/'))
-    expect(await screen.findByRole('link', { name: 'Pour vous' })).toHaveAttribute('aria-current', 'page')
+    // The link is already there before the redirect re-renders: retry the attribute too.
+    await waitFor(() =>
+      expect(screen.getByRole('link', { name: 'Pour vous' })).toHaveAttribute('aria-current', 'page'),
+    )
     expect(screen.queryByRole('link', { name: 'Sources' })).not.toBeInTheDocument()
   })
 
