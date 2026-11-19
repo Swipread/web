@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { routes } from '../../app/routes'
 import { session } from '../../lib/session'
-import { me, token, topics } from '../../test/fixtures'
+import { admin, me, token, topics } from '../../test/fixtures'
 import { renderRoutes } from '../../test/render'
 import { apiUrl, server } from '../../test/server'
 
@@ -88,5 +88,27 @@ describe('onboarding', () => {
     server.use(http.get(apiUrl('/v1/topics'), () => HttpResponse.json([])))
     renderRoutes(routes, { path: '/centres-interet' })
     expect(await screen.findByText('Aucun thème disponible')).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Créer les thèmes' })).not.toBeInTheDocument()
+  })
+
+  describe('fresh install, before any topic exists', () => {
+    beforeEach(() => {
+      server.use(http.get(apiUrl('/v1/topics'), () => HttpResponse.json([])))
+    })
+
+    it('leads an admin to the topics administration', async () => {
+      server.use(http.get(apiUrl('/v1/me'), () => HttpResponse.json({ ...admin, topics: [] })))
+      const { user, router } = renderRoutes(routes, { path: '/centres-interet' })
+
+      await user.click(await screen.findByRole('link', { name: 'Créer les thèmes' }))
+      expect(await screen.findByRole('heading', { level: 1, name: 'Thèmes' })).toBeInTheDocument()
+      expect(router.state.location.pathname).toBe('/admin/themes')
+    })
+
+    it('keeps readers out of the administration', async () => {
+      const { router } = renderRoutes(routes, { path: '/admin/themes' })
+      await waitFor(() => expect(router.state.location.pathname).toBe('/centres-interet'))
+      expect(screen.queryByRole('heading', { level: 1, name: 'Thèmes' })).not.toBeInTheDocument()
+    })
   })
 })

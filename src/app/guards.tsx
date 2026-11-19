@@ -24,9 +24,13 @@ export function RedirectIfAuthenticated() {
   return <Outlet />
 }
 
-/** Readers without topics must pick them before reaching the app. */
+/**
+ * Readers without topics must pick them before reaching the app. Admins may still reach the
+ * administration: on a fresh install no topic exists yet, and that is where they are created.
+ */
 export function RequireOnboarding() {
   const me = useMe()
+  const location = useLocation()
   if (me.isPending) return <LoadingState />
   if (me.isError) {
     return (
@@ -37,7 +41,10 @@ export function RequireOnboarding() {
       />
     )
   }
-  if (!me.data.topics?.length) return <Navigate to="/centres-interet" replace />
+  const adminPage = location.pathname === '/admin' || location.pathname.startsWith('/admin/')
+  if (!me.data.topics?.length && !(adminPage && me.data.role === 'ADMIN')) {
+    return <Navigate to="/centres-interet" replace />
+  }
   return <Outlet />
 }
 

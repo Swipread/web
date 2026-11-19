@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { getErrorMessage } from '../../api/problem'
 import { Button } from '../../ui/Button'
 import { EmptyState } from '../../ui/EmptyState'
@@ -41,10 +41,18 @@ export function TopicsPage() {
           retrying={topics.isRefetching}
         />
       ) : topics.data.length === 0 ? (
-        <EmptyState
-          title="Aucun thème disponible"
-          description="Les thèmes ne sont pas encore configurés. Revenez dans quelques instants."
-        />
+        me.data?.role === 'ADMIN' ? (
+          <EmptyState
+            title="Aucun thème disponible"
+            description="Créez les thèmes que les lecteurs choisiront à l'inscription."
+            action={<Link to="/admin/themes">Créer les thèmes</Link>}
+          />
+        ) : (
+          <EmptyState
+            title="Aucun thème disponible"
+            description="Les thèmes ne sont pas encore configurés. Revenez dans quelques instants."
+          />
+        )
       ) : (
         <>
           <TopicPicker topics={topics.data} selectedIds={selection.selected} onToggle={selection.toggle} />
