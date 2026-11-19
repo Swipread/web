@@ -27,6 +27,7 @@ All server state lives in one TanStack Query client (`src/api/queryClient.ts`: q
 | Remove from saved | `useUnsave` | Removes the item from `['saved']` and patches `saved: false` in `['feed']` |
 | Add a source | `useCreateSource` | Inserts into `['admin', 'sources']`, sorted |
 | Activate / deactivate a source | `useSetSourceActive` | Replaces the source in `['admin', 'sources']` |
+| Change a source's topics | `useSetSourceTopics` | Replaces the source in `['admin', 'sources']` |
 | Delete a source | `useDeleteSource` | Removes it from `['admin', 'sources']` |
 | Create a topic | `useCreateTopic` | Inserts into `['admin', 'topics']`, **invalidates** `['topics']` and `['me']` |
 | Rename a topic | `useRenameTopic` | Replaces and re-sorts in `['admin', 'topics']`, invalidates `['topics']` and `['me']` |

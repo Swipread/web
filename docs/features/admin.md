@@ -12,7 +12,17 @@ On a fresh install there is no topic, so the first admin cannot finish onboardin
 
 ## Sources (`/admin/sources`)
 
-**Table**: name, feed URL, language, licence (« — » when empty), status badge (Active / Inactive), actions « Désactiver » or « Activer » and « Supprimer ». Each action button is labelled with the source name for screen readers.
+**Table**: name, feed URL, language, topics in their order (« Sans thème : non lue » in red when a source has none, since the ingestion skips it), licence (« — » when empty), status, and actions « Désactiver » or « Activer », « Thèmes » and « Supprimer ». Each action button is labelled with the source name for screen readers (« Modifier les thèmes de <name> »).
+
+The status shows the Active / Inactive badge and, below, the ingestion's last read of the feed:
+
+| API fields | Shown |
+| --- | --- |
+| `lastError` | « Lecture en échec : <message> », in red, translated by `feedReadMessage` like the feed check below (plus `Ingestion failed` → « La lecture a échoué. ») |
+| `lastFetchedAt` | « Lue il y a 5 min », « Lue hier »… (`formatRelativeDate`) |
+| neither | « Jamais lue » |
+
+The API omits both fields when they are empty, and the types mark `topics` as optional: the screen reads `topics ?? []`.
 
 **Add a source**: « Ajouter une source » focuses the form below the table.
 
@@ -23,6 +33,9 @@ On a fresh install there is no topic, so the first admin cannot finish onboardin
 | URL du flux | Same rules; the API downloads it and checks it is an RSS or Atom feed with articles |
 | Langue | Two-letter code, sent in lowercase (default `fr`) |
 | Licence | Optional, ≤ 200 characters |
+| Thèmes | 1 to 3 (`SOURCE_TOPICS_MAX`), in the order they are picked: « Choisissez au moins un thème. » |
+
+**Topics of a source.** `SourceTopicsPicker` lists the topics of the administration (`useAdminTopics`) as `Chip` toggles. Picking one appends it; each picked chip shows its rank in place of the check mark, its accessible name says it (« Culture, thème 2 ») and a line below repeats the order (« 1. Environnement · 2. Culture »). Once three are picked the others are disabled. The order matters: the ingestion gives the source's articles these topics with decreasing confidence, so the first one is their main topic for the recommender. With no topic at all, the picker links to « Créer les thèmes » (`/admin/themes`).
 
 « Vérifier et ajouter » shows « Vérification du flux… » while the API downloads and checks the feed, which can take several seconds (5 s to connect and 10 s to answer, per request, redirects included). Errors:
 
@@ -37,10 +50,13 @@ On a fresh install there is no topic, so the first admin cannot finish onboardin
 | 422 `Feed redirects too many times` | « Le flux redirige trop de fois. » |
 | 422 `Feed is larger than 5 MB` | « Le flux dépasse 5 Mo. » |
 | 422, unknown detail | « Le flux n'a pas pu être vérifié : <detail> » |
+| 400 `Unknown topic ids: […]` | On the topics: « Un des thèmes choisis n'existe plus : choisissez-les à nouveau. », and the topic list is reloaded |
 
 The translations live in `feedProblem.ts`; keep them in sync with the API's documented details.
 
 **Activate / deactivate**: `PATCH /v1/admin/sources/{id}` with `{ active }`, then a toast. Inactive sources are skipped by ingestion; their articles stay in feeds.
+
+**Change the topics**: « Thèmes » opens a dialog with the picker, preselected with the source's topics in their order. « Enregistrer » sends `PATCH /v1/admin/sources/{id}` with `{ topicIds }` (the API accepts a partial update), replaces the source in the cache and shows « Thèmes de « <name> » enregistrés ». An empty selection shows « Choisissez au moins un thème. » without calling the API. The articles already ingested keep their topics; the dialog says so.
 
 **Delete**: a confirmation dialog, then `DELETE /v1/admin/sources/{id}`. A source that already has articles cannot be deleted (409): deleting its articles would erase readers' saved lists and history. The dialog then explains it and offers « Désactiver la source » instead.
 
@@ -57,7 +73,8 @@ The translations live in `feedProblem.ts`; keep them in sync with the API's docu
 | --- | --- |
 | `useSources()` | `['admin', 'sources']`, `GET /v1/admin/sources` |
 | `useCreateSource()` | `POST /v1/admin/sources`; inserts the result in the cache, sorted by name |
-| `useSetSourceActive()` | `PATCH /v1/admin/sources/{id}`; replaces the source in the cache |
+| `useSetSourceActive()` | `PATCH /v1/admin/sources/{id}` with `{ active }`; replaces the source in the cache |
+| `useSetSourceTopics()` | `PATCH /v1/admin/sources/{id}` with `{ topicIds }`; replaces the source in the cache |
 | `useDeleteSource()` | `DELETE /v1/admin/sources/{id}`; removes it from the cache |
 | `useAdminTopics()` | `['admin', 'topics']`, `GET /v1/admin/topics` |
 | `useCreateTopic()` | `POST /v1/admin/topics`; inserts sorted by label, invalidates `['topics']` and `['me']` |
@@ -65,4 +82,4 @@ The translations live in `feedProblem.ts`; keep them in sync with the API's docu
 
 ## Tests
 
-`features/admin/admin.test.tsx` (guard, navigation, `/admin` redirect, 403), `sources.test.tsx` (list, empty state, retry, deactivate, header button focus, add after the feed check, validation, 422 and 409, delete, 409 on delete offering deactivation), `adminTopics.test.tsx` (counts, empty state, retry, create and refresh reader topics, 409, letter-or-digit rule, rename, Escape, conflict on rename), `feedProblem.test.ts`.
+`features/admin/admin.test.tsx` (guard, navigation, `/admin` redirect, 403), `sources.test.tsx` (list with topics and last read, source without topics never read, empty state, retry, deactivate, header button focus, add after the feed check with ordered topics, validation, unknown topic (400), 422 and 409, topics changed in a new order, at least one and at most three topics, link when no topic exists, delete, 409 on delete offering deactivation), `adminTopics.test.tsx` (counts, empty state, retry, create and refresh reader topics, 409, letter-or-digit rule, rename, Escape, conflict on rename), `feedProblem.test.ts` (feed check and last read messages).

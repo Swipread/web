@@ -130,9 +130,10 @@ sequenceDiagram
     participant A as API
     participant Feed as Remote feed
 
-    Ad->>UI: fills the form, « Vérifier et ajouter »
-    Note over UI: Zod validation (http(s) URLs, 2-letter language)
-    UI->>A: POST /v1/admin/sources
+    Ad->>UI: fills the form, picks 1 to 3 topics in order, « Vérifier et ajouter »
+    Note over UI: Zod validation (http(s) URLs, 2-letter language, 1 to 3 topics)
+    UI->>A: POST /v1/admin/sources (with topicIds)
+    Note over A: topic ids checked first (400 if unknown)
     A->>Feed: GET feedUrl (public address, ports 80/443, ≤ 5 redirects, ≤ 5 MB)
     alt valid RSS/Atom with articles
         A-->>UI: 201 source
@@ -143,6 +144,7 @@ sequenceDiagram
     else feed URL already used
         A-->>UI: 409
     end
+    Note over A,Feed: the API's ingestion then reads the feed every 15 minutes;<br/>the table shows « Lue il y a … » or the error of the last read
 ```
 
 ## Remove a saved article

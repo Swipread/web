@@ -57,8 +57,8 @@ The web app never ranks articles itself. It shows the pages the API serves from 
 
 | For readers | For administrators | Under the hood |
 | --- | --- | --- |
-| Sign up, pick at least three topics | Add RSS/Atom sources (the API checks the feed first) | Typed API client generated from OpenAPI |
-| Full-screen feed: scroll, swipe or ↑/↓ | Activate, deactivate or delete sources | Batched event tracking with a `keepalive` final flush |
+| Sign up, pick at least three topics | Add RSS/Atom sources with one to three ordered topics (the API checks the feed first) | Typed API client generated from OpenAPI |
+| Full-screen feed: scroll, swipe or ↑/↓ | Activate, deactivate, retopic or delete sources; see each feed's last read | Batched event tracking with a `keepalive` final flush |
 | Like, save, share, « not interested » | Create and rename topics, with article and reader counts | 15-minute access token renewed silently, across tabs |
 | Saved list and reading history | Admin-only routes and navigation | Light and dark themes, reduced motion, keyboard and screen reader support |
 | Edit name and topics, delete the account | | Every screen handles loading, errors with retry, and empty states |

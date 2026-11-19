@@ -41,6 +41,8 @@ Client-side validation usually catches these first; the mapping is the safety ne
 | Admin, sources | 409 on create | Une source utilise déjà ce flux. |
 | Admin, sources | 422 on create | See the feed-check table in [Administration](../features/admin.md#sources-adminsources) |
 | Admin, sources | 409 on delete | Dialog « Cette source a déjà des articles », with « Désactiver la source » |
+| Admin, sources | 400 `Unknown topic ids` on create | Un des thèmes choisis n'existe plus : choisissez-les à nouveau. |
+| Admin, sources | Last read failed (`lastError`) | Lecture en échec : <message> (same translations as the feed check, plus « La lecture a échoué. ») |
 | Admin, topics | 409 on create or rename | Ce thème existe déjà (accents et majuscules ne comptent pas). |
 | Admin, topics | 400 on the label | Le nom doit contenir au moins une lettre ou un chiffre. |
 | Admin, topics | 404 on rename | Ce thème n'existe plus. Rechargez la page. |
@@ -59,6 +61,7 @@ Client-side validation usually catches these first; the mapping is the safety ne
 | Source | Site URL, feed URL | Saisissez l'adresse du site / du flux. · L'adresse ne doit pas dépasser 2 048 caractères. · Saisissez une adresse commençant par http:// ou https://. |
 | Source | Language | Saisissez un code à deux lettres, par exemple fr. |
 | Source | Licence | La licence ne doit pas dépasser 200 caractères. |
+| Source | Topics (form and dialog) | Choisissez au moins un thème. · Choisissez 3 thèmes au plus. |
 | Topic | Label | Saisissez le nom du thème. · Le nom ne doit pas dépasser 50 caractères. · Le nom doit contenir au moins une lettre ou un chiffre. |
 
 ## Confirmations (toasts)
@@ -73,6 +76,7 @@ Client-side validation usually catches these first; the mapping is the safety ne
 | Source added | Source « <name> » ajoutée |
 | Source activated / deactivated | Source activée · Source désactivée |
 | Source deleted | Source supprimée |
+| Source topics saved | Thèmes de « <name> » enregistrés |
 | Topic created | Thème « <label> » créé |
 | Topic renamed | Thème renommé en « <label> » |
 

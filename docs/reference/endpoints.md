@@ -18,8 +18,8 @@ Every API endpoint the frontend calls, and where. Request and response shapes ar
 | GET | `/v1/me/saved` | bearer | `useSaved` | `cursor`, `limit=20` |
 | GET | `/v1/me/history` | bearer | `useHistory` | `cursor`, `limit=20` |
 | GET | `/v1/admin/sources` | admin | `useSources` | |
-| POST | `/v1/admin/sources` | admin | `useCreateSource` | The API checks the feed before saving |
-| PATCH | `/v1/admin/sources/{id}` | admin | `useSetSourceActive` | `{ active }` |
+| POST | `/v1/admin/sources` | admin | `useCreateSource` | With `topicIds` (1 to 3, in order); the API checks the feed before saving |
+| PATCH | `/v1/admin/sources/{id}` | admin | `useSetSourceActive`, `useSetSourceTopics` | `{ active }` or `{ topicIds }` (partial update) |
 | DELETE | `/v1/admin/sources/{id}` | admin | `useDeleteSource` | 409 when the source has articles |
 | GET | `/v1/admin/topics` | admin | `useAdminTopics` | With `articleCount` and `readerCount` |
 | POST | `/v1/admin/topics` | admin | `useCreateTopic` | `{ label }` |
