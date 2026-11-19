@@ -1,0 +1,10 @@
+node_modules
+dist
+notes
+docs
+.git
+.github
+.env*
+!.env.example
+*.log
+.DS_Store
