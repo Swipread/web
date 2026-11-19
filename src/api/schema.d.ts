@@ -207,7 +207,7 @@ export interface paths {
         delete: operations["delete_1"];
         options?: never;
         head?: never;
-        /** Activate or deactivate a source */
+        /** Activate or deactivate a source, or change its topics */
         patch: operations["update_1"];
         trace?: never;
     };
@@ -363,6 +363,8 @@ export interface components {
             feedUrl: string;
             language: string;
             license?: string;
+            /** @description One to three distinct topic ids, in order: the source's articles inherit them, the first being their main topic */
+            topicIds: number[];
         };
         SourceResponse: {
             /** Format: int32 */
@@ -375,6 +377,15 @@ export interface components {
             license?: string;
             /** @description Inactive sources are skipped by the ingestion */
             active?: boolean;
+            /** @description The source's topics, in order; its articles inherit them. A source without topics is skipped by the ingestion */
+            topics?: components["schemas"]["TopicResponse"][];
+            /**
+             * Format: date-time
+             * @description Last successful read of the feed by the ingestion; null if never
+             */
+            lastFetchedAt?: string;
+            /** @description Error of the last read; null when it succeeded */
+            lastError?: string;
         };
         UpdateMeRequest: {
             displayName: string;
@@ -394,7 +405,10 @@ export interface components {
             topics?: components["schemas"]["TopicResponse"][];
         };
         UpdateSourceRequest: {
-            active: boolean;
+            /** @description Inactive sources are skipped by the ingestion */
+            active?: boolean;
+            /** @description One to three distinct topic ids, in order; replaces the source's topics */
+            topicIds?: number[];
         };
         ArticleResponse: {
             id?: string;
@@ -890,7 +904,7 @@ export interface operations {
                     "application/json": components["schemas"]["SourceResponse"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Invalid body, or unknown or repeated topic ids */
             400: {
                 headers: {
                     [name: string]: unknown;
@@ -1186,7 +1200,7 @@ export interface operations {
                     "application/json": components["schemas"]["SourceResponse"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Nothing to update, or unknown or repeated topic ids */
             400: {
                 headers: {
                     [name: string]: unknown;
