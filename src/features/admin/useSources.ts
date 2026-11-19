@@ -39,6 +39,19 @@ export function useSetSourceActive() {
   })
 }
 
+/** Replaces the source's topics, in order; the articles already ingested keep theirs. */
+export function useSetSourceTopics() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, topicIds }: { id: number; topicIds: number[] }) =>
+      unwrap(api.PATCH('/v1/admin/sources/{id}', { params: { path: { id } }, body: { topicIds } })),
+    onSuccess: (updated) =>
+      queryClient.setQueryData<Source[]>(sourcesQueryKey, (sources) =>
+        sources?.map((source) => (source.id === updated.id ? updated : source)),
+      ),
+  })
+}
+
 /** Answers 409 when the source already has articles: it must be deactivated instead. */
 export function useDeleteSource() {
   const queryClient = useQueryClient()

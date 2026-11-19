@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { feedCheckMessage } from './feedProblem'
+import { feedCheckMessage, feedReadMessage } from './feedProblem'
 
 describe('feedCheckMessage', () => {
   it.each([
@@ -23,5 +23,16 @@ describe('feedCheckMessage', () => {
 
   it('falls back when there is no detail', () => {
     expect(feedCheckMessage(undefined)).toBe("Le flux n'a pas pu être vérifié.")
+  })
+})
+
+describe('feedReadMessage', () => {
+  it('translates the errors of the last read', () => {
+    expect(feedReadMessage('Feed answered HTTP 503')).toBe('Le flux a répondu par une erreur HTTP 503.')
+    expect(feedReadMessage('Ingestion failed')).toBe('La lecture a échoué.')
+  })
+
+  it('shows an unknown error as sent', () => {
+    expect(feedReadMessage(' Something else ')).toBe('Something else')
   })
 })

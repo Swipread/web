@@ -90,6 +90,11 @@ export const sources: Schema<'SourceResponse'>[] = [
     language: 'fr',
     license: 'Résumé + lien',
     active: true,
+    topics: [
+      { id: 1, slug: 'technologie', label: 'Technologie' },
+      { id: 2, slug: 'science', label: 'Science' },
+    ],
+    lastFetchedAt: new Date(Date.now() - 5 * 60_000).toISOString(),
   },
   {
     id: 2,
@@ -98,6 +103,9 @@ export const sources: Schema<'SourceResponse'>[] = [
     feedUrl: 'https://sporthebdo.fr/rss',
     language: 'fr',
     active: false,
+    topics: [{ id: 3, slug: 'culture', label: 'Culture' }],
+    lastFetchedAt: new Date(Date.now() - 2 * 86_400_000).toISOString(),
+    lastError: 'Feed answered HTTP 404',
   },
 ]
 

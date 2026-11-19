@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useId, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { ApiError, getErrorMessage } from '../../api/problem'
 import type { Schema } from '../../api/types'
 import { Button } from '../../ui/Button'
@@ -11,9 +11,12 @@ import { LoadingState } from '../../ui/LoadingState'
 import { PageHeader } from '../../ui/PageHeader'
 import { TextField } from '../../ui/TextField'
 import { useToast } from '../../ui/toastContext'
-import { feedCheckMessage } from './feedProblem'
-import { sourceSchema, type SourceValues } from './schemas'
-import { useCreateSource, useDeleteSource, useSetSourceActive, useSources } from './useSources'
+import { formatRelativeDate } from '../../lib/format'
+import { feedCheckMessage, feedReadMessage } from './feedProblem'
+import { sourceSchema, sourceTopicsFormSchema, type SourceValues } from './schemas'
+import { SourceTopicsPicker } from './SourceTopicsPicker'
+import { useAdminTopics } from './useAdminTopics'
+import { useCreateSource, useDeleteSource, useSetSourceActive, useSetSourceTopics, useSources } from './useSources'
 import table from './AdminTable.module.css'
 import styles from './SourcesPage.module.css'
 
@@ -56,6 +59,7 @@ function SourcesTable({ sources }: { sources: Source[] }) {
   const setActive = useSetSourceActive()
   const toast = useToast()
   const [deleting, setDeleting] = useState<Source | null>(null)
+  const [retopicking, setRetopicking] = useState<Source | null>(null)
 
   const toggle = (source: Source) =>
     setActive.mutate(
@@ -75,6 +79,7 @@ function SourcesTable({ sources }: { sources: Source[] }) {
               <th scope="col">Nom</th>
               <th scope="col">URL du flux</th>
               <th scope="col">Langue</th>
+              <th scope="col">Thèmes</th>
               <th scope="col">Licence</th>
               <th scope="col">Statut</th>
               <th scope="col">Actions</th>
@@ -93,11 +98,19 @@ function SourcesTable({ sources }: { sources: Source[] }) {
                     {source.feedUrl}
                   </td>
                   <td>{source.language?.toUpperCase()}</td>
+                  <td>
+                    {source.topics?.length ? (
+                      source.topics.map((topic) => topic.label).join(', ')
+                    ) : (
+                      <span className={table.danger}>Sans thème : non lue</span>
+                    )}
+                  </td>
                   <td className={source.license ? undefined : table.muted}>{source.license ?? '—'}</td>
                   <td>
                     <span className={source.active ? styles.active : styles.inactive}>
                       {source.active ? 'Active' : 'Inactive'}
                     </span>
+                    <ReadState source={source} />
                   </td>
                   <td>
                     <div className={table.actions}>
@@ -110,6 +123,17 @@ function SourcesTable({ sources }: { sources: Source[] }) {
                         onClick={() => toggle(source)}
                       >
                         {toggleLabel}
+                      </button>
+                      <span className={table.separator} aria-hidden="true">
+                        ·
+                      </span>
+                      <button
+                        type="button"
+                        className={table.action}
+                        aria-label={`Modifier les thèmes de ${source.name}`}
+                        onClick={() => setRetopicking(source)}
+                      >
+                        Thèmes
                       </button>
                       <span className={table.separator} aria-hidden="true">
                         ·
@@ -131,7 +155,85 @@ function SourcesTable({ sources }: { sources: Source[] }) {
         </table>
       </div>
       <DeleteSourceDialog source={deleting} onClose={() => setDeleting(null)} />
+      <SourceTopicsDialog source={retopicking} onClose={() => setRetopicking(null)} />
     </>
+  )
+}
+
+/** Last read by the ingestion: its error if it failed, else when it succeeded. */
+function ReadState({ source }: { source: Source }) {
+  if (source.lastError) {
+    return <span className={`${styles.readState} ${table.danger}`}>Lecture en échec : {feedReadMessage(source.lastError)}</span>
+  }
+  const when = formatRelativeDate(source.lastFetchedAt)
+  if (!when) return <span className={`${styles.readState} ${table.muted}`}>Jamais lue</span>
+  return (
+    <span className={`${styles.readState} ${table.muted}`}>
+      Lue {when.charAt(0).toLowerCase()}
+      {when.slice(1)}
+    </span>
+  )
+}
+
+/** Changes a source's topics; the articles already ingested keep theirs. */
+function SourceTopicsDialog({ source, onClose }: { source: Source | null; onClose: () => void }) {
+  return source ? <SourceTopicsDialogContent key={source.id} source={source} onClose={onClose} /> : null
+}
+
+function SourceTopicsDialogContent({ source, onClose }: { source: Source; onClose: () => void }) {
+  const topics = useAdminTopics()
+  const setTopics = useSetSourceTopics()
+  const toast = useToast()
+  const [topicIds, setTopicIds] = useState<number[]>(
+    () => source.topics?.flatMap((topic) => (topic.id === undefined ? [] : [topic.id])) ?? [],
+  )
+  const [error, setError] = useState<string | null>(null)
+
+  const close = () => {
+    setTopics.reset()
+    onClose()
+  }
+
+  const confirm = () => {
+    const parsed = sourceTopicsFormSchema.safeParse({ topicIds })
+    if (!parsed.success) return setError(parsed.error.issues[0]?.message ?? null)
+    setError(null)
+    setTopics.mutate(
+      { id: source.id, topicIds },
+      {
+        onSuccess: () => {
+          close()
+          toast.show(`Thèmes de « ${source.name} » enregistrés`)
+        },
+      },
+    )
+  }
+
+  return (
+    <ConfirmDialog
+      open
+      title={`Thèmes de « ${source.name} »`}
+      confirmLabel="Enregistrer"
+      pending={setTopics.isPending}
+      error={setTopics.isError ? getErrorMessage(setTopics.error) : null}
+      onConfirm={confirm}
+      onCancel={close}
+    >
+      {topics.isPending ? (
+        <LoadingState label="Chargement des thèmes…" />
+      ) : topics.isError ? (
+        <ErrorState
+          message={getErrorMessage(topics.error)}
+          onRetry={() => void topics.refetch()}
+          retrying={topics.isRefetching}
+        />
+      ) : (
+        <>
+          <SourceTopicsPicker topics={topics.data} value={topicIds} onChange={setTopicIds} error={error ?? undefined} />
+          <p className={table.muted}>Les articles déjà ajoutés gardent leurs thèmes.</p>
+        </>
+      )}
+    </ConfirmDialog>
   )
 }
 
@@ -205,14 +307,16 @@ function DeleteSourceDialog({ source, onClose }: { source: Source | null; onClos
   )
 }
 
-const emptySource: SourceValues = { name: '', siteUrl: '', feedUrl: '', language: 'fr', license: '' }
+const emptySource: SourceValues = { name: '', siteUrl: '', feedUrl: '', language: 'fr', license: '', topicIds: [] }
 
 function SourceForm({ nameFieldId }: { nameFieldId: string }) {
   const createSource = useCreateSource()
+  const topics = useAdminTopics()
   const toast = useToast()
   const [formError, setFormError] = useState<string | null>(null)
   const {
     register,
+    control,
     handleSubmit,
     reset,
     setError,
@@ -230,6 +334,11 @@ function SourceForm({ nameFieldId }: { nameFieldId: string }) {
         if (!(error instanceof ApiError)) return setFormError(getErrorMessage(error))
         if (error.status === 409) return setError('feedUrl', { message: 'Une source utilise déjà ce flux.' })
         if (error.status === 422) return setError('feedUrl', { message: feedCheckMessage(error.problem?.detail) })
+        // A topic deleted or renamed meanwhile: the list is reloaded so the admin can pick again
+        if (error.status === 400 && error.problem?.detail?.startsWith('Unknown topic ids')) {
+          void topics.refetch()
+          return setError('topicIds', { message: "Un des thèmes choisis n'existe plus : choisissez-les à nouveau." })
+        }
         const fields = Object.keys(emptySource) as (keyof SourceValues)[]
         const invalid = fields.filter((field) => error.fieldErrors[field])
         for (const field of invalid) setError(field, { message: error.fieldErrors[field] })
@@ -287,6 +396,28 @@ function SourceForm({ nameFieldId }: { nameFieldId: string }) {
             {...register('license')}
           />
         </div>
+        {topics.isPending ? (
+          <LoadingState label="Chargement des thèmes…" />
+        ) : topics.isError ? (
+          <ErrorState
+            message={getErrorMessage(topics.error)}
+            onRetry={() => void topics.refetch()}
+            retrying={topics.isRefetching}
+          />
+        ) : (
+          <Controller
+            control={control}
+            name="topicIds"
+            render={({ field, fieldState }) => (
+              <SourceTopicsPicker
+                topics={topics.data}
+                value={field.value}
+                onChange={field.onChange}
+                error={fieldState.error?.message}
+              />
+            )}
+          />
+        )}
         {formError && (
           <p role="alert" className={table.formError}>
             {formError}

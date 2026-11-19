@@ -25,6 +25,13 @@
   color: var(--color-text-secondary);
 }
 
+.readState {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--font-size-xs);
+  white-space: normal;
+}
+
 .form {
   display: flex;
   flex-direction: column;

@@ -19,6 +19,18 @@ const urlSchema = (emptyMessage: string) =>
     .max(2048, "L'adresse ne doit pas dépasser 2 048 caractères.")
     .refine(isHttpUrl, 'Saisissez une adresse commençant par http:// ou https://.')
 
+/** Source topics: 1 to 3, in order, the first being the main topic of the source's articles. */
+export const SOURCE_TOPICS_MAX = 3
+
+function sourceTopicsSchema() {
+  return z
+    .array(z.number().int())
+    .min(1, 'Choisissez au moins un thème.')
+    .max(SOURCE_TOPICS_MAX, `Choisissez ${SOURCE_TOPICS_MAX} thèmes au plus.`)
+}
+
+export const sourceTopicsFormSchema = z.object({ topicIds: sourceTopicsSchema() })
+
 export const sourceSchema = z.object({
   name: z
     .string()
@@ -34,6 +46,7 @@ export const sourceSchema = z.object({
     .toLowerCase()
     .regex(/^[a-z]{2}$/, 'Saisissez un code à deux lettres, par exemple fr.'),
   license: z.string().trim().max(200, 'La licence ne doit pas dépasser 200 caractères.'),
+  topicIds: sourceTopicsSchema(),
 })
 
 export type SourceValues = z.infer<typeof sourceSchema>

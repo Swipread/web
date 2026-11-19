@@ -11,15 +11,26 @@ const KNOWN_DETAILS: [RegExp, (match: RegExpMatchArray) => string][] = [
   ],
   [/^Feed redirects too many times$/i, () => 'Le flux redirige trop de fois.'],
   [/^Feed is larger than (\d+) MB$/i, ([, size]) => `Le flux dépasse ${size} Mo.`],
+  // Only in lastError, for an unexpected failure of the ingestion
+  [/^Ingestion failed$/i, () => 'La lecture a échoué.'],
 ]
+
+function translate(text: string) {
+  for (const [pattern, translation] of KNOWN_DETAILS) {
+    const match = text.match(pattern)
+    if (match) return translation(match)
+  }
+  return null
+}
+
+/** Error of the last read by the ingestion (lastError, same messages as the feed check), in French when known. */
+export function feedReadMessage(error: string) {
+  return translate(error.trim()) ?? error.trim()
+}
 
 /** Message shown under the feed URL when the API could not validate the feed. */
 export function feedCheckMessage(detail: string | undefined) {
   const text = detail?.trim()
   if (!text) return "Le flux n'a pas pu être vérifié."
-  for (const [pattern, translate] of KNOWN_DETAILS) {
-    const match = text.match(pattern)
-    if (match) return translate(match)
-  }
-  return `Le flux n'a pas pu être vérifié : ${text}`
+  return translate(text) ?? `Le flux n'a pas pu être vérifié : ${text}`
 }
