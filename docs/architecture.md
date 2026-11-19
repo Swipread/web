@@ -8,7 +8,7 @@ flowchart LR
     Browser -- "events in batches" --> API
     API --> DB[(PostgreSQL)]
     API --> Redis[(Redis<br/>feed stock, events stream)]
-    Redis -- "events stream" --> Reco["Recommendation service"]
+    Redis -- "events stream" --> Reco["Recommendation service<br/>Swipread/reco"]
     Reco -- "recommendations" --> API
 ```
 

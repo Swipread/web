@@ -35,11 +35,11 @@ flowchart LR
     Web["<b>Web app</b><br/>this repository"] -- "REST + JWT<br/>feed pages, events" --> API["<b>Swipread API</b><br/>Spring Boot"]
     API --> PG[(PostgreSQL<br/>users, articles, events)]
     API --> Redis[(Redis<br/>feed stock, events stream)]
-    Redis -- "events stream" --> Reco["<b>Recommender</b><br/>separate service"]
+    Redis -- "events stream" --> Reco["<b>Recommender</b><br/>Swipread/reco"]
     Reco -- "ranked articles" --> API
 ```
 
-The web app never ranks articles itself. It shows the pages the API serves from a per-reader stock of recommended articles, and reports what the reader does with each card. The API stores these events and streams them to the recommendation service, which refills the stock. The backend lives in [**Swipread/api**](https://github.com/Swipread/api).
+The web app never ranks articles itself. It shows the pages the API serves from a per-reader stock of recommended articles, and reports what the reader does with each card. The API stores these events and streams them to the recommendation service, which refills the stock. The backend lives in [**Swipread/api**](https://github.com/Swipread/api), the recommendation service in [**Swipread/reco**](https://github.com/Swipread/reco).
 
 ## Screenshots
 
@@ -163,7 +163,7 @@ Current versions of Chrome, Edge, Firefox and Safari, on desktop and mobile. The
 
 The reader and admin user stories are implemented and verified against the API: onboarding, feed, reactions, sharing, saved list, history, profile and account deletion, source and topic administration, token renewal.
 
-Version 1.0.0 is in production. Every push and pull request runs CI on GitHub Actions; a version tag on `main` builds the Docker image and deploys it, then creates the GitHub release. → [Deployment](docs/deployment.md#releasing)
+Version 1.1.0 is in production. Every push and pull request runs CI on GitHub Actions; a version tag on `main` builds the Docker image and deploys it, then creates the GitHub release. → [Deployment](docs/deployment.md#releasing)
 
 Known limitations:
 
