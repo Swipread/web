@@ -80,7 +80,7 @@ The web app never ranks articles itself. It shows the pages the API serves from 
 
 | Tool | Version | For |
 | --- | --- | --- |
-| Node.js + npm | 20.19+ or 22.12+ | This app |
+| Node.js + npm | 22.13+ or 24+ | This app |
 | Java | 25 | The Swipread API |
 | Docker | recent | PostgreSQL and Redis, started by the API |
 

@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- **Node.js** 20.19+ or 22.12+ (required by Vite) and npm.
+- **Node.js** 22.13+ or 24+ (required by Vitest, msw, ESLint and jsdom) and npm.
 - **The Swipread API** running locally. It needs Java 25 and Docker (PostgreSQL with pgvector and Redis are started through Docker Compose). See the [API repository](https://github.com/Swipread/api).
 - A recent Chromium, Firefox or Safari. The app relies on `scroll-snap`, the native `<dialog>` element and, when available, the Web Locks API.
 
