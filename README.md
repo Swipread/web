@@ -4,6 +4,7 @@
 
 This repository is the web app: React 19 + TypeScript, desktop first and fully responsive, light and dark themes, French UI.
 
+[![CI](https://github.com/Swipread/web/actions/workflows/ci.yml/badge.svg)](https://github.com/Swipread/web/actions/workflows/ci.yml)
 ![React 19](https://img.shields.io/badge/React-19-149eca)
 ![TypeScript](https://img.shields.io/badge/TypeScript-6-3178c6)
 ![Vite](https://img.shields.io/badge/Vite-8-646cff)

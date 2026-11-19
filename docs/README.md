@@ -12,7 +12,7 @@ Developer documentation for the web frontend. Start with [Getting started](getti
 | [Flows](flows.md) | Follow the main sequences step by step (sign-up, paging, events, token renewal, admin) |
 | [Testing](testing.md) | Write and run tests with Vitest, Testing Library and msw |
 | [Contributing](contributing.md) | Follow the conventions, the accessibility checklist and the commit format |
-| [Deployment](deployment.md) | Build and serve the app in production (Docker and Nginx example, CI, checklist) |
+| [Deployment](deployment.md) | Build and serve the app in production (Docker and Nginx example, continuous integration, checklist) |
 | [Decision records](decisions.md) | Know why things are the way they are |
 | [FAQ and troubleshooting](faq.md) | Fix common problems |
 | [Glossary](glossary.md) | Look up a term |

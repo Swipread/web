@@ -6,7 +6,7 @@
 npm test && npm run lint && npm run build
 ```
 
-All three must pass. `npm run build` also runs the TypeScript compiler.
+All three must pass. `npm run build` also runs the TypeScript compiler. CI runs the same checks on every pull request (see [Continuous integration](deployment.md#continuous-integration)).
 
 ## Conventions
 

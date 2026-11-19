@@ -87,35 +87,11 @@ TLS is expected to be terminated in front of this container (load balancer, ingr
 - **Content Security Policy**: the app has no inline script or style, so `'self'` is enough for both. `img-src` allows any HTTPS origin because article images come from the sources' own sites. `connect-src` must list the API origin. The policy above was checked in a browser with no violation.
 - `frame-ancestors 'none'` prevents clickjacking; add `Strict-Transport-Security` on the HTTPS front.
 
-## Example: continuous integration
+## Continuous integration
 
-A GitHub Actions workflow that runs the same checks as before a pull request (`.github/workflows/ci.yml`, not committed):
+GitHub Actions runs [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) on every push to `main` and on every pull request. It runs the same checks as before a pull request — `npm ci`, `npm run lint`, `npm test`, `npm run build` — on Node 22 and 24, the supported versions. A new push to the same branch cancels the run in progress.
 
-```yaml
-name: CI
-on:
-  push:
-    branches: [main]
-  pull_request:
-
-jobs:
-  check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run lint
-      - run: npm test
-      - run: npm run build
-        env:
-          VITE_API_BASE_URL: https://api.example.com
-```
-
-The test suite needs no API: every request is answered by msw. The API types are committed, so CI does not need the API to be running either; regenerate them locally when the API changes.
+The test suite needs no API: every request is answered by msw. The API types are committed, so CI does not need the API to be running either; regenerate them locally when the API changes. The build uses a placeholder `VITE_API_BASE_URL`, since the URL is only baked into the bundle: CI checks that the app builds, it does not deploy it.
 
 ## Release checklist
 
