@@ -1,10 +1,13 @@
 import '@testing-library/jest-dom/vitest'
-import { cleanup } from '@testing-library/react'
+import { cleanup, configure } from '@testing-library/react'
 import { afterAll, afterEach, beforeAll, vi } from 'vitest'
 import { tracker } from '../features/tracking/tracker'
 import { session } from '../lib/session'
 import { MockIntersectionObserver } from './intersectionObserver'
 import { server } from './server'
+
+// findBy* and waitFor give up after 1 s by default, too short on a busy CI runner.
+configure({ asyncUtilTimeout: 5_000 })
 
 // Browser APIs missing from jsdom.
 vi.stubGlobal('IntersectionObserver', MockIntersectionObserver)

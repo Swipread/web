@@ -29,7 +29,7 @@ The suite runs in jsdom and never calls a real server: the API is mocked with [M
 
 | File | Content |
 | --- | --- |
-| `setup.ts` | Starts msw, and after each test resets handlers, the event queue, the session and web storage. Stubs the browser APIs jsdom lacks (`IntersectionObserver`, `scrollIntoView`, `<dialog>`) |
+| `setup.ts` | Starts msw, and after each test resets handlers, the event queue, the session and web storage. Stubs the browser APIs jsdom lacks (`IntersectionObserver`, `scrollIntoView`, `<dialog>`). Raises the `findBy*`/`waitFor` timeout to 5 s (the test timeout is 15 s, in `vite.config.ts`) so that slow CI runners do not fail |
 | `server.ts`, `apiUrl.ts` | The msw server and `apiUrl(path)`, which prefixes the test API base URL (`http://api.test`) |
 | `handlers.ts` | Default handlers: a regular reader's profile, topics, a feed page, saved and history items, admin lists. `POST /v1/auth/refresh` answers 401 by default (no refresh cookie) |
 | `fixtures.ts` | Typed sample data: `me`, `admin`, `topics`, `token`, `feedItem()`, `feedPage()`, `savedItem()`, `historyItem()`… |
@@ -68,5 +68,5 @@ Check the events a test produced: tracking tests intercept `POST /v1/events` wit
 ## Pitfalls
 
 - **`credentials` is dropped by msw.** To check that a request sends cookies, spy on `fetch` (`vi.spyOn(globalThis, 'fetch')`) and inspect the request it receives.
-- **Redirects happen in an effect.** After rendering a guarded route, wait for `router.state.location.pathname` with `waitFor` before asserting what is on screen.
+- **Redirects happen in an effect.** After rendering a guarded route, wait for `router.state.location.pathname` with `waitFor` before asserting what is on screen. An element that already exists before the redirect (a nav link) is found at once by `findBy*`: put the assertion on its state, such as `aria-current`, inside `waitFor` too.
 - **Timers.** Tests that rely on the 5-second flush or on token expiry use `vi.useFakeTimers()`; restore real timers afterwards.
