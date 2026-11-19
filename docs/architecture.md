@@ -48,7 +48,7 @@ Routes use React Router in data mode (`createBrowserRouter`). Paths are in Frenc
 | `/admin/sources`, `/admin/themes` | Administration | … and `RequireAdmin` |
 
 - `RequireAuth` redirects to `/connexion?redirect=…` when there is no session; the login page sends the reader back afterwards.
-- `RequireOnboarding` loads the profile (`GET /v1/me`) and sends readers without topics to the picker.
+- `RequireOnboarding` loads the profile (`GET /v1/me`) and sends readers without topics to the picker. Admins without topics may still open `/admin/…`: on a fresh install no topic exists yet, and the administration is where they are created.
 - `RequireAdmin` reads `role` from the profile. It only hides screens: the API enforces the role on `/v1/admin/**`.
 - Any authenticated request that ends in 401 (after a failed token renewal) clears the session and goes to the login page, remembering the current page.
 

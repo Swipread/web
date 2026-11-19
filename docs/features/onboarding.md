@@ -10,7 +10,7 @@ A new reader chooses at least three topics before seeing the feed. The same pick
 - `TopicPicker`: one `Chip` (toggle button with `aria-pressed`) per topic, in the order returned by the API.
 - A live counter (`aria-live="polite"`) from `selectionLabel`: « 2 thèmes sélectionnés · encore 1 à choisir ».
 - « Continuer vers mon fil » stays disabled below three topics.
-- States: loading, error with « Réessayer », and an empty state if the API has no topics yet.
+- States: loading, error with « Réessayer », and an empty state if the API has no topics yet. For an admin, that empty state links to « Créer les thèmes » (`/admin/themes`), which `RequireOnboarding` lets admins reach without topics: otherwise the first admin of a fresh install could never create the topics they must pick.
 
 If the reader already has topics (they came back to this page), they are preselected.
 
@@ -30,4 +30,4 @@ The API empties the reader's stock of prepared articles when topics change, and 
 
 ## Tests
 
-`features/onboarding/onboarding.test.tsx` (three-topic minimum, save and redirect to the feed, save error, retry on load error, no topic available), `selectionLabel.test.ts`, and the topics section of `features/profile/profile.test.tsx`.
+`features/onboarding/onboarding.test.tsx` (three-topic minimum, save and redirect to the feed, save error, retry on load error, no topic available, an admin led to the topics administration on a fresh install, readers kept out of it), `selectionLabel.test.ts`, and the topics section of `features/profile/profile.test.tsx`.

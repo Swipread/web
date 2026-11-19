@@ -2,6 +2,8 @@
 
 Management of article sources and topics, for accounts with the `ADMIN` role. Code: `src/features/admin/`.
 
+On a fresh install there is no topic, so the first admin cannot finish onboarding: the administration stays reachable for admins without topics, and the onboarding's empty state links them to `/admin/themes`. Create the topics there, then pick yours.
+
 ## Access
 
 - `RequireAdmin` reads `role` from the cached profile (`GET /v1/me`); readers are sent back to the feed. `/admin` redirects to `/admin/sources`.
