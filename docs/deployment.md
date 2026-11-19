@@ -7,85 +7,32 @@ The production build is a static site (`dist/`): an `index.html`, hashed JS and 
 | Concern | Requirement |
 | --- | --- |
 | API URL | Baked in at build time through `VITE_API_BASE_URL` (Vite inlines it into the bundle). One build per environment |
-| Same site | The frontend and the API must share a registrable domain (`app.example.com` + `api.example.com`): the refresh cookie is `SameSite=Strict` and is not sent across sites |
+| Same site | The frontend and the API must be on one origin (`/` and `/v1` behind one reverse proxy, as in production) or share a registrable domain (`app.example.com` + `api.example.com`): the refresh cookie is `SameSite=Strict` and is not sent across sites |
 | HTTPS | Required in production: the refresh cookie is `Secure`, and the clipboard API needs a secure context |
-| CORS | The API's `SWIPREAD_CORS_ALLOWED_ORIGINS` must list the frontend's exact origin |
+| CORS | The API's `SWIPREAD_CORS_ALLOWED_ORIGINS` must list the frontend's exact origin, including its port. This also applies on a single origin behind a TLS proxy: the API sees plain HTTP, so it treats the browser's `https` origin as cross-origin |
 | Routing | Unknown paths must serve `index.html` (status 200), so `/sauvegardes` or `/admin/sources` work on reload |
 
-## Example: Docker and Nginx
+## Docker image
 
-The two files below have been built and run as shown. Put them at the repository root (they are not committed; adapt them to your infrastructure).
-
-`Dockerfile`:
-
-```dockerfile
-# Build stage
-FROM node:22-alpine AS build
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
-COPY . .
-ARG VITE_API_BASE_URL
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
-RUN npm run build
-
-# Serve stage
-FROM nginx:1.27-alpine
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/dist /usr/share/nginx/html
-EXPOSE 80
-```
-
-`nginx.conf`:
-
-```nginx
-server {
-    listen 80;
-    root /usr/share/nginx/html;
-
-    # Hashed assets never change: cache them for a year
-    location /assets/ {
-        add_header Cache-Control "public, max-age=31536000, immutable";
-        try_files $uri =404;
-    }
-
-    # Client-side routes (/connexion, /sauvegardes, /admin/sources…) fall back to index.html
-    location / {
-        add_header Cache-Control "no-cache";
-        add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https: data:; connect-src 'self' https://api.example.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" always;
-        add_header X-Content-Type-Options "nosniff" always;
-        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-        add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
-        try_files $uri /index.html;
-    }
-}
-```
-
-`.dockerignore`:
-
-```text
-node_modules
-dist
-notes
-.env*
-!.env.example
-.git
-```
-
-Build and run:
+The repository ships a production image: [`Dockerfile`](../Dockerfile) (build with Node 22, serve with Nginx 1.30), [`docker/nginx.conf`](../docker/nginx.conf) and [`.dockerignore`](../.dockerignore).
 
 ```bash
-docker build --build-arg VITE_API_BASE_URL=https://api.example.com -t swipread-web .
+docker build --build-arg VITE_API_BASE_URL=https://swipread.example -t swipread-web .
 docker run --rm -p 8080:80 swipread-web
 ```
 
-TLS is expected to be terminated in front of this container (load balancer, ingress or a reverse proxy).
+- `VITE_API_BASE_URL` is required and must be an origin (scheme, host, optional port, no path): the build fails otherwise. It is baked into the bundle and written into the Content Security Policy (`connect-src 'self' <origin>`), so the image only works with that API.
+- The image holds the static files and Nginx only (about 60 MB). Nginx does not announce its version.
+- The base images are pinned to a minor version (`node:22-alpine`, `nginx:1.30-alpine`), so each new image picks up their security fixes.
+- TLS is terminated in front of the container (a reverse proxy).
+
+In production, Swipread runs this image behind Caddy on a single origin: the web app on `/`, the API on `/v1`. The image was checked that way in a browser: sign-up, refresh cookie, reload, deep links, no console error and no CSP violation.
 
 ### Notes on the headers
 
 - **`Cache-Control`**: `index.html` is revalidated on every visit (`no-cache`) so a new deployment is picked up at once; bundles are immutable because their names contain a content hash.
-- **Content Security Policy**: the app has no inline script or style, so `'self'` is enough for both. `img-src` allows any HTTPS origin because article images come from the sources' own sites. `connect-src` must list the API origin. The policy above was checked in a browser with no violation.
-- `frame-ancestors 'none'` prevents clickjacking; add `Strict-Transport-Security` on the HTTPS front.
+- **Content Security Policy**: the app has no inline script or style, so `'self'` is enough for both. `img-src` allows any HTTPS origin because article images come from the sources' own sites. `connect-src` allows the API origin given at build time.
+- `frame-ancestors 'none'` prevents clickjacking. `Strict-Transport-Security` is set by the HTTPS front.
 
 ## Continuous integration
 
