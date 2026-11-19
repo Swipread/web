@@ -8,6 +8,8 @@ npm test && npm run lint && npm run build
 
 All three must pass. `npm run build` also runs the TypeScript compiler. CI runs the same checks on every pull request (see [Continuous integration](deployment.md#continuous-integration)).
 
+Releases are version tags on `main`, created by admins: see [Releasing](deployment.md#releasing).
+
 ## Conventions
 
 - **Language.** User-facing text is in French; code, identifiers, comments, tests and documentation are in English.

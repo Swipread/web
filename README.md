@@ -163,6 +163,8 @@ Current versions of Chrome, Edge, Firefox and Safari, on desktop and mobile. The
 
 The reader and admin user stories are implemented and verified against the API: onboarding, feed, reactions, sharing, saved list, history, profile and account deletion, source and topic administration, token renewal.
 
+Version 1.0.0 is in production. Every push and pull request runs CI on GitHub Actions; a version tag on `main` builds the Docker image and deploys it, then creates the GitHub release. → [Deployment](docs/deployment.md#releasing)
+
 Known limitations:
 
 - French UI only, without an i18n framework.
