@@ -135,7 +135,7 @@ describe('guards', () => {
         return new HttpResponse(null, { status: 204 })
       }),
     )
-    const { user, router } = renderRoutes(routes, { path: '/' })
+    const { user, router } = renderRoutes(routes, { path: '/profil' })
     await user.click(await screen.findByRole('button', { name: 'Se déconnecter' }))
 
     await waitFor(() => expect(router.state.location.pathname).toBe('/connexion'))
