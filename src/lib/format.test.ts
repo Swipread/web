@@ -17,6 +17,11 @@ describe('formatReadingTime', () => {
   ])('%s words → %s', (words, label) => {
     expect(formatReadingTime(words)).toBe(label)
   })
+
+  it('shows no reading time for a count taken from the summary only', () => {
+    expect(formatReadingTime(40, true)).toBeNull()
+    expect(formatReadingTime(1380, false)).toBe('6 min de lecture')
+  })
 })
 
 describe('formatRelativeDate', () => {

@@ -7,7 +7,7 @@ Articles the reader opened, most recent first. Code: `src/features/history/`.
 `/historique` → `HistoryPage`.
 
 - Sections « Aujourd'hui », « Cette semaine » (the six previous days) and « Plus ancien », each with an `h2`; rows use `h3` titles under them.
-- Each row: thumbnail, source and reading time, title linking to the source, and when it was read: « Lu à 10 h 12 », « Lu hier », « Lu lundi », then « Lu le 12 oct. ».
+- Each row: thumbnail, source and reading time (none when `wordCountFromSummary`), title linking to the source, and when it was read: « Lu à 10 h 12 », « Lu hier », « Lu lundi », then « Lu le 12 oct. ».
 - « Relire » reopens the article in a new tab.
 - « Charger plus », empty state, error with « Réessayer », as in the saved list.
 

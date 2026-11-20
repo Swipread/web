@@ -15,7 +15,7 @@ export function ArticleCard({ card, titleId, eager = false, onOpen }: Props) {
   const [imageFailed, setImageFailed] = useState(false)
   // Topics come most confident first; the list may be empty.
   const topic = card.topics?.[0]?.label
-  const meta = [card.sourceName, formatRelativeDate(card.publishedAt), formatReadingTime(card.wordCount)].filter(
+  const meta = [card.sourceName, formatRelativeDate(card.publishedAt), formatReadingTime(card.wordCount, card.wordCountFromSummary)].filter(
     Boolean,
   )
 

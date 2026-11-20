@@ -79,7 +79,7 @@ export function SavedPage() {
                   title={article.title ?? ''}
                   url={article.url}
                   imageUrl={article.imageUrl}
-                  meta={[article.sourceName, formatReadingTime(article.wordCount)].filter((part) => !!part) as string[]}
+                  meta={[article.sourceName, formatReadingTime(article.wordCount, article.wordCountFromSummary)].filter((part) => !!part) as string[]}
                   caption={formatActionDate('Sauvegardé', savedAt)}
                   onOpen={() => tracker.track({ type: 'open', articleId: article.id! })}
                   actions={

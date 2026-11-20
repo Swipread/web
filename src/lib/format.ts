@@ -1,8 +1,11 @@
 const WORDS_PER_MINUTE = 230
 
-/** "6 min de lecture", or null when the word count is unknown. */
-export function formatReadingTime(wordCount: number | undefined) {
-  if (!wordCount || wordCount <= 0) return null
+/**
+ * "6 min de lecture", or null when the word count is unknown or was taken from the feed's summary only
+ * (`wordCountFromSummary`): it then says nothing of the article's length.
+ */
+export function formatReadingTime(wordCount: number | undefined, fromSummary = false) {
+  if (fromSummary || !wordCount || wordCount <= 0) return null
   const minutes = Math.max(1, Math.round(wordCount / WORDS_PER_MINUTE))
   return `${minutes} min de lecture`
 }

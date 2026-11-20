@@ -13,7 +13,7 @@ FeedPage
     └── end slide[data-index=n]  spinner | « Vous êtes à jour » | error + « Réessayer »
 ```
 
-- **`ArticleCard`**: image (eager for the first card, lazy afterwards, `referrerPolicy="no-referrer"`, falls back to the source's initial), meta line (source · relative date · reading time), first topic as a pill, title, summary, and « Lire l'article » which opens the source's page in a new tab.
+- **`ArticleCard`**: image (eager for the first card, lazy afterwards, `referrerPolicy="no-referrer"`, falls back to the source's initial), meta line (source · relative date · reading time, left out when `wordCountFromSummary` is true), first topic as a pill, title, summary, and « Lire l'article » which opens the source's page in a new tab.
 - **`ArticleActions`**: four `IconButton`s with visible captions: « J'aime » (`aria-pressed`), « Sauvegarder » (`aria-pressed`), « Partager », « Pas intéressé ». On desktop they sit to the right of the card, on mobile below it.
 - Each `article` is focusable (`tabIndex=-1`), labelled by its title, and carries `aria-posinset` / `aria-setsize` (`-1` while more pages may come).
 
@@ -48,4 +48,4 @@ The feed is the main source of tracking events (`impression`, `view`, `open`, `r
 
 ## Tests
 
-`features/feed/feed.test.tsx`: card content (source, date, reading time) and context headers, prefetch before the end, arrow keys (and ignoring them while typing), hide with focus on the next card, like and save toggles, reaction state and topic from the API, position memory and restore, retry on error, empty feed, end of feed. Tracking from the feed is covered by `features/tracking/feedTracking.test.tsx`.
+`features/feed/feed.test.tsx`: card content (source, date, reading time, none for a word count taken from the summary) and context headers, prefetch before the end, arrow keys (and ignoring them while typing), hide with focus on the next card, like and save toggles, reaction state and topic from the API, position memory and restore, retry on error, empty feed, end of feed. Tracking from the feed is covered by `features/tracking/feedTracking.test.tsx`.

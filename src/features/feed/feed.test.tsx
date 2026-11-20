@@ -48,6 +48,15 @@ describe('feed', () => {
     expect(calls[0].headers.get('X-Device')).toBe('desktop')
   })
 
+  it('shows no reading time when the word count comes from the summary only', async () => {
+    serveFeed([feedItem({ title: 'Une vidéo', wordCount: 40, wordCountFromSummary: true })])
+    renderRoutes(routes)
+
+    const card = await screen.findByRole('article', { name: 'Une vidéo' })
+    expect(within(card).getByText('Le Journal Tech')).toBeInTheDocument()
+    expect(within(card).queryByText(/min de lecture/)).not.toBeInTheDocument()
+  })
+
   it('loads the next page before reaching the end', async () => {
     const first = Array.from({ length: 5 }, () => feedItem())
     const second = Array.from({ length: 5 }, () => feedItem())

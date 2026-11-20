@@ -421,6 +421,8 @@ export interface components {
             language?: string;
             /** Format: int32 */
             wordCount?: number;
+            /** @description True when only the feed's title and summary could be counted (the article's page could not be read): wordCount then says nothing of the reading time */
+            wordCountFromSummary?: boolean;
             /** Format: date-time */
             publishedAt?: string;
             /** @description Detected topics, most confident first */
@@ -464,6 +466,8 @@ export interface components {
             language?: string;
             /** Format: int32 */
             wordCount?: number;
+            /** @description True when only the feed's title and summary could be counted (the article's page could not be read): wordCount then says nothing of the reading time */
+            wordCountFromSummary?: boolean;
             /** Format: date-time */
             publishedAt?: string;
             /** @description Detected topics, most confident first */

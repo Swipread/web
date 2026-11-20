@@ -40,6 +40,7 @@ export function feedItem(overrides: Partial<Schema<'FeedItem'>> = {}): Schema<'F
     sourceName: 'Le Journal Tech',
     language: 'fr',
     wordCount: 1380,
+    wordCountFromSummary: false,
     publishedAt: new Date(Date.now() - 2 * 3_600_000).toISOString(),
     topics: [topics[0]],
     liked: false,
@@ -57,9 +58,23 @@ export function feedPage(size = 10): Schema<'FeedResponse'> {
 
 /** An article as listed in Sauvegardés and Historique. */
 export function article(overrides: Partial<Schema<'ArticleResponse'>> = {}): Schema<'ArticleResponse'> {
-  const { articleId, title, summary, url, imageUrl, author, sourceName, language, wordCount, publishedAt, topics } =
+  const { articleId, title, summary, url, imageUrl, author, sourceName, language, wordCount, wordCountFromSummary, publishedAt, topics } =
     feedItem()
-  return { id: articleId, title, summary, url, imageUrl, author, sourceName, language, wordCount, publishedAt, topics, ...overrides }
+  return {
+    id: articleId,
+    title,
+    summary,
+    url,
+    imageUrl,
+    author,
+    sourceName,
+    language,
+    wordCount,
+    wordCountFromSummary,
+    publishedAt,
+    topics,
+    ...overrides,
+  }
 }
 
 export function savedItem(overrides: Partial<Schema<'ArticleResponse'>> = {}, savedAt?: string) {

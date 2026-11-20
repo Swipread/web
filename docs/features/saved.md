@@ -7,7 +7,7 @@ Articles the reader kept for later. Code: `src/features/saved/`.
 `/sauvegardes` → `SavedPage`.
 
 - Header « Sauvegardés » with a subtitle: the count (« 4 articles à lire plus tard ») once every page is loaded, « Vos articles à lire plus tard » while more pages remain.
-- One `ArticleRow` per article, most recently saved first: thumbnail, source and reading time, title linking to the source (new tab), « Sauvegardé il y a 2 h ».
+- One `ArticleRow` per article, most recently saved first: thumbnail, source and reading time (none when `wordCountFromSummary`), title linking to the source (new tab), « Sauvegardé il y a 2 h ».
 - Row actions: share (icon button labelled « Partager « <title> » ») and « Retirer ».
 - « Charger plus » when the API returns a `nextCursor`.
 - States: loading, error with « Réessayer », empty state with a link back to the feed. An error while loading more is shown under the list.
