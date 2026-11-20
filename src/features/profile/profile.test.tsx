@@ -16,7 +16,8 @@ describe('profile', () => {
   it('shows the display name and email', async () => {
     renderRoutes(routes, { path: '/profil' })
     expect(await screen.findByLabelText('Nom affiché')).toHaveValue('Léa')
-    expect(screen.getByLabelText('Email (non modifiable)')).toHaveValue('lea@exemple.fr')
+    expect(screen.getByText('lea@exemple.fr')).toBeInTheDocument()
+    expect(screen.getByText('Membre depuis octobre 2026')).toBeInTheDocument()
   })
 
   describe('password', () => {
@@ -97,12 +98,12 @@ describe('profile', () => {
     queryClient.setQueryData(['feed'], { pages: [], pageParams: [] })
     sessionStorage.setItem('swipread.feed.articleId', 'a_1')
 
-    const save = await screen.findByRole('button', { name: 'Enregistrer mes thèmes' })
+    const save = await screen.findByRole('button', { name: "Enregistrer mes centres d'intérêt" })
     expect(screen.getByRole('button', { name: 'Culture' })).toHaveAttribute('aria-pressed', 'true')
     expect(save).toBeDisabled()
 
     await user.click(screen.getByRole('button', { name: 'Culture' }))
-    expect(screen.getByText('2 thèmes sélectionnés · encore 1 à choisir')).toBeInTheDocument()
+    expect(screen.getByText("2 centres d'intérêt sélectionnés · encore 1 à choisir")).toBeInTheDocument()
     expect(save).toBeDisabled()
 
     await user.click(screen.getByRole('button', { name: 'Sport' }))
@@ -121,7 +122,7 @@ describe('profile', () => {
     const { user } = renderRoutes(routes, { path: '/profil' })
 
     await user.click(await screen.findByRole('button', { name: 'Sport' }))
-    await user.click(screen.getByRole('button', { name: 'Enregistrer mes thèmes' }))
+    await user.click(screen.getByRole('button', { name: "Enregistrer mes centres d'intérêt" }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent('momentanément indisponible')
   })
