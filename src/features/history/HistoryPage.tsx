@@ -6,13 +6,18 @@ import { ArticleRow } from '../../ui/ArticleRow'
 import { Button } from '../../ui/Button'
 import { EmptyState } from '../../ui/EmptyState'
 import { ErrorState } from '../../ui/ErrorState'
+import { IconButton } from '../../ui/IconButton'
+import { ReadingTime } from '../../ui/ReadingTime'
+import { BookmarkIcon, ShareIcon } from '../../ui/icons'
 import { LoadingState } from '../../ui/LoadingState'
 import { PageHeader } from '../../ui/PageHeader'
+import { useShare } from '../share/useShare'
 import { tracker } from '../tracking/tracker'
-import { useHistory } from './useHistory'
+import { useHistory, useHistorySave } from './useHistory'
 import styles from './HistoryPage.module.css'
 
 type HistoryItem = Schema<'HistoryItemResponse'>
+type Article = Schema<'ArticleResponse'>
 
 const groupTitles: Record<RecencyGroup, string> = {
   today: "Aujourd'hui",
@@ -34,10 +39,19 @@ function groupByRecency(items: HistoryItem[], now = Date.now()) {
 
 export function HistoryPage() {
   const history = useHistory()
+  const toggleSave = useHistorySave()
+  const share = useShare()
   const items = history.data?.pages.flatMap((page) => page.items ?? []) ?? []
 
+  const shareArticle = async (article: Article) => {
+    const result = await share(article)
+    if (article.id && (result === 'native' || result === 'clipboard')) {
+      tracker.track({ type: 'share', articleId: article.id, payload: { channel: result } })
+    }
+  }
+
   return (
-    <>
+    <div className={styles.page}>
       <PageHeader title="Historique" subtitle="Les articles que vous avez lus récemment" />
       {history.isPending ? (
         <LoadingState label="Chargement de votre historique…" />
@@ -60,30 +74,47 @@ export function HistoryPage() {
               <h2 id={`history-${group.key}`} className={styles.groupTitle}>
                 {groupTitles[group.key]}
               </h2>
-              {group.items.map(({ article, readAt }) => {
+              {group.items.map(({ article, readAt, saved }) => {
                 if (!article?.id || !article.url) return null
-                const open = () => tracker.track({ type: 'open', articleId: article.id! })
+                const articleId = article.id
                 return (
                   <ArticleRow
-                    key={article.id}
+                    key={articleId}
                     headingLevel={3}
                     title={article.title ?? ''}
                     url={article.url}
                     imageUrl={article.imageUrl}
-                    meta={[article.sourceName, formatReadingTime(article.wordCount, article.wordCountFromSummary)].filter((part) => !!part) as string[]}
-                    caption={formatReadAt(readAt)}
-                    onOpen={open}
+                    topicSlug={article.topics?.[0]?.slug}
+                    meta={[article.sourceName, article.topics?.[0]?.label]}
+                    caption={[
+                      formatReadAt(readAt),
+                      formatReadingTime(article.wordCount, article.wordCountFromSummary) && (
+                        <ReadingTime
+                          key="time"
+                          wordCount={article.wordCount}
+                          fromSummary={article.wordCountFromSummary}
+                        />
+                      ),
+                    ]}
+                    onOpen={() => tracker.track({ type: 'open', articleId })}
                     actions={
-                      <a
-                        href={article.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.reread}
-                        onClick={open}
-                      >
-                        Relire{' '}
-                        <span className="visually-hidden">« {article.title} » (nouvel onglet)</span>
-                      </a>
+                      <>
+                        <IconButton
+                          size="sm"
+                          icon={<BookmarkIcon filled={saved} />}
+                          label={`Sauvegarder « ${article.title} »`}
+                          title={saved ? 'Retirer des sauvegardés' : 'Sauvegarder'}
+                          pressed={saved ?? false}
+                          onClick={() => toggleSave(articleId, !saved)}
+                        />
+                        <IconButton
+                          size="sm"
+                          icon={<ShareIcon />}
+                          label={`Partager « ${article.title} »`}
+                          title="Partager"
+                          onClick={() => void shareArticle(article)}
+                        />
+                      </>
                     }
                   />
                 )
@@ -108,6 +139,6 @@ export function HistoryPage() {
           )}
         </>
       )}
-    </>
+    </div>
   )
 }

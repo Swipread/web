@@ -108,7 +108,9 @@ describe('saved articles', () => {
     )
     const { user } = renderRoutes(routes, { path: '/sauvegardes' })
 
-    await user.click(await screen.findByRole('button', { name: 'Retirer « Les batteries solides » des sauvegardés' }))
+    const toggle = await screen.findByRole('button', { name: 'Sauvegarder « Les batteries solides »' })
+    expect(toggle).toHaveAttribute('aria-pressed', 'true')
+    await user.click(toggle)
 
     expect(screen.queryByRole('link', { name: /Les batteries solides/ })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: /La sonde Juice/ })).toHaveFocus()
@@ -122,7 +124,7 @@ describe('saved articles', () => {
     server.use(http.get(apiUrl('/v1/me/saved'), () => HttpResponse.json({ items: [savedItem({ title: 'Seul' })] })))
     const { user } = renderRoutes(routes, { path: '/sauvegardes' })
 
-    await user.click(await screen.findByRole('button', { name: /^Retirer/ }))
+    await user.click(await screen.findByRole('button', { name: /^Sauvegarder/ }))
 
     expect(screen.getByText('Aucun article sauvegardé')).toBeInTheDocument()
   })
@@ -140,7 +142,7 @@ describe('saved articles', () => {
     await screen.findByRole('article', { name: title })
 
     await user.click(screen.getByRole('link', { name: 'Sauvegardés' }))
-    await user.click(await screen.findByRole('button', { name: /^Retirer/ }))
+    await user.click(await screen.findByRole('button', { name: /^Sauvegarder/ }))
     await user.click(screen.getByRole('link', { name: 'Pour vous' }))
 
     const card = await screen.findByRole('article', { name: title })

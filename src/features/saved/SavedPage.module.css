@@ -1,3 +1,9 @@
+/* One reading column, centred on the window's axis like the tab bar. */
+.page {
+  max-width: 48rem;
+  margin-inline: auto;
+}
+
 .list {
   display: flex;
   flex-direction: column;

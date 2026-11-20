@@ -55,7 +55,7 @@ describe('reading history', () => {
     expect(within(older).getByText('Lu le 1 oct.')).toBeInTheDocument()
   })
 
-  it('reopens an article and records it', async () => {
+  it('reopens an article from its row and records it', async () => {
     const item = historyItem({ title: 'La sonde Juice' }, at(13, 10))
     serveHistory(item)
     const events: TrackedEvent[] = []
@@ -67,13 +67,42 @@ describe('reading history', () => {
     )
     const { user } = renderRoutes(routes, { path: '/historique' })
 
-    const reread = await screen.findByRole('link', { name: 'Relire « La sonde Juice » (nouvel onglet)' })
-    expect(reread).toHaveAttribute('href', item.article.url)
-    expect(reread).toHaveAttribute('target', '_blank')
-    await user.click(reread)
+    const link = await screen.findByRole('link', { name: 'La sonde Juice (nouvel onglet)' })
+    expect(link).toHaveAttribute('href', item.article.url)
+    expect(link).toHaveAttribute('target', '_blank')
+    await user.click(link)
     await tracker.flush()
 
     expect(events).toMatchObject([{ type: 'open', articleId: item.article.id }])
+  })
+
+  it('saves and unsaves a read article, and shares it', async () => {
+    const item = historyItem({ title: 'La sonde Juice' }, at(13, 10))
+    serveHistory(item)
+    const events: TrackedEvent[] = []
+    server.use(
+      http.post(apiUrl('/v1/events'), async ({ request }) => {
+        events.push(...((await request.json()) as { events: TrackedEvent[] }).events)
+        return HttpResponse.json({ accepted: 1, duplicates: 0 }, { status: 202 })
+      }),
+    )
+    const { user } = renderRoutes(routes, { path: '/historique' })
+
+    const save = await screen.findByRole('button', { name: 'Sauvegarder « La sonde Juice »' })
+    expect(save).toHaveAttribute('aria-pressed', 'false')
+    await user.click(save)
+    expect(save).toHaveAttribute('aria-pressed', 'true')
+    await user.click(save)
+    expect(save).toHaveAttribute('aria-pressed', 'false')
+    await user.click(screen.getByRole('button', { name: 'Partager « La sonde Juice »' }))
+    expect(await screen.findByText('Lien copié')).toBeInTheDocument()
+    await tracker.flush()
+
+    expect(events.map(({ type, articleId }) => ({ type, articleId }))).toEqual([
+      { type: 'save', articleId: item.article.id },
+      { type: 'unsave', articleId: item.article.id },
+      { type: 'share', articleId: item.article.id },
+    ])
   })
 
   it('loads more with the cursor', async () => {

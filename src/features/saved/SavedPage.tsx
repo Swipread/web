@@ -8,7 +8,8 @@ import { Button } from '../../ui/Button'
 import { EmptyState } from '../../ui/EmptyState'
 import { ErrorState } from '../../ui/ErrorState'
 import { IconButton } from '../../ui/IconButton'
-import { ShareIcon } from '../../ui/icons'
+import { ReadingTime } from '../../ui/ReadingTime'
+import { BookmarkIcon, ShareIcon } from '../../ui/icons'
 import { LoadingState } from '../../ui/LoadingState'
 import { PageHeader } from '../../ui/PageHeader'
 import { useShare } from '../share/useShare'
@@ -53,7 +54,7 @@ export function SavedPage() {
   }
 
   return (
-    <>
+    <div className={styles.page}>
       <PageHeader title="Sauvegardés" subtitle={saved.isSuccess && items.length > 0 ? subtitle : undefined} />
       {saved.isPending ? (
         <LoadingState label="Chargement de vos sauvegardes…" />
@@ -79,23 +80,36 @@ export function SavedPage() {
                   title={article.title ?? ''}
                   url={article.url}
                   imageUrl={article.imageUrl}
-                  meta={[article.sourceName, formatReadingTime(article.wordCount, article.wordCountFromSummary)].filter((part) => !!part) as string[]}
-                  caption={formatActionDate('Sauvegardé', savedAt)}
+                  topicSlug={article.topics?.[0]?.slug}
+                  meta={[article.sourceName, article.topics?.[0]?.label]}
+                  caption={[
+                    formatActionDate('Sauvegardé', savedAt),
+                    formatReadingTime(article.wordCount, article.wordCountFromSummary) && (
+                      <ReadingTime
+                        key="time"
+                        wordCount={article.wordCount}
+                        fromSummary={article.wordCountFromSummary}
+                      />
+                    ),
+                  ]}
                   onOpen={() => tracker.track({ type: 'open', articleId: article.id! })}
                   actions={
                     <>
                       <IconButton
+                        size="sm"
+                        icon={<BookmarkIcon filled />}
+                        label={`Sauvegarder « ${article.title} »`}
+                        title="Retirer des sauvegardés"
+                        pressed
+                        onClick={() => remove(article.id!, index)}
+                      />
+                      <IconButton
+                        size="sm"
                         icon={<ShareIcon />}
                         label={`Partager « ${article.title} »`}
+                        title="Partager"
                         onClick={() => void shareArticle(article)}
                       />
-                      <Button
-                        variant="ghost"
-                        aria-label={`Retirer « ${article.title} » des sauvegardés`}
-                        onClick={() => remove(article.id!, index)}
-                      >
-                        Retirer
-                      </Button>
                     </>
                   }
                 />
@@ -116,6 +130,6 @@ export function SavedPage() {
           )}
         </>
       )}
-    </>
+    </div>
   )
 }
