@@ -3,6 +3,8 @@
   position: relative;
   isolation: isolate;
   height: calc(100dvh - var(--notice-height, 0px));
+  /* The field runs under the translucent tab bar; content stops above it. */
+  --feed-bottom-inset: calc(var(--tabbar-height) + env(safe-area-inset-bottom));
   overflow: hidden;
   background: var(--color-bg);
   color: var(--ambient-ink);
@@ -11,29 +13,7 @@
   --color-text-secondary: var(--ambient-ink-2);
 }
 
-.topBar {
-  position: absolute;
-  inset: 0 0 auto;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  height: var(--feed-topbar-height);
-  padding: 0 var(--space-5);
-  pointer-events: none;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-heavy);
-  letter-spacing: -0.03em;
-}
-
 .title {
-  margin-left: auto;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
 }
@@ -62,7 +42,7 @@
   display: grid;
   height: 100%;
   place-items: center;
-  padding: var(--feed-topbar-height) var(--space-4) 0;
+  padding: var(--feed-topbar-height) var(--space-4) var(--feed-bottom-inset);
 }
 
 .scroller {
@@ -99,21 +79,10 @@
 .endSlide {
   display: grid;
   place-items: center;
-  padding: var(--feed-topbar-height) var(--space-4) 0;
-}
-
-/* Desktop: the reading column sits lower, under a roomier bar. */
-@media (min-width: 769px) {
-  .topBar {
-    padding: 0 var(--space-6);
-  }
+  padding: var(--feed-topbar-height) var(--space-4) var(--feed-bottom-inset);
 }
 
 @media (max-width: 768px) {
-  .page {
-    height: calc(100dvh - var(--tabbar-height) - var(--notice-height, 0px));
-  }
-
   .hint {
     display: none;
   }

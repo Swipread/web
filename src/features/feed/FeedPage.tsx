@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { getErrorMessage } from '../../api/problem'
+import { TopBar } from '../../app/TopBar'
 import { prefersReducedMotion } from '../../lib/media'
-import { BrandSymbol } from '../../ui/BrandSymbol'
 import { EmptyState } from '../../ui/EmptyState'
 import { ErrorState } from '../../ui/ErrorState'
 import { Spinner } from '../../ui/Spinner'
@@ -123,17 +123,13 @@ export function FeedPage() {
   return (
     <div className={styles.page}>
       <AmbientField items={items} activeIndex={activeIndex} failedImages={failedImages} />
-      <header className={styles.topBar}>
-        <span className={styles.brand}>
-          <BrandSymbol size={28} light={symbolLight} />
-          Swipread
-        </span>
+      <TopBar tone="ambient" symbolLight={symbolLight}>
         <h1 className={styles.title}>Pour vous</h1>
         <p className={styles.hint} aria-hidden="true">
           <kbd>↑</kbd>
           <kbd>↓</kbd> au clavier
         </p>
-      </header>
+      </TopBar>
 
       {feed.isPending ? (
         <div className={styles.status}>

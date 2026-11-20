@@ -1,7 +1,7 @@
 import { NavLink, Outlet } from 'react-router'
 import styles from './AdminLayout.module.css'
 
-/** On mobile the tab bar has a single "Admin" entry: these tabs switch between the admin pages. */
+/** The tab bar has a single « Admin » entry: these tabs switch between the admin pages. */
 export function AdminLayout() {
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     [styles.tab, isActive && styles.active].filter(Boolean).join(' ')

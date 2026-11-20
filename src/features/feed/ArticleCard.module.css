@@ -5,7 +5,7 @@
   max-width: var(--feed-column-width);
   height: 100%;
   margin: 0 auto;
-  padding: calc(var(--feed-topbar-height) + var(--space-3)) var(--space-5) var(--space-4);
+  padding: calc(var(--feed-topbar-height) + var(--space-3)) var(--space-5) calc(var(--feed-bottom-inset, 0px) + var(--space-4));
   color: var(--ambient-ink);
 }
 
