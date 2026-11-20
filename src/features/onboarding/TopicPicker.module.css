@@ -1,16 +1,110 @@
-.list {
-  display: flex;
-  flex-wrap: wrap;
+.grid {
+  display: grid;
+  /* Two columns even on a 375px phone. */
+  grid-template-columns: repeat(auto-fill, minmax(min(9rem, 100%), 1fr));
   gap: var(--space-3);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.center {
-  justify-content: center;
+.tile {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+  /* Tiles of a row share its height when a long name takes two lines. */
+  height: 100%;
+  min-height: 6rem;
+  overflow: hidden;
+  padding: var(--space-4);
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--color-fill);
+  color: var(--color-text);
+  text-align: start;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-base) var(--ease-out-expo),
+    transform var(--duration-fast) var(--ease-out-expo);
 }
 
-.start {
-  justify-content: flex-start;
+.tile:active {
+  transform: scale(0.98);
+}
+
+.tile:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .tile:hover {
+    background: var(--color-fill-hover);
+  }
+}
+
+/* The topic's gradient under a veil that keeps white text readable on every topic; it fades in when chosen. */
+.light {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity var(--duration-ambient) var(--ease-out-expo);
+}
+
+.light::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--tile-veil);
+}
+
+.tile[aria-pressed='true'] {
+  color: var(--tile-ink);
+}
+
+.tile[aria-pressed='true'] .light {
+  opacity: 1;
+}
+
+.top {
+  display: flex;
+  justify-content: flex-end;
+  height: 1.125rem;
+}
+
+.swatch {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+}
+
+.label {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-heavy);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-title);
+  /* A long topic name breaks at a French hyphenation point, never mid-syllable. */
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+/* A topic without colours of its own: chosen in ink, its swatch a ring. */
+.neutral[aria-pressed='true'] {
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+}
+
+.neutral .light {
+  display: none;
+}
+
+.neutral .swatch {
+  background: none;
+  box-shadow: inset 0 0 0 1.5px var(--color-text-secondary);
 }

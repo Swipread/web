@@ -136,7 +136,7 @@ function TopicsSection({ selectedIds }: { selectedIds: number[] | undefined }) {
         />
       ) : (
         <>
-          <TopicPicker topics={topics.data} selectedIds={selection.selected} onToggle={selection.toggle} align="start" />
+          <TopicPicker topics={topics.data} selectedIds={selection.selected} onToggle={selection.toggle} />
           {count < MIN_TOPICS && (
             <p className={styles.hint} aria-live="polite">
               {selectionLabel(count, MIN_TOPICS)}

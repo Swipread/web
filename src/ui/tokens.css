@@ -96,6 +96,9 @@
   --topic-sport: #2f9e44, #0b3d1a;
   --topic-health: #0ca678, #06403a;
   --topic-default: #495057, #1b1e21;
+  /* A topic tile once chosen: white text over its gradient under this veil (worst case 4.95:1, Économie's yellow). */
+  --tile-veil: rgb(0 0 0 / 0.35);
+  --tile-ink: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
