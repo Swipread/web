@@ -101,7 +101,7 @@ The refresh token is never visible to JavaScript: it is the `swipread_refresh` c
 
 A session ends when:
 
-- the reader clicks « Se déconnecter » (`useLogout`);
+- the reader clicks « Se déconnecter » on the profile page (`useLogout`);
 - a request still gets a 401 after a renewal attempt, or the renewal itself is refused: the client clears the session and `createUnauthorizedHandler` clears the query cache and navigates to `/connexion?redirect=<current page>`;
 - the account is deleted from the profile page.
 

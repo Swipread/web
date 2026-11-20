@@ -21,7 +21,7 @@ The code is organised **by feature**, not by layer. A feature folder holds its p
 | Folder | Content |
 | --- | --- |
 | `src/api/` | `client.ts` (typed `openapi-fetch` client), `schema.d.ts` (generated, never edited), `types.ts` (`Schema<'Name'>` shorthand), `problem.ts` (errors), `refresh.ts` (token renewal), `queryClient.ts` |
-| `src/app/` | `routes.tsx`, `guards.tsx`, `AppLayout`, `Sidebar`, not found page, 401 handler |
+| `src/app/` | `routes.tsx`, `guards.tsx`, `AppLayout`, `TopBar`, `TabBar`, not found page, 401 handler |
 | `src/features/auth/` | Login and sign-up pages, session hooks (`useSession`, `useMe`, `useLogin`, `useLogout`…) |
 | `src/features/onboarding/` | Topic picker (reused by the profile), topic hooks |
 | `src/features/feed/` | Feed page, article card and actions, infinite query, active card detection, keyboard navigation, position memory |
@@ -73,8 +73,8 @@ All API calls go through hooks built on TanStack Query, never through `fetch` in
 ## Design system
 
 - **Tokens.** Colours, spacing, radii, typography and durations are CSS custom properties in `src/ui/tokens.css`. Components only use these variables. Dark mode redefines the colour tokens under `prefers-color-scheme: dark`; reduced motion sets the durations to zero.
-- **Styling.** One CSS Module per component (`Component.module.css`). The look is deliberately sober: system font, lots of space, few colours, discreet animations.
-- **Layout.** A fixed sidebar on desktop becomes a bottom tab bar under 768 px. On mobile the two admin pages share one « Admin » tab and switch with segmented tabs.
+- **Styling.** One CSS Module per component (`Component.module.css`). The look follows the « Ambiance » direction ([design.md](design.md)): ink only, the colour comes from the article's image, Schibsted Grotesk.
+- **Layout.** Every signed-in page has a top bar (`TopBar`: symbol and name) and a bottom tab bar (`TabBar`: Pour vous, Sauvegardés, Historique, Profil, plus Admin for administrators) on every screen size. The feed is immersive: its top bar and the tab bar are drawn over the article's ambient field. The two admin pages share the « Admin » tab and switch with segmented tabs. Logging out is on the profile page.
 - **States.** Every screen handles loading (`LoadingState`), errors with a « Réessayer » button (`ErrorState`) and empty lists (`EmptyState`).
 - **Accessibility.** Icon buttons require an `aria-label`, toggles use `aria-pressed`, focus is always visible, contrast meets WCAG AA in both themes, dialogs use the native `<dialog>` (focus trap, Escape) with the initial focus on « Annuler ».
 

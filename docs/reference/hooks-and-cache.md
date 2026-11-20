@@ -6,7 +6,7 @@ All server state lives in one TanStack Query client (`src/api/queryClient.ts`: q
 
 | Key | Hook | Endpoint | Kind | Notes |
 | --- | --- | --- | --- | --- |
-| `['me']` | `useMe` | `GET /v1/me` | query | `staleTime` 5 min. Read by the guards, the sidebar (admin links) and the profile |
+| `['me']` | `useMe` | `GET /v1/me` | query | `staleTime` 5 min. Read by the guards, the tab bar (admin tab) and the profile |
 | `['topics']` | `useTopics` | `GET /v1/topics` | query | Topics offered to readers |
 | `['feed']` | `useFeed` | `GET /v1/feed` | infinite | `staleTime: Infinity`, `gcTime` 30 min, page param is a counter |
 | `['saved']` | `useSaved` | `GET /v1/me/saved` | infinite | Cursor pagination, 20 per page, flushes events first |

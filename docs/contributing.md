@@ -33,7 +33,7 @@ Releases are version tags on `main`, created by admins: see [Releasing](deployme
 
 1. Create `src/features/<feature>/` with its hooks, components and page.
 2. If it needs new endpoints, regenerate the types (`npm run gen:api`).
-3. Add the route in `src/app/routes.tsx` (and a sidebar entry if needed).
+3. Add the route in `src/app/routes.tsx` (and a tab in `TabBar` if it is a main section).
 4. Add default msw handlers and fixtures for its endpoints, then its tests.
 5. Update this documentation when the change affects architecture, the API integration or the setup.
 

@@ -126,7 +126,7 @@ One article in a list (saved, history): thumbnail, meta, title linking to the so
 
 ## Toasts
 
-`ToastProvider` (in `main.tsx` and the test render helpers) renders one polite live region. `useToast().show(message)` displays a short confirmation for four seconds; a new message replaces the current one.
+`ToastProvider` (in `main.tsx` and the test render helpers) renders one polite live region. `useToast().show(message)` displays a short confirmation for four seconds; a new message replaces the current one. It appears at the top, under the top bar: the bottom of the screen holds the tab bar and, on the feed, the actions.
 
 ## Icons
 
