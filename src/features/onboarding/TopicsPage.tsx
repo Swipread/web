@@ -1,9 +1,12 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { getErrorMessage } from '../../api/problem'
+import { TopBar } from '../../app/TopBar'
 import { Button } from '../../ui/Button'
 import { EmptyState } from '../../ui/EmptyState'
 import { ErrorState } from '../../ui/ErrorState'
 import { LoadingState } from '../../ui/LoadingState'
+import { topicFieldClass } from '../../ui/topicField'
 import { useMe } from '../auth/useAuth'
 import { selectionLabel } from './selectionLabel'
 import { TopicPicker } from './TopicPicker'
@@ -18,6 +21,13 @@ export function TopicsPage() {
   const navigate = useNavigate()
   const selection = useTopicSelection(me.data?.topics?.flatMap((t) => (t.id === undefined ? [] : [t.id])))
   const count = selection.selected.size
+  // The symbol's lower guillemet takes the colours of the last topic chosen, as it takes the article's on the feed.
+  const [lastChosen, setLastChosen] = useState<number | null>(null)
+  const lastSlug = topics.data?.find((topic) => topic.id === lastChosen && selection.selected.has(topic.id))?.slug
+  const toggle = (id: number) => {
+    setLastChosen(selection.selected.has(id) ? null : id)
+    selection.toggle(id)
+  }
 
   const submit = () =>
     updateTopics.mutate([...selection.selected], {
@@ -25,50 +35,61 @@ export function TopicsPage() {
     })
 
   return (
-    <main className={styles.page}>
-      <p className={styles.brand}>Swipread</p>
-      <h1 className={styles.title}>Qu'est-ce qui vous intéresse ?</h1>
-      <p className={styles.subtitle}>
-        Choisissez au moins {MIN_TOPICS} thèmes. Vous pourrez les modifier à tout moment.
-      </p>
-
-      {topics.isPending ? (
-        <LoadingState label="Chargement des thèmes…" />
-      ) : topics.isError ? (
-        <ErrorState
-          message={getErrorMessage(topics.error)}
-          onRetry={() => void topics.refetch()}
-          retrying={topics.isRefetching}
-        />
-      ) : topics.data.length === 0 ? (
-        me.data?.role === 'ADMIN' ? (
-          <EmptyState
-            title="Aucun thème disponible"
-            description="Créez les thèmes que les lecteurs choisiront à l'inscription."
-            action={<Link to="/admin/themes">Créer les thèmes</Link>}
-          />
-        ) : (
-          <EmptyState
-            title="Aucun thème disponible"
-            description="Les thèmes ne sont pas encore configurés. Revenez dans quelques instants."
-          />
-        )
-      ) : (
-        <>
-          <TopicPicker topics={topics.data} selectedIds={selection.selected} onToggle={selection.toggle} />
-          <p className={styles.count} aria-live="polite">
-            {selectionLabel(count, MIN_TOPICS)}
+    <>
+      <TopBar tone="paper" symbolLight={lastSlug ? <span className={topicFieldClass(lastSlug)} /> : undefined} />
+      <main className={styles.page}>
+        <header className={styles.header}>
+          <h1 className={styles.title}>Qu'est-ce qui vous intéresse ?</h1>
+          <p className={styles.subtitle}>
+            Choisissez au moins {MIN_TOPICS} thèmes : votre fil commence par eux, puis apprend de vos lectures. Vous
+            pourrez les modifier à tout moment dans votre profil.
           </p>
-          {updateTopics.isError && (
-            <p role="alert" className={styles.error}>
-              {getErrorMessage(updateTopics.error)}
-            </p>
-          )}
-          <Button onClick={submit} disabled={count < MIN_TOPICS} loading={updateTopics.isPending}>
-            Continuer vers mon fil
-          </Button>
-        </>
-      )}
-    </main>
+        </header>
+
+        {topics.isPending ? (
+          <LoadingState label="Chargement des thèmes…" />
+        ) : topics.isError ? (
+          <ErrorState
+            message={getErrorMessage(topics.error)}
+            onRetry={() => void topics.refetch()}
+            retrying={topics.isRefetching}
+          />
+        ) : topics.data.length === 0 ? (
+          me.data?.role === 'ADMIN' ? (
+            <EmptyState
+              title="Aucun thème disponible"
+              description="Créez les thèmes que les lecteurs choisiront à l'inscription."
+              action={<Link to="/admin/themes">Créer les thèmes</Link>}
+            />
+          ) : (
+            <EmptyState
+              title="Aucun thème disponible"
+              description="Les thèmes ne sont pas encore configurés. Revenez dans quelques instants."
+            />
+          )
+        ) : (
+          <>
+            <TopicPicker topics={topics.data} selectedIds={selection.selected} onToggle={toggle} />
+            <div className={styles.footer}>
+              <div className={styles.footerInner}>
+                <div className={styles.status}>
+                  <p className={styles.count} aria-live="polite">
+                    {selectionLabel(count, MIN_TOPICS)}
+                  </p>
+                  {updateTopics.isError && (
+                    <p role="alert" className={styles.error}>
+                      {getErrorMessage(updateTopics.error)}
+                    </p>
+                  )}
+                </div>
+                <Button onClick={submit} disabled={count < MIN_TOPICS} loading={updateTopics.isPending}>
+                  Continuer vers mon fil
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
+      </main>
+    </>
   )
 }
