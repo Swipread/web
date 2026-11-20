@@ -96,3 +96,13 @@ const count = new Intl.NumberFormat('fr')
 export function formatCount(value: number | undefined) {
   return count.format(value ?? 0)
 }
+
+const monthYear = new Intl.DateTimeFormat('fr', { month: 'long', year: 'numeric' })
+
+/** "Membre depuis octobre 2026", or null without a valid date. */
+export function formatMemberSince(iso: string | undefined) {
+  if (!iso) return null
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return null
+  return `Membre depuis ${monthYear.format(date)}`
+}
