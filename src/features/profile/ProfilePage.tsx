@@ -2,12 +2,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { ApiError, getErrorMessage } from '../../api/problem'
+import { formatMemberSince } from '../../lib/format'
 import type { Schema } from '../../api/types'
 import { Button } from '../../ui/Button'
 import { ConfirmDialog } from '../../ui/ConfirmDialog'
 import { ErrorState } from '../../ui/ErrorState'
 import { LoadingState } from '../../ui/LoadingState'
-import { PageHeader } from '../../ui/PageHeader'
 import { TextField } from '../../ui/TextField'
 import { useToast } from '../../ui/toastContext'
 import { useLogout, useMe } from '../auth/useAuth'
@@ -23,8 +23,26 @@ export function ProfilePage() {
   const me = useMe()
 
   return (
-    <>
-      <PageHeader title="Profil" subtitle="Gérez vos informations et vos centres d'intérêt" />
+    <div className={styles.page}>
+      <header className={styles.identity}>
+        <h1 className={styles.name}>
+          {me.data?.displayName ? (
+            <>
+              <span className="visually-hidden">Profil : </span>
+              {me.data.displayName}
+            </>
+          ) : (
+            'Profil'
+          )}
+        </h1>
+        {me.data && (
+          <p className={styles.account}>
+            {[me.data.email, formatMemberSince(me.data.createdAt)].filter(Boolean).map((part, i) => (
+              <span key={i}>{part}</span>
+            ))}
+          </p>
+        )}
+      </header>
       {me.isPending ? (
         <LoadingState />
       ) : me.isError ? (
@@ -38,7 +56,7 @@ export function ProfilePage() {
           <DeleteAccountSection />
         </div>
       )}
-    </>
+    </div>
   )
 }
 
@@ -76,20 +94,18 @@ function InfoSection({ me }: { me: Schema<'MeResponse'> }) {
       : updateProfile.error && getErrorMessage(updateProfile.error)
 
   return (
-    <section className={styles.section} aria-labelledby="profile-info">
-      <h2 id="profile-info" className={styles.sectionTitle}>
-        Informations
-      </h2>
+    <section className={styles.section}>
+      <h2 className={styles.sectionTitle}>Nom affiché</h2>
       <form className={styles.form} onSubmit={onSubmit} noValidate>
         <div className={styles.fields}>
           <TextField
             label="Nom affiché"
+            hideLabel
             autoComplete="nickname"
             maxLength={50}
             error={errors.displayName?.message}
             {...register('displayName')}
           />
-          <TextField label="Email (non modifiable)" value={me.email ?? ''} readOnly />
         </div>
         {formError && (
           <p role="alert" className={styles.error}>
@@ -97,7 +113,12 @@ function InfoSection({ me }: { me: Schema<'MeResponse'> }) {
           </p>
         )}
         <div>
-          <Button type="submit" disabled={!isDirty} loading={updateProfile.isPending}>
+          <Button
+            type="submit"
+            variant={isDirty ? 'primary' : 'secondary'}
+            disabled={!isDirty}
+            loading={updateProfile.isPending}
+          >
             Enregistrer
           </Button>
         </div>
@@ -139,7 +160,7 @@ function TopicsSection({ selectedIds }: { selectedIds: number[] | undefined }) {
           <TopicPicker topics={topics.data} selectedIds={selection.selected} onToggle={selection.toggle} />
           {count < MIN_TOPICS && (
             <p className={styles.hint} aria-live="polite">
-              {selectionLabel(count, MIN_TOPICS)}
+              {selectionLabel(count, MIN_TOPICS, 'interest')}
             </p>
           )}
           {updateTopics.isError && (
@@ -147,14 +168,15 @@ function TopicsSection({ selectedIds }: { selectedIds: number[] | undefined }) {
               {getErrorMessage(updateTopics.error)}
             </p>
           )}
-          <div>
+          {/* Once the choice changed, the save stays in reach at the bottom while the tiles scroll by. */}
+          <div className={selection.isDirty ? `${styles.saveBar} ${styles.pending}` : styles.saveBar}>
             <Button
-              variant="secondary"
+              variant={selection.isDirty ? 'primary' : 'secondary'}
               onClick={save}
               disabled={!selection.isDirty || count < MIN_TOPICS}
               loading={updateTopics.isPending}
             >
-              Enregistrer mes thèmes
+              Enregistrer mes centres d'intérêt
             </Button>
           </div>
         </>
@@ -252,7 +274,7 @@ function LogoutSection() {
   return (
     <section className={styles.section} aria-labelledby="profile-logout">
       <h2 id="profile-logout" className={styles.sectionTitle}>
-        Déconnexion
+        Session
       </h2>
       <p className={styles.hint}>Vos articles sauvegardés et votre historique vous attendront à votre retour.</p>
       <div>
@@ -276,14 +298,14 @@ function DeleteAccountSection() {
   return (
     <section className={styles.section} aria-labelledby="profile-delete">
       <h2 id="profile-delete" className={styles.sectionTitle}>
-        Supprimer mon compte
+        Zone sensible
       </h2>
       <p className={styles.hint}>
-        Votre compte, vos thèmes et votre historique seront définitivement effacés. Une confirmation vous sera
-        demandée.
+        Votre compte, vos centres d'intérêt, vos articles sauvegardés, vos j'aime et votre historique seront
+        définitivement effacés. Une confirmation vous sera demandée.
       </p>
       <div>
-        <Button variant="secondary" onClick={() => setConfirming(true)}>
+        <Button variant="danger" onClick={() => setConfirming(true)}>
           Supprimer mon compte
         </Button>
       </div>
@@ -298,8 +320,8 @@ function DeleteAccountSection() {
         onCancel={close}
       >
         <p>
-          Votre compte, vos centres d'intérêt, vos articles sauvegardés, vos j'aime et votre historique seront
-          effacés. Cette action est irréversible.
+          Votre compte, vos centres d'intérêt, vos articles sauvegardés, vos j'aime et votre historique seront effacés.
+          Cette action est irréversible.
         </p>
       </ConfirmDialog>
     </section>
