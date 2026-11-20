@@ -1,0 +1,36 @@
+/* The ambiance of an article without an image: its topic's two colours (tokens.css --topic-<slug>). */
+.environment {
+  background: linear-gradient(160deg, var(--topic-environment));
+}
+
+.science {
+  background: linear-gradient(160deg, var(--topic-science));
+}
+
+.culture {
+  background: linear-gradient(160deg, var(--topic-culture));
+}
+
+.politics {
+  background: linear-gradient(160deg, var(--topic-politics));
+}
+
+.economy {
+  background: linear-gradient(160deg, var(--topic-economy));
+}
+
+.tech {
+  background: linear-gradient(160deg, var(--topic-tech));
+}
+
+.sport {
+  background: linear-gradient(160deg, var(--topic-sport));
+}
+
+.health {
+  background: linear-gradient(160deg, var(--topic-health));
+}
+
+.default {
+  background: linear-gradient(160deg, var(--topic-default));
+}

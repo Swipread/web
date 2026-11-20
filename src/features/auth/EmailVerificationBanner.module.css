@@ -24,3 +24,8 @@
   display: flex;
   gap: var(--space-2);
 }
+
+/* Above the immersive feed, which has no page padding of its own. */
+:global(main[data-immersive]) .wrapper {
+  padding: var(--space-3) var(--space-4);
+}
