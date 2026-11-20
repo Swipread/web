@@ -28,12 +28,14 @@ describe('admin access', () => {
     const { user } = renderRoutes(routes, { path: '/profil' })
     const nav = await screen.findByRole('navigation', { name: 'Navigation principale' })
 
-    await user.click(await within(nav).findByRole('link', { name: 'Thèmes' }))
-    expect(await screen.findByRole('heading', { level: 1, name: 'Thèmes' })).toBeInTheDocument()
+    await user.click(await within(nav).findByRole('link', { name: 'Admin' }))
+    expect(await screen.findByRole('heading', { level: 1, name: "Sources d'articles" })).toBeInTheDocument()
     expect(within(nav).getByRole('link', { name: 'Admin' })).toHaveAttribute('aria-current', 'page')
 
-    // Mobile tabs between the admin pages.
+    // Tabs between the admin pages.
     const adminTabs = screen.getByRole('navigation', { name: "Pages d'administration" })
+    await user.click(within(adminTabs).getByRole('link', { name: 'Thèmes' }))
+    expect(await screen.findByRole('heading', { level: 1, name: 'Thèmes' })).toBeInTheDocument()
     await user.click(within(adminTabs).getByRole('link', { name: 'Sources' }))
     expect(await screen.findByRole('heading', { level: 1, name: "Sources d'articles" })).toBeInTheDocument()
   })

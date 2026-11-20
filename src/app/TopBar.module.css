@@ -1,0 +1,55 @@
+.bar {
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: var(--feed-topbar-height);
+  padding: 0 var(--space-5);
+}
+
+/* Over the feed's field: no ground of its own, the article's light shows through. */
+.ambient {
+  position: absolute;
+  inset: 0 0 auto;
+  color: var(--ambient-ink);
+  pointer-events: none;
+}
+
+.paper {
+  position: sticky;
+  top: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  /* A hairline appears once the page scrolls under the bar (where scroll timelines exist; none otherwise). */
+  animation: scroll-edge linear both;
+  animation-timeline: scroll(root);
+  animation-range: 0 1px;
+}
+
+@keyframes scroll-edge {
+  to {
+    box-shadow: 0 1px 0 var(--color-border);
+  }
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-heavy);
+  letter-spacing: -0.03em;
+}
+
+.trailing {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-left: auto;
+}
+
+@media (min-width: 769px) {
+  .bar {
+    padding: 0 var(--space-6);
+  }
+}
