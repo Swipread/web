@@ -9,6 +9,7 @@ import { routes } from './app/routes'
 import { createUnauthorizedHandler } from './app/unauthorized'
 import { startTracking } from './features/tracking/tracker'
 import { ToastProvider } from './ui/ToastProvider'
+import '@fontsource-variable/schibsted-grotesk'
 import './ui/global.css'
 
 const router = createBrowserRouter(routes)
