@@ -1,10 +1,16 @@
 .region {
   position: fixed;
-  bottom: var(--space-6);
+  /* Under the top bar: the bottom of the screen holds the tab bar and, on the feed, the actions and reading pill. */
+  top: calc(var(--feed-topbar-height) + var(--space-2));
   left: 50%;
   z-index: 100;
   transform: translateX(-50%);
   pointer-events: none;
+}
+
+/* On the feed, sit wholly on the photo (inside its top edge), not across it. */
+:global(body:has(main[data-immersive])) .region {
+  top: calc(var(--feed-topbar-height) + var(--space-3) + var(--space-4));
 }
 
 .toast {
@@ -21,12 +27,6 @@
 @keyframes enter {
   from {
     opacity: 0;
-    transform: translateY(8px);
-  }
-}
-
-@media (max-width: 768px) {
-  .region {
-    bottom: calc(var(--tabbar-height) + var(--space-4));
+    transform: translateY(-8px);
   }
 }
