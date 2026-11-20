@@ -4,12 +4,14 @@
   gap: var(--space-4);
 }
 
+/* Messages are tinted grounds of their own colour, never the input's fill, so they cannot pass for a field. */
 .formError {
   padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-sm);
-  background: var(--color-fill);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg));
   color: var(--color-danger);
   font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
 }
 
 .submit {
@@ -24,15 +26,17 @@
 
 .switch a {
   color: var(--color-text);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
+  text-underline-offset: 0.2em;
 }
 
 .notice {
   padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-sm);
-  background: var(--color-fill);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-ink) 6%, var(--color-bg));
   color: var(--color-text);
   font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
 }
 
 .hint {
@@ -44,8 +48,34 @@
   align-self: flex-start;
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
+  text-underline-offset: 0.2em;
 }
 
 .forgot:hover {
   color: var(--color-text);
+}
+
+/* A screen whose only next step is a link: the same solid ink pill as a primary button. */
+.primaryLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-pill);
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.primaryLink:hover {
+  opacity: 0.88;
+}
+
+.primaryLink:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
 }

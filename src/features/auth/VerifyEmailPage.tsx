@@ -35,7 +35,7 @@ export function VerifyEmailPage() {
   if (invalid) {
     return (
       <AuthLayout
-        title="Ce lien n’est plus valable"
+        title="Ce lien n'est plus valable"
         subtitle="Il a peut-être déjà servi, expiré après 24 heures, ou été remplacé par un lien plus récent."
       >
         <InvalidLinkActions />
@@ -59,9 +59,9 @@ export function VerifyEmailPage() {
 function ContinueLink() {
   const signedIn = useSession() !== null
   return (
-    <p className={styles.switch}>
-      <Link to={signedIn ? '/' : '/connexion'}>{signedIn ? 'Continuer vers Swipread' : 'Se connecter'}</Link>
-    </p>
+    <Link to={signedIn ? '/' : '/connexion'} className={styles.primaryLink}>
+      {signedIn ? 'Continuer vers Swipread' : 'Se connecter'}
+    </Link>
   )
 }
 
