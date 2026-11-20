@@ -4,13 +4,17 @@ Account details, topics, password, logout and account deletion. Code: `src/featu
 
 ## Screen
 
-`/profil` → `ProfilePage`, five sections:
+`/profil` → `ProfilePage`: one centred 48rem column, no boxes; sections are separated by space and a heading.
 
-1. **Informations**: « Nom affiché » (editable) and « Email (non modifiable) » (read-only). « Enregistrer » is enabled only when the name changed.
-2. **Centres d'intérêt**: the onboarding `TopicPicker` tiles, with the same three-topic rule and « Enregistrer mes thèmes ».
-3. **Mot de passe**: current password, new password and its confirmation, « Changer le mot de passe ».
-4. **Déconnexion**: « Se déconnecter » (`useLogout`, see [auth](auth.md#end-of-session)).
-5. **Supprimer mon compte**: an explanation and a button that opens a confirmation dialog.
+- **Header**: the display name as the page title (`h1`, « Profil : » kept for screen readers), then the email and « Membre depuis octobre 2026 » (`formatMemberSince(createdAt)`). The email is shown, not edited: there is no read-only field any more.
+
+Then five sections:
+
+1. **Nom affiché**: the editable name (its label is the section heading for sighted readers, kept on the field for assistive tech). « Enregistrer » is enabled only when the name changed.
+2. **Centres d'intérêt**: the onboarding `TopicPicker` tiles, with the same three-topic rule and « Enregistrer mes centres d'intérêt », which becomes an ink pill on a paper band pinned above the tab bar once the choice changed. « Enregistrer » (name) likewise turns primary only when the name changed.
+3. **Mot de passe**: current password, new password and its confirmation, one per line, « Changer le mot de passe ».
+4. **Session**: « Se déconnecter » (`useLogout`, see [auth](auth.md#end-of-session)).
+5. **Zone sensible**: an explanation and the danger button « Supprimer mon compte », which opens a confirmation dialog.
 
 The page waits for the profile (`useMe`); while it loads or fails it shows the usual loading and error states.
 
