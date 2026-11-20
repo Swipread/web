@@ -47,6 +47,9 @@ Client-side validation usually catches these first; the mapping is the safety ne
 | Admin, topics | 400 on the label | Le nom doit contenir au moins une lettre ou un chiffre. |
 | Admin, topics | 404 on rename | Ce thème n'existe plus. Rechargez la page. |
 | Share | Nothing worked | Impossible de partager ce lien. (toast) |
+| Confirmation banner | 202 / 429 / other on « Renvoyer le lien » | Nouveau lien envoyé à <email> / Un lien vient d’être envoyé. Réessayez dans une minute. / Le lien n’a pas pu être envoyé. Réessayez plus tard. (toasts) |
+| `/verifier-email` | 400 or no token | Ce lien n’est plus valable |
+| Profile, password | `WrongPassword` / `SamePassword` | Mot de passe incorrect. / Choisissez un mot de passe différent de l'actuel. (on the field) |
 
 ## Form validation (Zod schemas)
 

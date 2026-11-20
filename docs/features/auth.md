@@ -1,6 +1,6 @@
 # Authentication
 
-Sign-up, login, session lifecycle and logout. Code: `src/features/auth/`, `src/lib/session.ts`, `src/api/refresh.ts`, `src/app/guards.tsx`.
+Sign-up, login, email address confirmation, session lifecycle and logout. Code: `src/features/auth/`, `src/lib/session.ts`, `src/api/refresh.ts`, `src/app/guards.tsx`.
 
 ## Screens
 
@@ -8,6 +8,7 @@ Sign-up, login, session lifecycle and logout. Code: `src/features/auth/`, `src/l
 | --- | --- | --- |
 | `/connexion` | `LoginPage` | Email, password, « Se connecter », link to sign-up |
 | `/inscription` | `RegisterPage` | Display name, email, password, « Créer mon compte », link to login |
+| `/verifier-email?token=…` | `VerifyEmailPage` | Target of the link sent by mail; public, with or without a session |
 
 Both pages render inside `AuthLayout`: a presentation panel (brand, tagline, decorative card stack) next to the form. Under 900 px the panel moves above the form.
 
@@ -21,6 +22,8 @@ Both routes sit behind `RedirectIfAuthenticated`: a reader who already has a ses
 | `useMe()` | Query `['me']`, `staleTime` 5 min | `GET /v1/me`: profile, role and chosen topics |
 | `useLogin()` | Mutation | `POST /v1/auth/login`, then `session.save(token)` |
 | `useRegister()` | Mutation | `POST /v1/auth/register` with the browser locale when it matches `xx-XX`, then `session.save(token)` |
+| `useVerifyEmail()` | Mutation | `POST /v1/auth/email/verify` with the link's token (no `Authorization`), then invalidates `['me']` |
+| `useResendVerification()` | Mutation | `POST /v1/me/verification-email` |
 | `useLogout()` | Callback | Flushes events, calls `POST /v1/auth/logout`, clears session and cache, goes to `/connexion` |
 
 ## Login
@@ -46,6 +49,24 @@ Validated with `registerSchema`:
 
 Server errors are mapped back onto the form: 409 → « Cet email est déjà utilisé. » on the email field, 400 → a French message per field from `errors[].code`. Anything else is shown above the form. A new account always lands on the topic picker.
 
+## Email address confirmation
+
+Sign-up sends a mail with a link to `/verifier-email?token=…`, valid 24 hours. The account works at once; `GET /v1/me` says `emailVerified`.
+
+**Banner.** `EmailVerificationBanner`, at the top of every page of `AppLayout`, shows while `emailVerified` is `false`: « Confirmez votre adresse : un lien a été envoyé à <email>. », with « Renvoyer le lien » and « Plus tard ».
+
+- « Renvoyer le lien »: toast « Nouveau lien envoyé à <email> »; on 429 (a link less than a minute old, or five today) « Un lien vient d’être envoyé. Réessayez dans une minute. »; on 409 (already confirmed, in another tab) the profile is reloaded and the banner goes.
+- « Plus tard » hides it until the tab is closed (`sessionStorage`, key `swipread.verifyBanner.dismissed`).
+- Its height is published as the CSS variable `--notice-height`, which the feed takes off its full-screen height, so the card still fits the viewport.
+
+**Page `/verifier-email`.** On load it sends the token once (a ref guards against StrictMode's double effect: a token works only once).
+
+| Outcome | Shown |
+| --- | --- |
+| 204 | « Adresse confirmée », then « Continuer vers Swipread » (`/`) or « Se connecter » without a session |
+| 400, or no token | « Ce lien n’est plus valable » (used, expired after 24 h, or replaced by a newer one). With a session: « Recevoir un nouveau lien »; without: a link to log in |
+| Other error | The status message and « Réessayer » |
+
 ## Session
 
 `src/lib/session.ts` stores `{ accessToken, userId, expiresAt }` under `localStorage['swipread.session']` (in memory if storage is unavailable). It is a small external store:
@@ -67,4 +88,4 @@ A session ends when:
 
 ## Tests
 
-`features/auth/auth.test.tsx` (client-side validation, generic message on wrong credentials, return to the requested page, password length, email already used, server field errors, new reader sent to onboarding, guards, logout revoking the refresh token), `lib/session.test.ts`, `api/client.test.ts` (token renewal), `app/unauthorized.test.ts`.
+`features/auth/auth.test.tsx` (client-side validation, generic message on wrong credentials, return to the requested page, password length, email already used, server field errors, new reader sent to onboarding, guards, logout revoking the refresh token), `features/auth/emailVerification.test.tsx` (banner hidden once confirmed, shown and resending, 429 message, « Plus tard » and `--notice-height`; page confirming without a session and without `Authorization`, refreshing the profile with one, invalid link with a new one offered, no token), `lib/session.test.ts`, `api/client.test.ts` (token renewal), `app/unauthorized.test.ts`.

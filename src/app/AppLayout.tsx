@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router'
+import { EmailVerificationBanner } from '../features/auth/EmailVerificationBanner'
 import { useLogout, useMe } from '../features/auth/useAuth'
 import { Sidebar } from './Sidebar'
 import styles from './AppLayout.module.css'
@@ -10,6 +11,7 @@ export function AppLayout() {
     <div className={styles.layout}>
       <Sidebar showAdmin={isAdmin} onLogout={logout} />
       <main className={styles.main}>
+        <EmailVerificationBanner />
         <Outlet />
       </main>
     </div>

@@ -14,7 +14,13 @@ export function setUnauthorizedHandler(handler: () => void) {
 }
 
 // Endpoints that take no access token: there a 401 means wrong credentials, not an expired session.
-const PUBLIC_AUTH_PATHS = new Set(['/v1/auth/register', '/v1/auth/login', '/v1/auth/refresh', '/v1/auth/logout'])
+const PUBLIC_AUTH_PATHS = new Set([
+  '/v1/auth/register',
+  '/v1/auth/login',
+  '/v1/auth/refresh',
+  '/v1/auth/logout',
+  '/v1/auth/email/verify',
+])
 
 function isPublicAuthEndpoint(url: string) {
   return PUBLIC_AUTH_PATHS.has(new URL(url).pathname)

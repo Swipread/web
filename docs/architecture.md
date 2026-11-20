@@ -42,6 +42,7 @@ Routes use React Router in data mode (`createBrowserRouter`). Paths are in Frenc
 | Path | Page | Guards |
 | --- | --- | --- |
 | `/connexion`, `/inscription` | Login, sign-up | `RedirectIfAuthenticated` |
+| `/verifier-email` | Email confirmation (link sent by mail) | none: with or without a session |
 | `/centres-interet` | Topic picker | `RequireAuth` |
 | `/` | Feed (« Pour vous ») | `RequireAuth`, `RequireOnboarding` |
 | `/sauvegardes`, `/historique`, `/profil` | Saved, history, profile | `RequireAuth`, `RequireOnboarding` |

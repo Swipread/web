@@ -42,6 +42,20 @@ export function useRegister() {
   })
 }
 
+/** Confirms the email address with the token of the link sent by mail. Works with or without a session. */
+export function useVerifyEmail() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (token: string) => unwrap(api.POST('/v1/auth/email/verify', { body: { token } })),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: meQueryKey }),
+  })
+}
+
+/** Sends a new confirmation link; the previous ones stop working. */
+export function useResendVerification() {
+  return useMutation({ mutationFn: () => unwrap(api.POST('/v1/me/verification-email')) })
+}
+
 export function useLogout() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()

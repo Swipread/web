@@ -15,6 +15,7 @@ export const me: Schema<'MeResponse'> = {
   locale: 'fr-FR',
   createdAt: '2026-10-01T08:00:00Z',
   role: 'READER',
+  emailVerified: true,
   topics: topics.slice(0, 3),
 }
 

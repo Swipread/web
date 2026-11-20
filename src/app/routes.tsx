@@ -4,6 +4,7 @@ import { AdminTopicsPage } from '../features/admin/AdminTopicsPage'
 import { SourcesPage } from '../features/admin/SourcesPage'
 import { LoginPage } from '../features/auth/LoginPage'
 import { RegisterPage } from '../features/auth/RegisterPage'
+import { VerifyEmailPage } from '../features/auth/VerifyEmailPage'
 import { FeedPage } from '../features/feed/FeedPage'
 import { HistoryPage } from '../features/history/HistoryPage'
 import { TopicsPage } from '../features/onboarding/TopicsPage'
@@ -55,5 +56,7 @@ export const routes: RouteObject[] = [
       },
     ],
   },
+  // Link sent by mail: with or without a session.
+  { path: '/verifier-email', element: <VerifyEmailPage /> },
   { path: '*', element: <NotFoundPage /> },
 ]

@@ -21,7 +21,7 @@ Developer documentation for the web frontend. Start with [Getting started](getti
 
 | Feature | Screens |
 | --- | --- |
-| [Authentication](features/auth.md) | `/connexion`, `/inscription`, session and logout |
+| [Authentication](features/auth.md) | `/connexion`, `/inscription`, email confirmation (`/verifier-email`, banner), session and logout |
 | [Onboarding](features/onboarding.md) | `/centres-interet` |
 | [Feed](features/feed.md) | `/` (« Pour vous ») |
 | [Tracking](features/tracking.md) | Events sent from every screen |

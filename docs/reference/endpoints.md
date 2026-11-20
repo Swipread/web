@@ -9,7 +9,9 @@ Every API endpoint the frontend calls, and where. Request and response shapes ar
 | POST | `/v1/auth/refresh` | cookie | `refreshSession` (`src/api/refresh.ts`) | Plain `fetch` with `credentials: 'include'`, outside the typed client to avoid recursion |
 | POST | `/v1/auth/logout` | cookie | `useLogout` | Not awaited |
 | PUT | `/v1/auth/password` | bearer + cookie | `useChangePassword` | Signs out the other devices; field errors `WrongPassword`, `SamePassword` |
-| GET | `/v1/me` | bearer | `useMe` | Profile, role, topics |
+| POST | `/v1/auth/email/verify` | — | `useVerifyEmail` | Token of the mailed link; public, no `Authorization` |
+| POST | `/v1/me/verification-email` | bearer | `useResendVerification` | 202; 409 already confirmed, 429 too soon |
+| GET | `/v1/me` | bearer | `useMe` | Profile, role, `emailVerified`, topics |
 | PATCH | `/v1/me` | bearer | `useUpdateProfile` | `{ displayName }` |
 | DELETE | `/v1/me` | bearer | `useDeleteAccount` | 204 |
 | GET | `/v1/topics` | bearer | `useTopics` | |

@@ -41,6 +41,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/me/verification-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a new link to confirm the email address
+         * @description Previous links stop working. At most one per minute and five per day.
+         */
+        post: operations["resendVerification"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/events": {
         parameters: {
             query?: never;
@@ -69,7 +89,7 @@ export interface paths {
         put?: never;
         /**
          * Create an account and return an access token
-         * @description Also sets the refresh token cookie (`swipread_refresh`, HttpOnly, path /v1/auth).
+         * @description Also sets the refresh token cookie (`swipread_refresh`, HttpOnly, path /v1/auth), and sends a mail with a link to confirm the address (valid 24 hours).
          */
         post: operations["register"];
         delete?: never;
@@ -132,6 +152,26 @@ export interface paths {
          * @description Also sets the refresh token cookie (`swipread_refresh`, HttpOnly, path /v1/auth).
          */
         post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/email/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm the email address with the link sent by mail
+         * @description `token` is the `token` parameter of the link. Public: the link may be opened on another device or after logging out. The token works once and for 24 hours; a newer link replaces it.
+         */
+        post: operations["verifyEmail"];
         delete?: never;
         options?: never;
         head?: never;
@@ -362,6 +402,9 @@ export interface components {
             email: string;
             password: string;
         };
+        VerifyEmailRequest: {
+            token: string;
+        };
         TopicLabelRequest: {
             label: string;
         };
@@ -426,6 +469,8 @@ export interface components {
              * @enum {string}
              */
             role?: "READER" | "ADMIN";
+            /** @description The reader clicked the link sent to their email address */
+            emailVerified?: boolean;
             topics?: components["schemas"]["TopicResponse"][];
         };
         UpdateSourceRequest: {
@@ -611,6 +656,51 @@ export interface operations {
             };
             /** @description Missing or invalid access token */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    resendVerification: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Mail queued */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid access token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Email address already verified */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description A link was sent less than a minute ago, or five today */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -808,6 +898,37 @@ export interface operations {
             };
             /** @description Invalid email or password */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    verifyEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyEmailRequest"];
+            };
+        };
+        responses: {
+            /** @description Address confirmed (also if it already was) */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown, used, replaced or expired link */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
