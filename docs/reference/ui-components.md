@@ -31,6 +31,7 @@ Round icon button, used for the feed actions and row actions.
 | `showLabel` | `boolean` | `false` | |
 | `pressed` | `boolean` | | Sets `aria-pressed`: use it for toggles |
 | `tone` | `'default' \| 'like'` | `'default'` | `like` colours the pressed state |
+| `size` | `'md' \| 'sm'` | `'md'` | `sm`: a 40px circle, for list rows |
 | `variant` | `'default' \| 'ambient'` | `'default'` | `ambient`: larger translucent circle for the feed's ambient field (`--ambient-*`); pressed turns to ink |
 
 ## BrandSymbol
@@ -113,16 +114,21 @@ Every screen uses the three states: see [Contributing](../contributing.md#conven
 
 ## ArticleRow
 
-One article in a list (saved, history): thumbnail, meta, title linking to the source in a new tab, caption, actions.
+One article in a list (saved, history): 16:9 thumbnail, meta, title, then the caption and the actions on one line. The title's link stretches over the whole row (it opens the source in a new tab); the actions sit above it, and keyboard focus on the link rings the row.
 
 | Prop | Notes |
 | --- | --- |
-| `title`, `url`, `imageUrl` | The image falls back to an empty thumbnail if it fails to load |
-| `meta` | Strings joined by a dot, e.g. `['Le Journal Tech', '6 min de lecture']` |
-| `caption` | e.g. « Sauvegardé hier » |
-| `actions` | Buttons on the right |
+| `title`, `url`, `imageUrl` | Without an image, or when it fails to load, the thumbnail takes the topic's gradient |
+| `topicSlug` | First topic's slug, for that gradient (`src/ui/topicField.ts`, shared with the feed) |
+| `meta` | What the article is, joined by a dot, e.g. `['Le Journal Tech', 'Sciences']`; empty parts are dropped |
+| `caption` | When it happened and how long it reads, e.g. `['Sauvegardé hier', <ReadingTime … />]` |
+| `actions` | Round icon buttons (`size="sm"`), right of the caption |
 | `onOpen` | Called when the title link is followed (to record `open`) |
 | `headingLevel` | `2` (default) or `3` when rows sit under section headings |
+
+## ReadingTime
+
+`<ReadingTime wordCount={…} fromSummary={…} />` shows « 4 min » and keeps « de lecture » for screen readers; it renders nothing when the length is unknown or comes from the summary. Used by the feed card and the list rows; check `formatReadingTime(…)` first when it sits in a list joined by dots.
 
 ## Toasts
 
