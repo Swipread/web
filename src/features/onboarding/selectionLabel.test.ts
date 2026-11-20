@@ -11,3 +11,13 @@ describe('selectionLabel', () => {
     expect(selectionLabel(count, 3)).toBe(label)
   })
 })
+
+describe('selectionLabel with the profile noun', () => {
+  it.each([
+    [0, "Aucun centre d'intérêt sélectionné · encore 3 à choisir"],
+    [1, "1 centre d'intérêt sélectionné · encore 2 à choisir"],
+    [2, "2 centres d'intérêt sélectionnés · encore 1 à choisir"],
+  ])('%i → %s', (count, label) => {
+    expect(selectionLabel(count, 3, 'interest')).toBe(label)
+  })
+})
