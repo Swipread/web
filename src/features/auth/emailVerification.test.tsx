@@ -55,7 +55,7 @@ describe('email verification banner', () => {
     const { user } = renderRoutes(routes, { path: '/profil' })
 
     await user.click(await screen.findByRole('button', { name: 'Renvoyer le lien' }))
-    expect(await screen.findByText('Un lien vient d’être envoyé. Réessayez dans une minute.')).toBeInTheDocument()
+    expect(await screen.findByText("Un lien vient d'être envoyé. Réessayez dans une minute.")).toBeInTheDocument()
   })
 
   it('hides until the tab is closed with « Plus tard »', async () => {
@@ -107,7 +107,7 @@ describe('verify email page', () => {
     )
     const { user } = renderRoutes(routes, { path: '/verifier-email?token=old' })
 
-    expect(await screen.findByRole('heading', { name: 'Ce lien n’est plus valable' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: "Ce lien n'est plus valable" })).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Recevoir un nouveau lien' }))
     expect(await screen.findByRole('button', { name: 'Lien envoyé' })).toBeDisabled()
     expect(resent).toBe(1)
@@ -116,7 +116,7 @@ describe('verify email page', () => {
   it('asks a signed-out reader to log in for a new link, and needs a token', async () => {
     renderRoutes(routes, { path: '/verifier-email' })
 
-    expect(await screen.findByRole('heading', { name: 'Ce lien n’est plus valable' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: "Ce lien n'est plus valable" })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Se connecter' })).toHaveAttribute('href', '/connexion')
   })
 })

@@ -134,7 +134,7 @@ describe('reset password page', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: 'Ce lien n’est plus valable',
+        name: "Ce lien n'est plus valable",
       }),
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Recevoir un nouveau lien' })).toHaveAttribute(
@@ -173,6 +173,6 @@ describe('reset password page', () => {
 
   it('needs a token', () => {
     renderRoutes(routes, { path: '/reinitialiser-mot-de-passe' })
-    expect(screen.getByRole('heading', { name: 'Ce lien n’est plus valable' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: "Ce lien n'est plus valable" })).toBeInTheDocument()
   })
 })

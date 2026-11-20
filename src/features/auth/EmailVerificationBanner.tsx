@@ -59,9 +59,9 @@ export function EmailVerificationBanner() {
         if (error instanceof ApiError && error.status === 409) {
           void me.refetch()
         } else if (error instanceof ApiError && error.status === 429) {
-          toast.show('Un lien vient d’être envoyé. Réessayez dans une minute.')
+          toast.show("Un lien vient d'être envoyé. Réessayez dans une minute.")
         } else {
-          toast.show('Le lien n’a pas pu être envoyé. Réessayez plus tard.')
+          toast.show("Le lien n'a pas pu être envoyé. Réessayez plus tard.")
         }
       },
     })
