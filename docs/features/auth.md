@@ -12,7 +12,7 @@ Sign-up, login, email address confirmation, session lifecycle and logout. Code: 
 | `/mot-de-passe-oublie` | `ForgotPasswordPage` | Email, « Recevoir le lien »; public |
 | `/reinitialiser-mot-de-passe?token=…` | `ResetPasswordPage` | New password and confirmation; target of the link sent by mail; public |
 
-Both pages render inside `AuthLayout`: a presentation panel (brand, tagline, decorative card stack) next to the form. Under 900 px the panel moves above the form.
+Both pages render inside `AuthLayout`, as do the email confirmation and password reset pages: a presentation panel next to the form. The panel shows the « Ambiance » idea before any article exists: the eight topics' gradients take turns (6 s each, 2 s crossfades, a pure CSS animation already on its first light when the page opens, still under `prefers-reduced-motion`) under `--tile-veil`, with the symbol, « Swipread » and the tagline in `--tile-ink`. Under 900 px the panel becomes a band above the form. Fields are filled (`TextField`), the submit is the ink `Button`.
 
 Both routes sit behind `RedirectIfAuthenticated`: a reader who already has a session is sent to the `redirect` query parameter or to the feed.
 
