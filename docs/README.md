@@ -37,6 +37,7 @@ Developer documentation for the web frontend. Start with [Getting started](getti
 | --- | --- |
 | [UI components](reference/ui-components.md) | Props and usage of every shared component |
 | [Hooks and cache](reference/hooks-and-cache.md) | Query keys, which action updates which cache, client-side storage |
+| [Art direction](design.md) | Identity, symbol, typography, the « Ambiance » feed, contrast guarantees, motion |
 | [Design tokens](reference/design-tokens.md) | Colours (light and dark), typography, spacing, layout, motion, breakpoints |
 | [Messages](reference/messages.md) | Every user-facing error, validation, toast and empty-state text |
 | [Endpoints](reference/endpoints.md) | Every API endpoint the app calls, and from where |
