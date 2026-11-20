@@ -7,7 +7,7 @@ Account details, topics, password, logout and account deletion. Code: `src/featu
 `/profil` → `ProfilePage`, five sections:
 
 1. **Informations**: « Nom affiché » (editable) and « Email (non modifiable) » (read-only). « Enregistrer » is enabled only when the name changed.
-2. **Centres d'intérêt**: the onboarding `TopicPicker`, aligned left, with the same three-topic rule and « Enregistrer mes thèmes ».
+2. **Centres d'intérêt**: the onboarding `TopicPicker` tiles, with the same three-topic rule and « Enregistrer mes thèmes ».
 3. **Mot de passe**: current password, new password and its confirmation, « Changer le mot de passe ».
 4. **Déconnexion**: « Se déconnecter » (`useLogout`, see [auth](auth.md#end-of-session)).
 5. **Supprimer mon compte**: an explanation and a button that opens a confirmation dialog.
