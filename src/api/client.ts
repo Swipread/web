@@ -18,6 +18,16 @@ function isAuthEndpoint(url: string) {
   return new URL(url).pathname.startsWith('/v1/auth/')
 }
 
+// The role travels in the access token: after a promotion, admin endpoints answer 403 until the token is renewed,
+// and the renewal reads the role from the database again.
+function isAdminEndpoint(url: string) {
+  return new URL(url).pathname.startsWith('/v1/admin/')
+}
+
+function worthRenewing(request: Request, response: Response) {
+  return response.status === 401 || (response.status === 403 && isAdminEndpoint(request.url))
+}
+
 const authMiddleware: Middleware = {
   async onRequest({ request }) {
     if (isAuthEndpoint(request.url) || !session.get()) return request
@@ -38,15 +48,16 @@ const authMiddleware: Middleware = {
 }
 
 /**
- * Sends the refresh token cookie to /v1/auth, and on a 401 elsewhere renews the access token once and replays
- * the request. If the refresh is refused, the 401 goes through and the middleware ends the session.
+ * Sends the refresh token cookie to /v1/auth, and on a 401 elsewhere (or a 403 from an admin endpoint, whose token
+ * may carry a role changed since) renews the access token once and replays the request. If the refresh is refused,
+ * the first response goes through: a 401 then ends the session in the middleware, a 403 stays a 403.
  */
 async function fetchWithRefresh(request: Request): Promise<Response> {
   // Resolve fetch at call time so test interceptors and polyfills are picked up.
   if (isAuthEndpoint(request.url)) return globalThis.fetch(new Request(request, { credentials: 'include' }))
   const replay = request.clone()
   const response = await globalThis.fetch(request)
-  if (response.status !== 401 || !session.get()) return response
+  if (!worthRenewing(request, response) || !session.get()) return response
   // A network failure while renewing propagates as a network error: the session is kept.
   const renewed = await refreshSession()
   const current = session.get()

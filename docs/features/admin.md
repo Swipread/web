@@ -8,7 +8,7 @@ On a fresh install there is no topic, so the first admin cannot finish onboardin
 
 - `RequireAdmin` reads `role` from the cached profile (`GET /v1/me`); readers are sent back to the feed. `/admin` redirects to `/admin/sources`.
 - The sidebar shows an « Administration » group (Sources, Thèmes) to admins only. On mobile, one « Admin » tab opens the section and `AdminLayout` shows segmented tabs to switch pages.
-- The API is the real gate: `/v1/admin/**` answers 403 to readers. The role is carried by the access token, so a promotion or demotion takes effect at the next token renewal (at most 15 minutes). A 403 shows « Vous n'avez pas accès à cette page. ».
+- The API is the real gate: `/v1/admin/**` answers 403 to readers. The role is carried by the access token, and a renewal reads it from the database again. So on a 403 from `/v1/admin/**` the client renews the token once and replays the request: a reader promoted while logged in reaches the administration at once, without logging in again. If the replay still gets a 403 (demoted admin), the page shows « Vous n'avez pas accès à cette page. ».
 
 ## Sources (`/admin/sources`)
 

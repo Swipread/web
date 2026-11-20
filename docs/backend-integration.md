@@ -65,6 +65,7 @@ sequenceDiagram
 - **Refresh token.** It lives in the `swipread_refresh` cookie (HttpOnly, `SameSite=Strict`, path `/v1/auth`). JavaScript never sees it; the browser sends it to `/v1/auth/refresh` and `/v1/auth/logout`.
 - **Renewal** (`src/api/refresh.ts`):
   - on a 401 from any other endpoint, the client renews once and replays the request, body included;
+  - on a 403 from `/v1/admin/**` too, since the token may carry a role changed since it was issued (the renewal reads it again); a 403 elsewhere is final;
   - before sending, it renews if the token expires within 60 seconds, and a timer checks every 30 seconds while the tab is visible, so the last events sent when the tab closes carry a valid token;
   - only one renewal runs at a time: concurrent requests share it, and other tabs wait on a Web Lock and reuse the token the first tab obtained (each renewal rotates the cookie);
   - a network failure during renewal surfaces as a network error and keeps the session; a 401 from `/v1/auth/refresh` ends it.

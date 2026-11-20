@@ -65,6 +65,60 @@ describe('api client', () => {
       expect(onUnauthorized).not.toHaveBeenCalled()
     })
 
+    it('renews the token once on a 403 from an admin endpoint, as the role may have changed since', async () => {
+      session.save({ accessToken: 'jwt-old', userId: 'u_1', expiresIn: 900 })
+      const seen: (string | null)[] = []
+      server.use(
+        http.post(apiUrl('/v1/auth/refresh'), () => HttpResponse.json(renewed)),
+        http.get(apiUrl('/v1/admin/sources'), ({ request }) => {
+          seen.push(request.headers.get('Authorization'))
+          return request.headers.get('Authorization') === 'Bearer jwt-new'
+            ? HttpResponse.json([])
+            : new HttpResponse(null, { status: 403 })
+        }),
+      )
+
+      await unwrap(api.GET('/v1/admin/sources'))
+
+      expect(seen).toEqual(['Bearer jwt-old', 'Bearer jwt-new'])
+      expect(session.get()?.accessToken).toBe('jwt-new')
+    })
+
+    it('keeps the 403 and the session when the renewed token is still refused', async () => {
+      session.save({ accessToken: 'jwt-old', userId: 'u_1', expiresIn: 900 })
+      let refreshes = 0
+      let calls = 0
+      server.use(
+        http.post(apiUrl('/v1/auth/refresh'), () => {
+          refreshes += 1
+          return HttpResponse.json(renewed)
+        }),
+        http.get(apiUrl('/v1/admin/sources'), () => {
+          calls += 1
+          return new HttpResponse(null, { status: 403 })
+        }),
+      )
+
+      await expect(unwrap(api.GET('/v1/admin/sources'))).rejects.toMatchObject({ status: 403 })
+      expect([refreshes, calls]).toEqual([1, 2])
+      expect(session.get()?.accessToken).toBe('jwt-new')
+    })
+
+    it('does not renew on a 403 outside the administration', async () => {
+      session.save({ accessToken: 'jwt-old', userId: 'u_1', expiresIn: 900 })
+      let refreshes = 0
+      server.use(
+        http.post(apiUrl('/v1/auth/refresh'), () => {
+          refreshes += 1
+          return HttpResponse.json(renewed)
+        }),
+        http.get(apiUrl('/v1/me'), () => new HttpResponse(null, { status: 403 })),
+      )
+
+      await expect(unwrap(api.GET('/v1/me'))).rejects.toMatchObject({ status: 403 })
+      expect(refreshes).toBe(0)
+    })
+
     it('renews only once for simultaneous 401s', async () => {
       session.save({ accessToken: 'jwt-old', userId: 'u_1', expiresIn: 900 })
       let refreshes = 0
