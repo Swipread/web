@@ -81,7 +81,11 @@ describe('reset password page', () => {
     await choose(user, 'nouveau-secret')
 
     await waitFor(() => expect(router.state.location.pathname).toBe('/connexion'))
-    expect(screen.getByText('Mot de passe modifié. Connectez-vous avec le nouveau.')).toHaveAttribute('role', 'status')
+    // The path changes before the login page renders its notice: wait for the notice itself.
+    expect(await screen.findByText('Mot de passe modifié. Connectez-vous avec le nouveau.')).toHaveAttribute(
+      'role',
+      'status',
+    )
     expect(sent).toEqual([{ token: 'abc_DEF-123', newPassword: 'nouveau-secret' }])
   })
 
