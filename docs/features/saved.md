@@ -7,8 +7,8 @@ Articles the reader kept for later. Code: `src/features/saved/`.
 `/sauvegardes` → `SavedPage`.
 
 - Header « Sauvegardés » with a subtitle: the count (« 4 articles à lire plus tard ») once every page is loaded, « Vos articles à lire plus tard » while more pages remain.
-- One `ArticleRow` per article, most recently saved first: thumbnail, source and reading time (none when `wordCountFromSummary`), title linking to the source (new tab), « Sauvegardé il y a 2 h ».
-- Row actions: share (icon button labelled « Partager « <title> » ») and « Retirer ».
+- One `ArticleRow` per article, most recently saved first: 16:9 thumbnail (the topic's gradient when there is no image), source · topic, the title, « Sauvegardé il y a 2 h · 4 min » (no reading time when `wordCountFromSummary`). The whole row opens the article at its source (new tab). The list keeps a reading measure (48rem).
+- Row actions, round 40px icon buttons: a filled bookmark labelled « Retirer « <title> » des sauvegardés » (the same icon as the feed's save toggle), then « Partager « <title> » ».
 - « Charger plus » when the API returns a `nextCursor`.
 - States: loading, error with « Réessayer », empty state with a link back to the feed. An error while loading more is shown under the list.
 
@@ -24,7 +24,7 @@ There is no endpoint to delete a saved article: the event log is the source of t
 ## Behaviour
 
 - Opening an article (its title) records `open`; sharing records `share` with its channel. These events carry no `requestId`: the article was not served by the feed at that moment.
-- « Retirer » shows the toast « Article retiré des sauvegardés » and moves focus to the row that took its place (or the previous one at the end), so keyboard users keep their place. When the last article goes, the empty state appears.
+- Removing shows the toast « Article retiré des sauvegardés » and moves focus to the row that took its place (or the previous one at the end), so keyboard users keep their place. When the last article goes, the empty state appears.
 
 ## Tests
 
