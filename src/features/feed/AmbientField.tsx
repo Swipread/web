@@ -1,5 +1,5 @@
 import { hasImage } from './hasImage'
-import { topicFieldClass } from './topicField'
+import { topicFieldClass } from '../../ui/topicField'
 import type { FeedCard } from './useFeed'
 import styles from './AmbientField.module.css'
 
