@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  formatMemberSince,
   formatActionDate,
   formatCount,
   formatReadAt,
@@ -92,5 +93,16 @@ describe('formatCount', () => {
     expect(formatCount(1284).replace(/\s/g, ' ')).toBe('1 284')
     expect(formatCount(97)).toBe('97')
     expect(formatCount(undefined)).toBe('0')
+  })
+})
+
+describe('formatMemberSince', () => {
+  it('names the month and year of sign-up', () => {
+    expect(formatMemberSince('2026-10-01T08:00:00Z')).toBe('Membre depuis octobre 2026')
+  })
+
+  it('says nothing without a valid date', () => {
+    expect(formatMemberSince(undefined)).toBeNull()
+    expect(formatMemberSince('pas une date')).toBeNull()
   })
 })
