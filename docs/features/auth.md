@@ -6,9 +6,11 @@ Sign-up, login, email address confirmation, session lifecycle and logout. Code: 
 
 | Route | Component | Content |
 | --- | --- | --- |
-| `/connexion` | `LoginPage` | Email, password, « Se connecter », link to sign-up |
+| `/connexion` | `LoginPage` | Email, password, « Mot de passe oublié ? », « Se connecter », link to sign-up |
 | `/inscription` | `RegisterPage` | Display name, email, password, « Créer mon compte », link to login |
 | `/verifier-email?token=…` | `VerifyEmailPage` | Target of the link sent by mail; public, with or without a session |
+| `/mot-de-passe-oublie` | `ForgotPasswordPage` | Email, « Recevoir le lien »; public |
+| `/reinitialiser-mot-de-passe?token=…` | `ResetPasswordPage` | New password and confirmation; target of the link sent by mail; public |
 
 Both pages render inside `AuthLayout`: a presentation panel (brand, tagline, decorative card stack) next to the form. Under 900 px the panel moves above the form.
 
@@ -24,6 +26,8 @@ Both routes sit behind `RedirectIfAuthenticated`: a reader who already has a ses
 | `useRegister()` | Mutation | `POST /v1/auth/register` with the browser locale when it matches `xx-XX`, then `session.save(token)` |
 | `useVerifyEmail()` | Mutation | `POST /v1/auth/email/verify` with the link's token (no `Authorization`), then invalidates `['me']` |
 | `useResendVerification()` | Mutation | `POST /v1/me/verification-email` |
+| `useForgotPassword()` | Mutation | `POST /v1/auth/password/forgot` (no `Authorization`) |
+| `useResetPassword()` | Mutation | `POST /v1/auth/password/reset` with the link's token and the new password; then forgets a session kept in this browser (tracker flushed, session and query cache cleared), since the API signed out every session |
 | `useLogout()` | Callback | Flushes events, calls `POST /v1/auth/logout`, clears session and cache, goes to `/connexion` |
 
 ## Login
@@ -67,6 +71,21 @@ Sign-up sends a mail with a link to `/verifier-email?token=…`, valid 24 hours.
 | 400, or no token | « Ce lien n’est plus valable » (used, expired after 24 h, or replaced by a newer one). With a session: « Recevoir un nouveau lien »; without: a link to log in |
 | Other error | The status message and « Réessayer » |
 
+## Forgotten password
+
+**Page `/mot-de-passe-oublie`.** Reached from « Mot de passe oublié ? » on the login page, which carries the email already typed (router state). It sends `POST /v1/auth/password/forgot` and then always shows « Vérifiez vos e-mails »: « Si un compte existe pour <email>, un lien … vient d’y être envoyé. Il est valable une heure. » The API answers 202 whether the address has an account or not, so the page cannot and does not say more. A field error from the API is shown under the email; any other error above the form, which keeps its value.
+
+**Page `/reinitialiser-mot-de-passe?token=…`.** Target of the link sent by mail. Opening it uses nothing: the token is sent only with the new password (`resetPasswordSchema`: 8–72 characters, and a confirmation that must match).
+
+| Outcome | Shown |
+| --- | --- |
+| 204 | Back to `/connexion` with « Mot de passe modifié. Connectez-vous avec le nouveau. » (router state). A session kept in this browser is forgotten first: the API signed out every session |
+| 400 with field errors | The form, with the message under « Nouveau mot de passe » |
+| 400 otherwise, or no token | « Ce lien n’est plus valable » (used, expired after 1 hour, or replaced), with « Recevoir un nouveau lien » (`/mot-de-passe-oublie`) |
+| Other error | The status message above the form |
+
+Both pages are public, outside `RedirectIfAuthenticated`: the link may be opened on any device.
+
 ## Session
 
 `src/lib/session.ts` stores `{ accessToken, userId, expiresAt }` under `localStorage['swipread.session']` (in memory if storage is unavailable). It is a small external store:
@@ -88,4 +107,4 @@ A session ends when:
 
 ## Tests
 
-`features/auth/auth.test.tsx` (client-side validation, generic message on wrong credentials, return to the requested page, password length, email already used, server field errors, new reader sent to onboarding, guards, logout revoking the refresh token), `features/auth/emailVerification.test.tsx` (banner hidden once confirmed, shown and resending, 429 message, « Plus tard » and `--notice-height`; page confirming without a session and without `Authorization`, refreshing the profile with one, invalid link with a new one offered, no token), `lib/session.test.ts`, `api/client.test.ts` (token renewal), `app/unauthorized.test.ts`.
+`features/auth/auth.test.tsx` (client-side validation, generic message on wrong credentials, return to the requested page, password length, email already used, server field errors, new reader sent to onboarding, guards, logout revoking the refresh token), `features/auth/passwordReset.test.tsx` (link from login carrying the typed email, request without `Authorization` and the same answer for any address, validation and server error; reset sending token and password then the login notice, a session in this browser forgotten, rules and confirmation checked before sending, used or expired link offering a new one, rejected password keeping the form, no token), `features/auth/emailVerification.test.tsx` (banner hidden once confirmed, shown and resending, 429 message, « Plus tard » and `--notice-height`; page confirming without a session and without `Authorization`, refreshing the profile with one, invalid link with a new one offered, no token), `lib/session.test.ts`, `api/client.test.ts` (token renewal), `app/unauthorized.test.ts`.

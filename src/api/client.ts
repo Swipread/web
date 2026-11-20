@@ -20,6 +20,8 @@ const PUBLIC_AUTH_PATHS = new Set([
   '/v1/auth/refresh',
   '/v1/auth/logout',
   '/v1/auth/email/verify',
+  '/v1/auth/password/forgot',
+  '/v1/auth/password/reset',
 ])
 
 function isPublicAuthEndpoint(url: string) {

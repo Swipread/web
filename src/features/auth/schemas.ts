@@ -30,5 +30,28 @@ export const registerSchema = z.object({
   password: newPasswordSchema,
 })
 
+/** Limits mirror ForgotPasswordRequest. */
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Saisissez votre email.')
+    .max(254, "L'email est trop long.")
+    .pipe(z.email('Saisissez un email valide.')),
+})
+
+/** Limits mirror ResetPasswordRequest; the confirmation stays in the browser. */
+export const resetPasswordSchema = z
+  .object({
+    newPassword: newPasswordSchema,
+    confirmation: z.string().min(1, 'Confirmez le nouveau mot de passe.'),
+  })
+  .refine((values) => values.confirmation === values.newPassword, {
+    path: ['confirmation'],
+    message: 'Les deux mots de passe ne correspondent pas.',
+  })
+
 export type LoginValues = z.infer<typeof loginSchema>
 export type RegisterValues = z.infer<typeof registerSchema>
+export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>
+export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>

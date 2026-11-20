@@ -2,8 +2,10 @@ import { Navigate, type RouteObject } from 'react-router'
 import { AdminLayout } from '../features/admin/AdminLayout'
 import { AdminTopicsPage } from '../features/admin/AdminTopicsPage'
 import { SourcesPage } from '../features/admin/SourcesPage'
+import { ForgotPasswordPage } from '../features/auth/ForgotPasswordPage'
 import { LoginPage } from '../features/auth/LoginPage'
 import { RegisterPage } from '../features/auth/RegisterPage'
+import { ResetPasswordPage } from '../features/auth/ResetPasswordPage'
 import { VerifyEmailPage } from '../features/auth/VerifyEmailPage'
 import { FeedPage } from '../features/feed/FeedPage'
 import { HistoryPage } from '../features/history/HistoryPage'
@@ -56,7 +58,9 @@ export const routes: RouteObject[] = [
       },
     ],
   },
-  // Link sent by mail: with or without a session.
+  // Links sent by mail, and the page that sends one: with or without a session.
   { path: '/verifier-email', element: <VerifyEmailPage /> },
+  { path: '/mot-de-passe-oublie', element: <ForgotPasswordPage /> },
+  { path: '/reinitialiser-mot-de-passe', element: <ResetPasswordPage /> },
   { path: '*', element: <NotFoundPage /> },
 ]

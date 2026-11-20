@@ -18,7 +18,7 @@ Ordinateur d'abord, responsive. React 19 + TypeScript + Vite.
 ## Conventions
 
 - Textes de l'interface en français, code (noms, commentaires) en anglais
-- Routes en français : `/connexion`, `/inscription`, `/verifier-email`, `/centres-interet`, `/`, `/sauvegardes`, `/historique`, `/profil`, `/admin/sources`, `/admin/themes`
+- Routes en français : `/connexion`, `/inscription`, `/verifier-email`, `/mot-de-passe-oublie`, `/reinitialiser-mot-de-passe`, `/centres-interet`, `/`, `/sauvegardes`, `/historique`, `/profil`, `/admin/sources`, `/admin/themes`
 - Organisation par fonctionnalité dans `src/features/<feature>/` (auth, onboarding, feed, tracking, share, saved, history, profile, admin) ; composants partagés dans `src/ui/`
 - Jamais de DTO écrits à la main : utiliser les types de `src/api/schema.d.ts`, jamais modifier ce fichier
 - Appels API uniquement via le client `src/api/client.ts` (openapi-fetch) enveloppé dans des hooks TanStack Query

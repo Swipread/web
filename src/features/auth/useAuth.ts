@@ -56,6 +56,31 @@ export function useResendVerification() {
   return useMutation({ mutationFn: () => unwrap(api.POST('/v1/me/verification-email')) })
 }
 
+/** Mails a link to choose a new password. Answers the same whether the address has an account or not. */
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (email: string) => unwrap(api.POST('/v1/auth/password/forgot', { body: { email } })),
+  })
+}
+
+/**
+ * Sets a new password with the token of the link sent by mail. The API signs out every session of the account,
+ * so a session kept in this browser is forgotten too.
+ */
+export function useResetPassword() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (body: { token: string; newPassword: string }) => unwrap(api.POST('/v1/auth/password/reset', { body })),
+    onSuccess: () => {
+      if (session.get() === null) return
+      void tracker.flushOnExit()
+      tracker.clear()
+      session.clear()
+      queryClient.clear()
+    },
+  })
+}
+
 export function useLogout() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()

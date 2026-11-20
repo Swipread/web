@@ -118,6 +118,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/auth/password/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Choose a new password with the link sent by mail
+         * @description Public. `token` is the `token` parameter of the link; it works once and for 1 hour. Signs out every session of the account (refresh tokens revoked; access tokens stay valid until they expire, 15 minutes), confirms the email address, and mails a notice. Does not sign in: log in with the new password.
+         */
+        post: operations["resetPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/password/forgot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mail a link to choose a new password
+         * @description Public. If the address has an account, a link `<web>/reinitialiser-mot-de-passe?token=…` is mailed, valid 1 hour; it replaces the older ones. At most one link per minute and five per 24 hours for an account. The answer is the same whether the address has an account or not, and also when the limit is reached, so it does not reveal who is registered.
+         */
+        post: operations["forgotPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/auth/logout": {
         parameters: {
             query?: never;
@@ -397,6 +437,14 @@ export interface components {
              */
             expiresIn?: number;
             userId?: string;
+        };
+        ResetPasswordRequest: {
+            token: string;
+            newPassword: string;
+        };
+        ForgotPasswordRequest: {
+            /** Format: email */
+            email: string;
         };
         LoginRequest: {
             email: string;
@@ -826,6 +874,68 @@ export interface operations {
             };
             /** @description Missing, unknown, expired, revoked or reused refresh token */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    resetPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResetPasswordRequest"];
+            };
+        };
+        responses: {
+            /** @description Password replaced */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request (password rules as at sign-up), or unknown, used, replaced or expired link */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    forgotPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ForgotPasswordRequest"];
+            };
+        };
+        responses: {
+            /** @description Request taken (a mail is sent only to a registered address) */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request (missing or malformed email) */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -43,6 +43,7 @@ Routes use React Router in data mode (`createBrowserRouter`). Paths are in Frenc
 | --- | --- | --- |
 | `/connexion`, `/inscription` | Login, sign-up | `RedirectIfAuthenticated` |
 | `/verifier-email` | Email confirmation (link sent by mail) | none: with or without a session |
+| `/mot-de-passe-oublie`, `/reinitialiser-mot-de-passe` | Forgotten password: ask for a link, choose a new password (link sent by mail) | none: with or without a session |
 | `/centres-interet` | Topic picker | `RequireAuth` |
 | `/` | Feed (« Pour vous ») | `RequireAuth`, `RequireOnboarding` |
 | `/sauvegardes`, `/historique`, `/profil` | Saved, history, profile | `RequireAuth`, `RequireOnboarding` |
