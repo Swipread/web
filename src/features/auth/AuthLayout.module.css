@@ -4,65 +4,96 @@
   min-height: 100dvh;
 }
 
+/* The presentation: the topics' colours take turns, slowly, as the feed's field under the theme's ambient veil. */
 .presentation {
+  position: relative;
+  isolation: isolate;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  overflow: hidden;
   padding: var(--space-8);
-  background: var(--color-bg-subtle);
+  color: var(--ambient-ink);
+}
+
+.field {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.field::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* Above the lights, whose handover stacks them at z-index 1 and 2. */
+  z-index: 3;
+  background: var(--ambient-veil);
+}
+
+/*
+ * Eight lights, 6 s each. The incoming light fades in (2 s) on top of the outgoing one, which stays full until it is
+ * covered, then steps under and goes out: the page ground never shows between two lights, the last one hands over
+ * to the first the same way. The sequence starts 2 s in, so the first light is full when the page opens; with
+ * reduced motion it simply stays.
+ */
+.light {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: take-turns 48s linear infinite;
+  animation-delay: -2s;
+}
+
+.light:first-child {
+  opacity: 1;
+}
+
+.light:nth-child(2) { animation-delay: 4s; }
+.light:nth-child(3) { animation-delay: 10s; }
+.light:nth-child(4) { animation-delay: 16s; }
+.light:nth-child(5) { animation-delay: 22s; }
+.light:nth-child(6) { animation-delay: 28s; }
+.light:nth-child(7) { animation-delay: 34s; }
+.light:nth-child(8) { animation-delay: 40s; }
+
+/* 2 s = 4.17 %, 6 s = 12.5 %, 8 s = 16.67 % of the cycle. */
+@keyframes take-turns {
+  0% { opacity: 0; z-index: 2; }
+  4.17% { opacity: 1; z-index: 2; }
+  12.49% { opacity: 1; z-index: 2; }
+  12.5% { opacity: 1; z-index: 1; }
+  16.66% { opacity: 1; z-index: 1; }
+  16.67% { opacity: 0; z-index: 1; }
+  100% { opacity: 0; z-index: 1; }
+}
+
+/* The symbol's lower guillemet takes the same lights. */
+.symbolLights {
+  position: relative;
 }
 
 .presentationInner {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  max-width: 40rem;
+  max-width: 34rem;
 }
 
 .brand {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--letter-spacing-tight);
-  line-height: var(--line-height-tight);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: clamp(var(--font-size-xl), 4vw, var(--font-size-2xl));
+  font-weight: var(--font-weight-heavy);
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
 .tagline {
-  color: var(--color-text-secondary);
   font-size: var(--font-size-lg);
-}
-
-/* Three stacked article cards hinting at the vertical feed. */
-.illustration {
-  position: relative;
-  width: min(100%, 25rem);
-  aspect-ratio: 400 / 260;
-  margin-top: var(--space-4);
-}
-
-.stackCard {
-  position: absolute;
-  inset: 0;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-card);
-}
-
-.stackCard:nth-child(1) {
-  transform: translateY(24px) scale(0.88);
-  opacity: 0.5;
-}
-
-.stackCard:nth-child(2) {
-  transform: translateY(12px) scale(0.94);
-  opacity: 0.75;
-}
-
-.stackCard:nth-child(3) {
-  background:
-    linear-gradient(var(--color-fill), var(--color-fill)) top / 100% 55% no-repeat,
-    linear-gradient(var(--color-fill), var(--color-fill)) 24px calc(55% + 24px) / 60% 14px no-repeat,
-    linear-gradient(var(--color-fill), var(--color-fill)) 24px calc(55% + 48px) / 40% 10px no-repeat,
-    var(--color-surface);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  text-wrap: balance;
 }
 
 .formSide {
@@ -78,15 +109,24 @@
 
 .title {
   font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-heavy);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-title);
 }
 
 .subtitle {
-  margin: var(--space-3) 0 var(--space-5);
+  margin: var(--space-2) 0 var(--space-6);
   color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
+  line-height: var(--line-height-base);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .light {
+    animation: none;
+  }
+}
+
+/* Phones and narrow windows: the light becomes a band at the top, the form below it. */
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
@@ -94,28 +134,20 @@
   }
 
   .presentation {
-    padding: var(--space-6) var(--space-5) var(--space-4);
-    background: none;
+    min-height: 12rem;
+    padding: var(--space-6) var(--space-5) var(--space-5);
   }
 
   .presentationInner {
     gap: var(--space-2);
   }
 
-  .brand {
-    font-size: var(--font-size-xl);
-  }
-
   .tagline {
     font-size: var(--font-size-md);
   }
 
-  .illustration {
-    display: none;
-  }
-
   .formSide {
     align-items: flex-start;
-    padding-top: var(--space-4);
+    padding-top: var(--space-6);
   }
 }

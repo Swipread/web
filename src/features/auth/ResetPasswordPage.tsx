@@ -55,12 +55,12 @@ export function ResetPasswordPage() {
   if (invalidLink) {
     return (
       <AuthLayout
-        title="Ce lien n’est plus valable"
+        title="Ce lien n'est plus valable"
         subtitle="Il a peut-être déjà servi, expiré après une heure, ou été remplacé par un lien plus récent."
       >
-        <p className={styles.switch}>
-          <Link to="/mot-de-passe-oublie">Recevoir un nouveau lien</Link>
-        </p>
+        <Link to="/mot-de-passe-oublie" className={styles.primaryLink}>
+          Recevoir un nouveau lien
+        </Link>
       </AuthLayout>
     )
   }
