@@ -119,6 +119,27 @@ describe('api client', () => {
       expect(refreshes).toBe(0)
     })
 
+    it('sends the access token and the refresh cookie to PUT /v1/auth/password', async () => {
+      session.save({ accessToken: 'jwt-123', userId: 'u_1', expiresIn: 900 })
+      let authorization: string | null = null
+      const fetchSpy = vi.spyOn(globalThis, 'fetch')
+      server.use(
+        http.put(apiUrl('/v1/auth/password'), ({ request }) => {
+          authorization = request.headers.get('Authorization')
+          return new HttpResponse(null, { status: 204 })
+        }),
+      )
+
+      await unwrap(api.PUT('/v1/auth/password', { body: { currentPassword: 'a', newPassword: 'bbbbbbbb' } }))
+
+      expect(authorization).toBe('Bearer jwt-123')
+      // msw drops `credentials`: check what was handed to fetch instead.
+      const sent = fetchSpy.mock.calls.map(([input]) => input).find((input) => input instanceof Request)
+      expect(sent).toBeInstanceOf(Request)
+      expect((sent as Request).credentials).toBe('include')
+      fetchSpy.mockRestore()
+    })
+
     it('renews only once for simultaneous 401s', async () => {
       session.save({ accessToken: 'jwt-old', userId: 'u_1', expiresIn: 900 })
       let refreshes = 0

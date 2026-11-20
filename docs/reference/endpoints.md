@@ -8,6 +8,7 @@ Every API endpoint the frontend calls, and where. Request and response shapes ar
 | POST | `/v1/auth/login` | — | `useLogin` | Sets the refresh cookie |
 | POST | `/v1/auth/refresh` | cookie | `refreshSession` (`src/api/refresh.ts`) | Plain `fetch` with `credentials: 'include'`, outside the typed client to avoid recursion |
 | POST | `/v1/auth/logout` | cookie | `useLogout` | Not awaited |
+| PUT | `/v1/auth/password` | bearer + cookie | `useChangePassword` | Signs out the other devices; field errors `WrongPassword`, `SamePassword` |
 | GET | `/v1/me` | bearer | `useMe` | Profile, role, topics |
 | PATCH | `/v1/me` | bearer | `useUpdateProfile` | `{ displayName }` |
 | DELETE | `/v1/me` | bearer | `useDeleteAccount` | 204 |

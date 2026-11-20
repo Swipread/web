@@ -13,9 +13,17 @@ export function setUnauthorizedHandler(handler: () => void) {
   unauthorizedHandler = handler
 }
 
-// On auth endpoints a 401 means wrong credentials, not an expired session.
-function isAuthEndpoint(url: string) {
-  return new URL(url).pathname.startsWith('/v1/auth/')
+// Endpoints that take no access token: there a 401 means wrong credentials, not an expired session.
+const PUBLIC_AUTH_PATHS = new Set(['/v1/auth/register', '/v1/auth/login', '/v1/auth/refresh', '/v1/auth/logout'])
+
+function isPublicAuthEndpoint(url: string) {
+  return PUBLIC_AUTH_PATHS.has(new URL(url).pathname)
+}
+
+// The refresh token cookie is scoped to /v1/auth: send it there, including on PUT /v1/auth/password, which keeps
+// the session it belongs to.
+function withRefreshCookie(request: Request) {
+  return new URL(request.url).pathname.startsWith('/v1/auth/') ? new Request(request, { credentials: 'include' }) : request
 }
 
 // The role travels in the access token: after a promotion, admin endpoints answer 403 until the token is renewed,
@@ -30,7 +38,7 @@ function worthRenewing(request: Request, response: Response) {
 
 const authMiddleware: Middleware = {
   async onRequest({ request }) {
-    if (isAuthEndpoint(request.url) || !session.get()) return request
+    if (isPublicAuthEndpoint(request.url) || !session.get()) return request
     // Renew just before expiry: a keepalive request sent while the tab closes could not be retried.
     // On failure, go on with the current token: the 401 path below renews or ends the session.
     if (expiresSoon()) await refreshSession().catch(() => false)
@@ -39,7 +47,7 @@ const authMiddleware: Middleware = {
     return request
   },
   onResponse({ request, response }) {
-    if (response.status === 401 && !isAuthEndpoint(request.url)) {
+    if (response.status === 401 && !isPublicAuthEndpoint(request.url)) {
       session.clear()
       unauthorizedHandler()
     }
@@ -54,16 +62,16 @@ const authMiddleware: Middleware = {
  */
 async function fetchWithRefresh(request: Request): Promise<Response> {
   // Resolve fetch at call time so test interceptors and polyfills are picked up.
-  if (isAuthEndpoint(request.url)) return globalThis.fetch(new Request(request, { credentials: 'include' }))
+  if (isPublicAuthEndpoint(request.url)) return globalThis.fetch(withRefreshCookie(request))
   const replay = request.clone()
-  const response = await globalThis.fetch(request)
+  const response = await globalThis.fetch(withRefreshCookie(request))
   if (!worthRenewing(request, response) || !session.get()) return response
   // A network failure while renewing propagates as a network error: the session is kept.
   const renewed = await refreshSession()
   const current = session.get()
   if (!renewed || !current) return response
   replay.headers.set('Authorization', `Bearer ${current.accessToken}`)
-  return globalThis.fetch(replay)
+  return globalThis.fetch(withRefreshCookie(replay))
 }
 
 export const api = createClient<paths>({

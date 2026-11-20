@@ -5,13 +5,21 @@ import { session } from '../../lib/session'
 import { meQueryKey } from '../auth/useAuth'
 import { tracker } from '../tracking/tracker'
 import { useToast } from '../../ui/toastContext'
-import type { ProfileValues } from './schemas'
+import type { PasswordValues, ProfileValues } from './schemas'
 
 export function useUpdateProfile() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (body: ProfileValues) => unwrap(api.PATCH('/v1/me', { body })),
     onSuccess: (me) => queryClient.setQueryData(meQueryKey, me),
+  })
+}
+
+/** Changes the password; the API signs out the reader's other devices and keeps this session. */
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: ({ currentPassword, newPassword }: PasswordValues) =>
+      unwrap(api.PUT('/v1/auth/password', { body: { currentPassword, newPassword } })),
   })
 }
 

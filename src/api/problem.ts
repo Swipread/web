@@ -53,6 +53,9 @@ const CONSTRAINT_MESSAGES: Record<string, string> = {
   Size: "La longueur de ce champ n'est pas acceptée.",
   Email: 'Saisissez un email valide.',
   Pattern: "Le format de ce champ n'est pas valide.",
+  // Rules checked by the API itself (PUT /v1/auth/password)
+  WrongPassword: 'Mot de passe incorrect.',
+  SamePassword: "Choisissez un mot de passe différent de l'actuel.",
 }
 
 /** French message for a field rejected by the server, from its constraint code (`NotBlank`, `Size`…). */

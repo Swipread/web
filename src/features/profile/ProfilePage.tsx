@@ -15,8 +15,8 @@ import { selectionLabel } from '../onboarding/selectionLabel'
 import { TopicPicker } from '../onboarding/TopicPicker'
 import { MIN_TOPICS, useTopics, useUpdateTopics } from '../onboarding/useTopics'
 import { useTopicSelection } from '../onboarding/useTopicSelection'
-import { profileSchema, type ProfileValues } from './schemas'
-import { useDeleteAccount, useUpdateProfile } from './useProfile'
+import { passwordSchema, profileSchema, type PasswordValues, type ProfileValues } from './schemas'
+import { useChangePassword, useDeleteAccount, useUpdateProfile } from './useProfile'
 import styles from './ProfilePage.module.css'
 
 export function ProfilePage() {
@@ -33,6 +33,7 @@ export function ProfilePage() {
         <div className={styles.sections}>
           <InfoSection me={me.data} />
           <TopicsSection selectedIds={me.data.topics?.flatMap((t) => (t.id === undefined ? [] : [t.id]))} />
+          <PasswordSection email={me.data.email} />
           <DeleteAccountSection />
         </div>
       )}
@@ -157,6 +158,90 @@ function TopicsSection({ selectedIds }: { selectedIds: number[] | undefined }) {
           </div>
         </>
       )}
+    </section>
+  )
+}
+
+const PASSWORD_FIELDS = ['currentPassword', 'newPassword'] as const
+
+function PasswordSection({ email }: { email: string | undefined }) {
+  const changePassword = useChangePassword()
+  const toast = useToast()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors },
+  } = useForm<PasswordValues>({
+    resolver: zodResolver(passwordSchema),
+    defaultValues: { currentPassword: '', newPassword: '', confirmation: '' },
+  })
+
+  const onSubmit = handleSubmit((values) =>
+    changePassword.mutate(values, {
+      onSuccess: () => {
+        reset()
+        toast.show('Mot de passe modifié. Vos autres appareils ont été déconnectés.')
+      },
+      onError: (error) => {
+        if (!(error instanceof ApiError)) return
+        for (const field of PASSWORD_FIELDS) {
+          const message = error.fieldErrors[field]
+          if (message) setError(field, { message })
+        }
+      },
+    }),
+  )
+
+  const error = changePassword.error
+  const fieldRejected = error instanceof ApiError && PASSWORD_FIELDS.some((field) => error.fieldErrors[field])
+  const formError = error && !fieldRejected ? getErrorMessage(error) : null
+
+  return (
+    <section className={styles.section} aria-labelledby="profile-password">
+      <h2 id="profile-password" className={styles.sectionTitle}>
+        Mot de passe
+      </h2>
+      <p className={styles.hint}>Vos autres appareils seront déconnectés ; celui-ci reste connecté.</p>
+      <form className={styles.form} onSubmit={onSubmit} noValidate>
+        {/* Lets password managers tie the new password to the account. */}
+        <input type="email" autoComplete="username" value={email ?? ''} readOnly hidden />
+        <div className={styles.fields}>
+          <TextField
+            label="Mot de passe actuel"
+            type="password"
+            autoComplete="current-password"
+            error={errors.currentPassword?.message}
+            {...register('currentPassword')}
+          />
+          <TextField
+            label="Nouveau mot de passe"
+            type="password"
+            autoComplete="new-password"
+            hint="8 caractères au moins"
+            error={errors.newPassword?.message}
+            {...register('newPassword')}
+          />
+          <TextField
+            label="Confirmer le nouveau mot de passe"
+            type="password"
+            autoComplete="new-password"
+            error={errors.confirmation?.message}
+            {...register('confirmation')}
+          />
+        </div>
+        {formError && (
+          <p role="alert" className={styles.error}>
+            {formError}
+          </p>
+        )}
+        <div>
+          <Button type="submit" variant="secondary" loading={changePassword.isPending}>
+            Changer le mot de passe
+          </Button>
+        </div>
+      </form>
     </section>
   )
 }

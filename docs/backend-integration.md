@@ -22,7 +22,7 @@ const topics = await unwrap(api.GET('/v1/topics', { signal }))
 
 The client:
 
-- adds `Authorization: Bearer <access token>` to every request except `/v1/auth/*`;
+- adds `Authorization: Bearer <access token>` to every request except the public auth endpoints (`register`, `login`, `refresh`, `logout`); `PUT /v1/auth/password` gets it;
 - sends cookies (`credentials: 'include'`) to `/v1/auth/*` only, for the refresh token;
 - renews the access token when needed (see below);
 - on a final 401, clears the session and calls the unauthorized handler, which goes to the login page.
@@ -62,7 +62,7 @@ sequenceDiagram
 ```
 
 - **Session.** `src/lib/session.ts` stores the access token, the user id and the expiry time in `localStorage`, and keeps tabs in sync through the `storage` event. The session outlives its access token: only a refused renewal or a logout ends it.
-- **Refresh token.** It lives in the `swipread_refresh` cookie (HttpOnly, `SameSite=Strict`, path `/v1/auth`). JavaScript never sees it; the browser sends it to `/v1/auth/refresh` and `/v1/auth/logout`.
+- **Refresh token.** It lives in the `swipread_refresh` cookie (HttpOnly, `SameSite=Strict`, path `/v1/auth`). JavaScript never sees it; the browser sends it to `/v1/auth/refresh`, `/v1/auth/logout` and `/v1/auth/password` (which keeps the session it belongs to when the password changes).
 - **Renewal** (`src/api/refresh.ts`):
   - on a 401 from any other endpoint, the client renews once and replays the request, body included;
   - on a 403 from `/v1/admin/**` too, since the token may carry a role changed since it was issued (the renewal reads it again); a 403 elsewhere is final;

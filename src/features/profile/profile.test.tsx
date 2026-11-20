@@ -19,6 +19,72 @@ describe('profile', () => {
     expect(screen.getByLabelText('Email (non modifiable)')).toHaveValue('lea@exemple.fr')
   })
 
+  describe('password', () => {
+    async function fill(user: Awaited<ReturnType<typeof renderRoutes>>['user'], current: string, next: string, again = next) {
+      await user.type(await screen.findByLabelText('Mot de passe actuel'), current)
+      await user.type(screen.getByLabelText('Nouveau mot de passe'), next)
+      await user.type(screen.getByLabelText('Confirmer le nouveau mot de passe'), again)
+      await user.click(screen.getByRole('button', { name: 'Changer le mot de passe' }))
+    }
+
+    it('changes the password and tells the other devices are signed out', async () => {
+      let sent: unknown
+      server.use(
+        http.put(apiUrl('/v1/auth/password'), async ({ request }) => {
+          sent = await request.json()
+          return new HttpResponse(null, { status: 204 })
+        }),
+      )
+      const { user } = renderRoutes(routes, { path: '/profil' })
+
+      await fill(user, 'ancien-mdp', 'nouveau-mdp-2026')
+
+      expect(await screen.findByText('Mot de passe modifié. Vos autres appareils ont été déconnectés.')).toBeInTheDocument()
+      expect(sent).toEqual({ currentPassword: 'ancien-mdp', newPassword: 'nouveau-mdp-2026' })
+      expect(screen.getByLabelText('Mot de passe actuel')).toHaveValue('')
+      expect(session.get()).not.toBeNull()
+    })
+
+    it('checks the confirmation before sending', async () => {
+      let calls = 0
+      server.use(
+        http.put(apiUrl('/v1/auth/password'), () => {
+          calls += 1
+          return new HttpResponse(null, { status: 204 })
+        }),
+      )
+      const { user } = renderRoutes(routes, { path: '/profil' })
+
+      await fill(user, 'ancien-mdp', 'nouveau-mdp-2026', 'autre-chose')
+
+      expect(await screen.findByText('Les deux mots de passe ne correspondent pas.')).toBeInTheDocument()
+      expect(calls).toBe(0)
+    })
+
+    it('shows a wrong current password under its field', async () => {
+      server.use(
+        http.put(apiUrl('/v1/auth/password'), () =>
+          HttpResponse.json(
+            {
+              status: 400,
+              title: 'Bad request',
+              detail: 'Current password is incorrect',
+              errors: [{ field: 'currentPassword', code: 'WrongPassword', message: 'Current password is incorrect' }],
+            },
+            { status: 400 },
+          ),
+        ),
+      )
+      const { user } = renderRoutes(routes, { path: '/profil' })
+
+      await fill(user, 'pas-le-bon', 'nouveau-mdp-2026')
+
+      expect(await screen.findByText('Mot de passe incorrect.')).toBeInTheDocument()
+      expect(screen.getByLabelText('Mot de passe actuel')).toHaveAttribute('aria-invalid', 'true')
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    })
+  })
+
   it('updates topics and resets the feed', async () => {
     let sent: unknown
     server.use(
