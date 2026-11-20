@@ -3,6 +3,7 @@ import { useCallback } from 'react'
 import { api, unwrap } from '../../api/client'
 import type { Schema } from '../../api/types'
 import { patchFeedCard } from '../feed/useFeed'
+import { patchHistorySaved } from '../history/useHistory'
 import { tracker } from '../tracking/tracker'
 
 export const savedQueryKey = ['saved'] as const
@@ -44,6 +45,7 @@ export function useUnsave() {
         },
       )
       patchFeedCard(queryClient, articleId, { saved: false })
+      patchHistorySaved(queryClient, articleId, false)
     },
     [queryClient],
   )
