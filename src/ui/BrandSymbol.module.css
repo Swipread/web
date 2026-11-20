@@ -1,0 +1,40 @@
+.symbol {
+  position: relative;
+  display: inline-block;
+  flex: none;
+}
+
+.symbol > svg {
+  display: block;
+}
+
+.ground {
+  fill: currentColor;
+  fill-opacity: 0.12;
+}
+
+/* The lower guillemet, cut out of whatever lights it (an image or a gradient filling the box). */
+.light {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  clip-path: polygon(23.44% 70.31%, 50% 43.75%, 76.56% 70.31%, 67.97% 78.91%, 50% 60.94%, 32.03% 78.91%);
+}
+
+/* The article's colours, not its picture: blurred so no detail reads at symbol size. */
+.light > * {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(4px) saturate(1.6);
+  transform: scale(1.4);
+}
+
+/* A soft halo of the same colours under the lit guillemet. */
+.glow {
+  position: absolute;
+  inset: 0;
+  filter: blur(3px);
+  opacity: 0.8;
+}

@@ -65,6 +65,8 @@
   --content-max-width: 1072px;
   --card-max-width: 640px;
   --tabbar-height: 64px;
+  --feed-topbar-height: 56px;
+  --feed-column-width: 600px;
 
   /* Motion */
   --duration-fast: 150ms;

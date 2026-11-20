@@ -62,3 +62,33 @@
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
 }
+
+/* Over the feed's ambient field: translucent circle, the pressed state turns to ink. */
+.ambient {
+  color: var(--ambient-ink);
+}
+
+.ambient .circle {
+  width: 3.125rem;
+  height: 3.125rem;
+  border: 0;
+  background: var(--ambient-chip);
+}
+
+.ambient:hover .circle {
+  background: var(--ambient-chip-hover);
+}
+
+.ambient:focus-visible .circle {
+  outline-color: var(--ambient-ink);
+}
+
+.ambient[aria-pressed='true'] .circle,
+.ambient.like[aria-pressed='true'] .circle {
+  background: var(--ambient-ink);
+  color: var(--ambient-on-pill);
+}
+
+.ambient:active .circle {
+  transform: scale(0.92);
+}
