@@ -37,15 +37,42 @@ describe('feed', () => {
     const card = await screen.findByRole('article', { name: 'Les batteries solides' })
     expect(within(card).getByText('Le Journal Tech')).toBeInTheDocument()
     expect(within(card).getByText('Il y a 2 h', { normalizer: (t) => t.replace(/\s/g, ' ') })).toBeInTheDocument()
-    expect(within(card).getByText('6 min de lecture')).toBeInTheDocument()
+    // Shown as « 6 min », read out in full.
+    expect(within(card).getByText((_, element) => element?.textContent === '6 min de lecture')).toBeInTheDocument()
 
-    const link = within(card).getByRole('link', { name: "Lire l'article (nouvel onglet)" })
+    const link = within(card).getByRole('link', { name: "Lire l'article chez Le Journal Tech (nouvel onglet)" })
     expect(link).toHaveAttribute('href', item.url)
     expect(link).toHaveAttribute('target', '_blank')
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
 
     expect(calls[0].headers.get('X-Session-Id')).toMatch(/^s_/)
     expect(calls[0].headers.get('X-Device')).toBe('desktop')
+  })
+
+  it('says why each article is in the feed', async () => {
+    serveFeed([
+      feedItem({ title: 'Proche', reason: 'similar' }),
+      feedItem({ title: 'Découverte', reason: 'explore' }),
+      feedItem({ title: 'Sans raison', reason: 'trending' }),
+    ])
+    renderRoutes(routes)
+
+    expect(within(await screen.findByRole('article', { name: 'Proche' })).getByText('Proche de vos lectures')).toBeInTheDocument()
+    expect(within(screen.getByRole('article', { name: 'Découverte' })).getByText('Pour découvrir autre chose')).toBeInTheDocument()
+    expect(within(screen.getByRole('article', { name: 'Sans raison' })).queryByText(/vos|découvrir/)).not.toBeInTheDocument()
+  })
+
+  it('drops a photo that fails to load and keeps the article readable', async () => {
+    serveFeed([feedItem({ title: 'Image cassée', imageUrl: 'https://img.example.test/broken.jpg' })])
+    renderRoutes(routes)
+
+    const card = await screen.findByRole('article', { name: 'Image cassée' })
+    const photo = card.querySelector('img')!
+    expect(photo).toHaveAttribute('src', 'https://img.example.test/broken.jpg')
+    fireEvent.error(photo)
+
+    await waitFor(() => expect(card.querySelector('img')).toBeNull())
+    expect(within(card).getByRole('link', { name: "Lire l'article chez Le Journal Tech (nouvel onglet)" })).toBeInTheDocument()
   })
 
   it('shows no reading time when the word count comes from the summary only', async () => {

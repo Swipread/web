@@ -12,25 +12,17 @@ type Props = {
 }
 
 export function ArticleActions({ card, onToggleLike, onToggleSave, onShare, onHide }: Props) {
+  const buttons = [
+    { label: "J'aime", icon: <HeartIcon filled={card.liked} size={22} />, pressed: card.liked, onClick: onToggleLike },
+    { label: 'Sauvegarder', icon: <BookmarkIcon filled={card.saved} size={22} />, pressed: card.saved, onClick: onToggleSave },
+    { label: 'Partager', icon: <ShareIcon size={22} />, onClick: onShare },
+    { label: 'Pas intéressé', icon: <CloseIcon size={22} />, onClick: onHide },
+  ]
   return (
     <div className={styles.actions} role="group" aria-label="Actions sur l'article">
-      <IconButton
-        icon={<HeartIcon filled={card.liked} />}
-        label="J'aime"
-        showLabel
-        tone="like"
-        pressed={card.liked}
-        onClick={onToggleLike}
-      />
-      <IconButton
-        icon={<BookmarkIcon filled={card.saved} />}
-        label="Sauvegarder"
-        showLabel
-        pressed={card.saved}
-        onClick={onToggleSave}
-      />
-      <IconButton icon={<ShareIcon />} label="Partager" showLabel onClick={onShare} />
-      <IconButton icon={<CloseIcon />} label="Pas intéressé" showLabel onClick={onHide} />
+      {buttons.map(({ label, ...button }) => (
+        <IconButton key={label} label={label} title={label} variant="ambient" {...button} />
+      ))}
     </div>
   )
 }

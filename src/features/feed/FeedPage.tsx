@@ -1,15 +1,19 @@
-import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { getErrorMessage } from '../../api/problem'
 import { prefersReducedMotion } from '../../lib/media'
+import { BrandSymbol } from '../../ui/BrandSymbol'
 import { EmptyState } from '../../ui/EmptyState'
 import { ErrorState } from '../../ui/ErrorState'
 import { Spinner } from '../../ui/Spinner'
 import { useShare } from '../share/useShare'
 import { useFeedTracking } from '../tracking/useFeedTracking'
+import { AmbientField } from './AmbientField'
 import { ArticleActions } from './ArticleActions'
 import { ArticleCard } from './ArticleCard'
 import { feedPosition } from './feedPosition'
+import { hasImage } from './hasImage'
+import { topicFieldClass } from './topicField'
 import { useActiveIndex } from './useActiveIndex'
 import { useFeed, type FeedCard } from './useFeed'
 import { useFeedKeyboard } from './useFeedKeyboard'
@@ -31,6 +35,8 @@ export function FeedPage() {
   const restored = useRef(false)
   // Slide to focus once a hidden card has left the list.
   const focusAfterHide = useRef<number | null>(null)
+  const [failedImages, setFailedImages] = useState<ReadonlySet<string>>(() => new Set())
+  const markImageFailed = (articleId: string) => setFailedImages((failed) => new Set(failed).add(articleId))
 
   const getSlide = (index: number) =>
     scrollerRef.current?.querySelector<HTMLElement>(`[data-index="${index}"]`) ?? null
@@ -105,12 +111,27 @@ export function FeedPage() {
     feed.removeCard(card.articleId)
   }
 
+  const currentCard = items[currentIndex]
+  const symbolLight =
+    currentCard &&
+    (hasImage(currentCard, failedImages) ? (
+      <img src={currentCard.imageUrl} alt="" referrerPolicy="no-referrer" />
+    ) : (
+      <span className={topicFieldClass(currentCard.topics?.[0]?.slug)} />
+    ))
+
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
+      <AmbientField items={items} activeIndex={activeIndex} failedImages={failedImages} />
+      <header className={styles.topBar}>
+        <span className={styles.brand}>
+          <BrandSymbol size={28} light={symbolLight} />
+          Swipread
+        </span>
         <h1 className={styles.title}>Pour vous</h1>
         <p className={styles.hint} aria-hidden="true">
-          ↓ Faites défiler ou utilisez les flèches du clavier
+          <kbd>↑</kbd>
+          <kbd>↓</kbd> au clavier
         </p>
       </header>
 
@@ -119,17 +140,21 @@ export function FeedPage() {
           <Spinner label="Chargement de votre fil…" />
         </div>
       ) : feed.isError && items.length === 0 ? (
-        <ErrorState
-          message={getErrorMessage(feed.error)}
-          onRetry={() => void feed.refetch()}
-          retrying={feed.isRefetching}
-        />
+        <div className={styles.status}>
+          <ErrorState
+            message={getErrorMessage(feed.error)}
+            onRetry={() => void feed.refetch()}
+            retrying={feed.isRefetching}
+          />
+        </div>
       ) : items.length === 0 && !hasNextPage ? (
-        <EmptyState
-          title="Votre fil est vide pour le moment"
-          description="Ajoutez des centres d'intérêt pour découvrir de nouveaux articles."
-          action={<Link to="/profil">Modifier mes centres d'intérêt</Link>}
-        />
+        <div className={styles.status}>
+          <EmptyState
+            title="Votre fil est vide pour le moment"
+            description="Ajoutez des centres d'intérêt pour découvrir de nouveaux articles."
+            action={<Link to="/profil">Modifier mes centres d'intérêt</Link>}
+          />
+        </div>
       ) : (
         <div
           ref={scrollerRef}
@@ -151,15 +176,20 @@ export function FeedPage() {
               <ArticleCard
                 card={card}
                 titleId={`card-title-${card.articleId}`}
+                withImage={hasImage(card, failedImages)}
+                current={index === currentIndex}
                 eager={index === 0}
+                onImageError={() => markImageFailed(card.articleId)}
                 onOpen={() => trackOpen(card, index)}
-              />
-              <ArticleActions
-                card={card}
-                onToggleLike={() => toggleLike(card, index)}
-                onToggleSave={() => toggleSave(card, index)}
-                onShare={() => void share(card, index)}
-                onHide={() => hide(card, index)}
+                actions={
+                  <ArticleActions
+                    card={card}
+                    onToggleLike={() => toggleLike(card, index)}
+                    onToggleSave={() => toggleSave(card, index)}
+                    onShare={() => void share(card, index)}
+                    onHide={() => hide(card, index)}
+                  />
+                }
               />
             </article>
           ))}

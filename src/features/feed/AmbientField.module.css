@@ -1,0 +1,60 @@
+.field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity var(--duration-ambient) var(--ease-out-expo);
+}
+
+.on {
+  opacity: 1;
+}
+
+/* Overscan beyond the blur's reach (about 3 × its radius) so the field never fades at the window's edge. */
+.image {
+  inset: -160px;
+  width: calc(100% + 320px);
+  height: calc(100% + 320px);
+  object-fit: cover;
+  filter: var(--ambient-filter);
+}
+
+/* Wide windows: more blur, so the field reads as light rather than as a blurred photo. */
+@media (min-width: 769px) {
+  .image {
+    inset: -280px;
+    width: calc(100% + 560px);
+    height: calc(100% + 560px);
+    filter: var(--ambient-filter) blur(64px);
+  }
+}
+
+/* No article (loading, error, empty): the plain ground, light paper or dark neutral. */
+.base {
+  background: var(--color-bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  .base {
+    background: linear-gradient(160deg, var(--topic-default));
+  }
+}
+
+.layer.base {
+  opacity: 1;
+}
+
+.veil {
+  position: absolute;
+  inset: 0;
+  background: var(--ambient-veil);
+}
