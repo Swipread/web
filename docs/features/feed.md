@@ -4,17 +4,22 @@ The home screen: recommended articles, one card per screen. Code: `src/features/
 
 ## Anatomy
 
+The feed is immersive: on `/`, `AppLayout` drops the main area's padding (`main[data-immersive]`) and the page fills the window, minus the notice banner (`--notice-height`) and, on mobile, the tab bar. The look follows the « Ambiance » direction ([design.md](../design.md)).
+
 ```text
 FeedPage
-├── header: « Pour vous » + keyboard hint
+├── AmbientField   the current article's image, blurred and veiled, behind everything (aria-hidden)
+├── top bar        BrandSymbol lit by the current article + « Swipread », « Pour vous » (h1), keyboard hint (desktop)
 └── scroller (role="feed", scroll-snap)
-    ├── article[data-index=0]  ArticleCard + ArticleActions
+    ├── article[data-index=0]  ArticleCard (with ArticleActions inside)
     ├── article[data-index=1]  …
     └── end slide[data-index=n]  spinner | « Vous êtes à jour » | error + « Réessayer »
 ```
 
-- **`ArticleCard`**: image (eager for the first card, lazy afterwards, `referrerPolicy="no-referrer"`, falls back to the source's initial), meta line (source · relative date · reading time, left out when `wordCountFromSummary` is true), first topic as a pill, title, summary, and « Lire l'article » which opens the source's page in a new tab.
-- **`ArticleActions`**: four `IconButton`s with visible captions: « J'aime » (`aria-pressed`), « Sauvegarder » (`aria-pressed`), « Partager », « Pas intéressé ». On desktop they sit to the right of the card, on mobile below it.
+- **`AmbientField`**: one layer per article for the current card and its neighbours (so a swipe crossfades, `--duration-ambient`, instead of popping): the image with `--ambient-filter`, or the topic's gradient (`topicField.ts`, `--topic-<slug>`, neutral for other topics) when there is no image or it failed. A neutral base layer and the `--ambient-veil` sit under and over them; the veil caps the contrast whatever the image.
+- **`ArticleCard`**: a reading column (max `--feed-column-width`): the 16:9 photo (eager for the first card, lazy afterwards, `referrerPolicy="no-referrer"`), which settles from 96 % when its card becomes current; a meta line in two groups that wrap as wholes (source · topic, then relative date · reading time, the latter left out when `wordCountFromSummary` is true); the title (never rewritten, scaled with the screen's height); the summary; a chip saying why the article is here (`reasonLabel`); the actions; and « Lire l'article chez <source> », which opens the source's page in a new tab. Without an image (or when it fails to load, tracked in `FeedPage`), the photo slot disappears and the title grows. On short screens the photo gives way first (cropped, never squashed), then the summary.
+- **`ArticleActions`**: four round `IconButton`s (`variant="ambient"`), named by `aria-label` and `title`: « J'aime » (`aria-pressed`), « Sauvegarder » (`aria-pressed`), « Partager », « Pas intéressé ». A pressed toggle turns to ink.
+- **Reason chip** (`reasonLabel.ts`), from the item's `reason`: `similar` « Proche de vos lectures », `onboarding` and `fallback` (both drawn from the reader's topics) « D'après vos centres d'intérêt », `explore` « Pour découvrir autre chose »; any other value shows no chip.
 - Each `article` is focusable (`tabIndex=-1`), labelled by its title, and carries `aria-posinset` / `aria-setsize` (`-1` while more pages may come).
 
 ## Data
@@ -48,4 +53,4 @@ The feed is the main source of tracking events (`impression`, `view`, `open`, `r
 
 ## Tests
 
-`features/feed/feed.test.tsx`: card content (source, date, reading time, none for a word count taken from the summary) and context headers, prefetch before the end, arrow keys (and ignoring them while typing), hide with focus on the next card, like and save toggles, reaction state and topic from the API, position memory and restore, retry on error, empty feed, end of feed. Tracking from the feed is covered by `features/tracking/feedTracking.test.tsx`.
+`features/feed/feed.test.tsx`: card content (source, date, reading time, none for a word count taken from the summary), the reason chip, a photo that fails to load and context headers, prefetch before the end, arrow keys (and ignoring them while typing), hide with focus on the next card, like and save toggles, reaction state and topic from the API, position memory and restore, retry on error, empty feed, end of feed. `reasonLabel.test.ts` covers every reason. Tracking from the feed is covered by `features/tracking/feedTracking.test.tsx`.
