@@ -8,6 +8,8 @@ type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'aria-label' | 'child
   showLabel?: boolean
   pressed?: boolean
   tone?: 'default' | 'like'
+  /** `ambient`: larger translucent circle drawn over an article's ambient field (feed). */
+  variant?: 'default' | 'ambient'
 }
 
 export function IconButton({
@@ -16,11 +18,12 @@ export function IconButton({
   showLabel = false,
   pressed,
   tone = 'default',
+  variant = 'default',
   type = 'button',
   className,
   ...props
 }: Props) {
-  const classes = [styles.button, styles[tone], showLabel && styles.withLabel, className]
+  const classes = [styles.button, styles[tone], variant === 'ambient' && styles.ambient, showLabel && styles.withLabel, className]
     .filter(Boolean)
     .join(' ')
   return (
