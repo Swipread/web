@@ -54,7 +54,7 @@ The API omits both fields when they are empty, and the types mark `topics` as op
 
 The translations live in `feedProblem.ts`; keep them in sync with the API's documented details.
 
-**Activate / deactivate**: `PATCH /v1/admin/sources/{id}` with `{ active }`, then a toast. Inactive sources are skipped by ingestion; their articles stay in feeds.
+**Activate / deactivate**: `PATCH /v1/admin/sources/{id}` with `{ active }`, then a toast. Inactive sources are skipped by ingestion and no longer feed the feed (recommender and fallback feed); their articles stay in saved lists and history.
 
 **Change the topics**: « Thèmes » opens a dialog with the picker, preselected with the source's topics in their order. « Enregistrer » sends `PATCH /v1/admin/sources/{id}` with `{ topicIds }` (the API accepts a partial update), replaces the source in the cache and shows « Thèmes de « <name> » enregistrés ». An empty selection shows « Choisissez au moins un thème. » without calling the API. The articles already ingested keep their topics; the dialog says so.
 
