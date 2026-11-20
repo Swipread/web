@@ -13,8 +13,11 @@
   --color-primary: #1d1d1f;
   --color-primary-hover: #3a3a3c;
   --color-on-primary: #ffffff;
-  --color-accent: #0066cc;
-  --color-focus: #0071e3;
+  /* Identity: ink only, no brand colour; the colour of Swipread is the article's (see the ambient tokens) */
+  --color-ink: #111111;
+  --color-on-ink: #ffffff;
+  --color-accent: var(--color-ink);
+  --color-focus: var(--color-ink);
   --color-danger: #c4001a;
   --color-like: #e0244a;
   --color-success: #1d7d36;
@@ -22,8 +25,8 @@
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px rgb(0 0 0 / 0.06);
 
   /* Typography */
-  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, Roboto,
-    'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Schibsted Grotesk Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto,
+    Arial, sans-serif;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-md: 1rem;
@@ -34,9 +37,11 @@
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  --font-weight-heavy: 800;
   --line-height-tight: 1.2;
   --line-height-base: 1.5;
   --letter-spacing-tight: -0.02em;
+  --letter-spacing-title: -0.025em;
 
   /* Spacing */
   --space-1: 0.25rem;
@@ -53,6 +58,7 @@
   --radius-md: 12px;
   --radius-lg: 20px;
   --radius-pill: 999px;
+  --radius-photo: 16px;
 
   /* Layout */
   --sidebar-width: 240px;
@@ -64,6 +70,31 @@
   --duration-fast: 150ms;
   --duration-base: 250ms;
   --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-ambient: 700ms;
+
+  /* Ambiance (feed): the article's image, blurred and veiled. The caps below guarantee the contrast whatever the
+     image: worst case 8.6:1 for --ambient-ink in dark, 9.5:1 in light. */
+  --ambient-filter: blur(48px) saturate(1.2) brightness(1.1);
+  --ambient-veil: rgb(255 255 255 / 0.72);
+  --ambient-ink: #111111;
+  --ambient-ink-2: #2b2b2b;
+  --ambient-chip: rgb(0 0 0 / 0.07);
+  --ambient-chip-hover: rgb(0 0 0 / 0.12);
+  --ambient-pill: #111111;
+  --ambient-on-pill: #ffffff;
+  --shadow-photo: 0 18px 40px rgb(0 0 0 / 0.18);
+
+  /* Ambiance without an image: one gradient per topic (slug) */
+  --topic-environment: #1f8a5b, #0d3b4f;
+  --topic-science: #3b5bdb, #1b1f5e;
+  --topic-culture: #c2255c, #4a1442;
+  --topic-politics: #e8590c, #5c1d0c;
+  --topic-economy: #e0a100, #5c3d00;
+  --topic-tech: #7048e8, #20124d;
+  --topic-sport: #2f9e44, #0b3d1a;
+  --topic-health: #0ca678, #06403a;
+  --topic-default: #495057, #1b1e21;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -79,13 +110,23 @@
     --color-primary: #f5f5f7;
     --color-primary-hover: #d2d2d7;
     --color-on-primary: #1d1d1f;
-    --color-accent: #2997ff;
-    --color-focus: #2997ff;
+    --color-ink: #ffffff;
+    --color-on-ink: #111111;
     --color-danger: #ff6961;
     --color-like: #ff375f;
     --color-success: #30d158;
     --color-overlay: rgb(0 0 0 / 0.6);
     --shadow-card: 0 0 0 1px var(--color-border);
+
+    --ambient-filter: blur(48px) saturate(1.4) brightness(0.6);
+    --ambient-veil: rgb(0 0 0 / 0.5);
+    --ambient-ink: #ffffff;
+    --ambient-ink-2: rgb(255 255 255 / 0.82);
+    --ambient-chip: rgb(255 255 255 / 0.14);
+    --ambient-chip-hover: rgb(255 255 255 / 0.22);
+    --ambient-pill: #ffffff;
+    --ambient-on-pill: #111111;
+    --shadow-photo: 0 24px 48px rgb(0 0 0 / 0.45);
   }
 }
 
@@ -93,5 +134,6 @@
   :root {
     --duration-fast: 0ms;
     --duration-base: 0ms;
+    --duration-ambient: 0ms;
   }
 }
