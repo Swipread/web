@@ -31,6 +31,20 @@ Round icon button, used for the feed actions and row actions.
 | `showLabel` | `boolean` | `false` | |
 | `pressed` | `boolean` | | Sets `aria-pressed`: use it for toggles |
 | `tone` | `'default' \| 'like'` | `'default'` | `like` colours the pressed state |
+| `variant` | `'default' \| 'ambient'` | `'default'` | `ambient`: larger translucent circle for the feed's ambient field (`--ambient-*`); pressed turns to ink |
+
+## BrandSymbol
+
+« Les guillemets qui montent », the Swipread symbol, decorative (`aria-hidden`).
+
+```tsx
+<BrandSymbol size={28} light={<img src={imageUrl} alt="" />} />
+```
+
+| Prop | Type | Default | Notes |
+| --- | --- | --- | --- |
+| `size` | `number` | `28` | Side in pixels |
+| `light` | `ReactNode` | | Fills the lower guillemet (cut out with `clip-path`): the feed passes the current article's image or its topic gradient. Without it the symbol is monochrome, as on the app icon |
 
 ## TextField
 

@@ -51,7 +51,7 @@ Titles and summaries are always the publisher's, never shortened or rewritten.
 
 ## The feed screen
 
-From top to bottom on a phone: a top bar with the symbol, the name and « Pour vous »; the photo; source, topic and reading time; the title; the summary (three lines at most); why the article is recommended (« Vous suivez Environnement », « Découverte »…); four round actions (J'aime, Sauvegarder, Partager, Pas pour moi); a full-width « Lire l'article chez [source] » pill; the tab bar.
+From top to bottom on a phone: a top bar with the symbol, the name and « Pour vous »; the photo; source, topic and reading time; the title; the summary (three lines at most); why the article is recommended (« Proche de vos lectures », « D'après vos centres d'intérêt », « Pour découvrir autre chose »); four round actions (J'aime, Sauvegarder, Partager, Pas intéressé); a full-width « Lire l'article chez [source] » pill; the tab bar.
 
 On a computer the ambiance fills the window, the reading column is centred (about 600 px) and the navigation stays at the bottom, as on a phone.
 
@@ -76,7 +76,7 @@ One authored moment: when the active article changes, the ambiance layers crossf
 
 ## Voice
 
-Plain French, « vous », no exclamation marks in the interface. Controls name their action (« Lire l'article chez franceinfo », « Pas pour moi »).
+Plain French, « vous », no exclamation marks in the interface. Controls name their action (« Lire l'article chez franceinfo », « Pas intéressé »).
 
 ## Working files
 
