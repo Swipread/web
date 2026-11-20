@@ -117,7 +117,7 @@ function TopicsSection({ selectedIds }: { selectedIds: number[] | undefined }) {
     updateTopics.mutate([...selection.selected], {
       onSuccess: () => {
         selection.reset()
-        toast.show('Centres d’intérêt enregistrés')
+        toast.show("Centres d'intérêt enregistrés")
       },
     })
 

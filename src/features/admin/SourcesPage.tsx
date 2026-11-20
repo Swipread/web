@@ -297,8 +297,8 @@ function DeleteSourceDialog({ source, onClose }: { source: Source | null; onClos
         <p>
           La supprimer effacerait ses articles, ainsi que les sauvegardés et l'historique des lecteurs.
           {source?.active
-            ? ' Désactivez-la plutôt\u00a0: elle n’alimentera plus le fil.'
-            : ' Elle est déjà désactivée et n’alimente plus le fil.'}
+            ? " Désactivez-la plutôt\u00a0: elle n'alimentera plus le fil."
+            : " Elle est déjà désactivée et n'alimente plus le fil."}
         </p>
       ) : (
         <p>Seule une source sans article peut être supprimée. Cette action est irréversible.</p>

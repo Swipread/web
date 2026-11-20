@@ -41,7 +41,7 @@ export function ForgotPasswordPage() {
       <AuthLayout
         title="Vérifiez vos e-mails"
         // Same words whether the address has an account or not: the API does not tell either.
-        subtitle={`Si un compte existe pour ${getValues('email').trim()}, un lien pour choisir un nouveau mot de passe vient d’y être envoyé. Il est valable une heure.`}
+        subtitle={`Si un compte existe pour ${getValues('email').trim()}, un lien pour choisir un nouveau mot de passe vient d'y être envoyé. Il est valable une heure.`}
       >
         <p className={styles.hint}>Rien reçu après quelques minutes ? Regardez dans les indésirables.</p>
         <p className={styles.switch}>
@@ -57,7 +57,7 @@ export function ForgotPasswordPage() {
   return (
     <AuthLayout
       title="Mot de passe oublié"
-      subtitle="Indiquez l’email de votre compte : nous vous enverrons un lien pour choisir un nouveau mot de passe."
+      subtitle="Indiquez l'email de votre compte : nous vous enverrons un lien pour choisir un nouveau mot de passe."
     >
       <form className={styles.form} onSubmit={onSubmit} noValidate>
         {formError && (

@@ -108,7 +108,7 @@ describe('profile', () => {
     await user.click(screen.getByRole('button', { name: 'Sport' }))
     await user.click(save)
 
-    expect(await screen.findByText('Centres d’intérêt enregistrés')).toBeInTheDocument()
+    expect(await screen.findByText("Centres d'intérêt enregistrés")).toBeInTheDocument()
     expect(sent).toEqual({ topicIds: [1, 2, 4] })
     await waitFor(() => expect(save).toBeDisabled())
     expect(screen.getByRole('button', { name: 'Sport' })).toHaveAttribute('aria-pressed', 'true')
