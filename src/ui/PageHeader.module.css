@@ -15,7 +15,9 @@
 
 .title {
   font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-heavy);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-title);
 }
 
 .subtitle {

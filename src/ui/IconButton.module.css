@@ -19,9 +19,9 @@
   place-items: center;
   width: 2.75rem;
   height: 2.75rem;
-  border: 1px solid var(--color-border);
+  border: 0;
   border-radius: 50%;
-  background: var(--color-surface);
+  background: var(--color-fill);
   transition:
     background-color var(--duration-fast) var(--ease-standard),
     transform var(--duration-fast) var(--ease-standard),
@@ -34,7 +34,7 @@
 }
 
 .button:hover .circle {
-  background: var(--color-fill);
+  background: var(--color-fill-hover);
 }
 
 .button:active .circle {
@@ -47,9 +47,8 @@
 }
 
 .button[aria-pressed='true'] .circle {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: var(--color-on-primary);
+  background: var(--color-ink);
+  color: var(--color-on-ink);
 }
 
 .like[aria-pressed='true'] .circle {
@@ -91,4 +90,9 @@
 
 .ambient:active .circle {
   transform: scale(0.92);
+}
+
+.sm .circle {
+  width: 2.5rem;
+  height: 2.5rem;
 }

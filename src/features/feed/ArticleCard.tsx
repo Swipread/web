@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 import { formatReadingTime, formatRelativeDate } from '../../lib/format'
+import { frenchSpacing } from '../../lib/typography'
+import { ReadingTime } from '../../ui/ReadingTime'
 import { reasonLabel } from './reasonLabel'
 import type { FeedCard } from './useFeed'
 import styles from './ArticleCard.module.css'
@@ -19,25 +21,27 @@ type Props = {
   onOpen?: () => void
 }
 
-/** « 4 min », with « de lecture » kept for screen readers: the short form keeps the meta line on one line. */
-function readingTime(card: FeedCard) {
-  const full = formatReadingTime(card.wordCount, card.wordCountFromSummary)
-  if (!full) return null
-  return (
-    <>
-      {full.replace(' de lecture', '')}
-      <span className="visually-hidden"> de lecture</span>
-    </>
-  )
-}
-
 /** One article over the ambient field: photo, source, title, summary, why it is here, actions, then reading. */
-export function ArticleCard({ card, titleId, withImage, current, eager = false, actions, onImageError, onOpen }: Props) {
+export function ArticleCard({
+  card,
+  titleId,
+  withImage,
+  current,
+  eager = false,
+  actions,
+  onImageError,
+  onOpen,
+}: Props) {
   // Topics come most confident first; the list may be empty.
   const topic = card.topics?.[0]?.label
   const meta = [
     [card.sourceName, topic],
-    [formatRelativeDate(card.publishedAt), readingTime(card)],
+    [
+      formatRelativeDate(card.publishedAt),
+      formatReadingTime(card.wordCount, card.wordCountFromSummary) && (
+        <ReadingTime wordCount={card.wordCount} fromSummary={card.wordCountFromSummary} />
+      ),
+    ],
   ]
     .map((group) => group.filter(Boolean))
     .filter((group) => group.length > 0)
@@ -68,7 +72,7 @@ export function ArticleCard({ card, titleId, withImage, current, eager = false, 
         </p>
       )}
       <h2 id={titleId} className={styles.title}>
-        {card.title}
+        {frenchSpacing(card.title ?? '')}
       </h2>
       {card.summary && <p className={styles.summary}>{card.summary}</p>}
       {reason && <p className={styles.reason}>{reason}</p>}
