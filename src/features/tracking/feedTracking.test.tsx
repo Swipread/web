@@ -138,7 +138,9 @@ describe('feed tracking', () => {
     const { user, router } = await renderFeed()
     setVisible(slide(0))
 
-    await user.click(screen.getByRole('button', { name: 'Se déconnecter' }))
+    // Logging out happens from the profile: leaving the feed closes the card's view, the logout sends it.
+    await user.click(screen.getByRole('link', { name: 'Profil' }))
+    await user.click(await screen.findByRole('button', { name: 'Se déconnecter' }))
 
     await waitFor(() => expect(router.state.location.pathname).toBe('/connexion'))
     await waitFor(() => expect(sent().map((e) => e.type)).toEqual(['impression', 'view']))

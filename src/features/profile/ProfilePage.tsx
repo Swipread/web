@@ -10,7 +10,7 @@ import { LoadingState } from '../../ui/LoadingState'
 import { PageHeader } from '../../ui/PageHeader'
 import { TextField } from '../../ui/TextField'
 import { useToast } from '../../ui/toastContext'
-import { useMe } from '../auth/useAuth'
+import { useLogout, useMe } from '../auth/useAuth'
 import { selectionLabel } from '../onboarding/selectionLabel'
 import { TopicPicker } from '../onboarding/TopicPicker'
 import { MIN_TOPICS, useTopics, useUpdateTopics } from '../onboarding/useTopics'
@@ -34,6 +34,7 @@ export function ProfilePage() {
           <InfoSection me={me.data} />
           <TopicsSection selectedIds={me.data.topics?.flatMap((t) => (t.id === undefined ? [] : [t.id]))} />
           <PasswordSection email={me.data.email} />
+          <LogoutSection />
           <DeleteAccountSection />
         </div>
       )}
@@ -242,6 +243,23 @@ function PasswordSection({ email }: { email: string | undefined }) {
           </Button>
         </div>
       </form>
+    </section>
+  )
+}
+
+function LogoutSection() {
+  const logout = useLogout()
+  return (
+    <section className={styles.section} aria-labelledby="profile-logout">
+      <h2 id="profile-logout" className={styles.sectionTitle}>
+        Déconnexion
+      </h2>
+      <p className={styles.hint}>Vos articles sauvegardés et votre historique vous attendront à votre retour.</p>
+      <div>
+        <Button variant="secondary" onClick={logout}>
+          Se déconnecter
+        </Button>
+      </div>
     </section>
   )
 }
