@@ -83,6 +83,8 @@ The feed's background is the article's own image, blurred and veiled; these toke
 | `--ambient-chip`, `--ambient-chip-hover` | black 7 %, 12 % | white 14 %, 22 % | Round actions, reason chip |
 | `--ambient-pill`, `--ambient-on-pill` | `#111111` on `#ffffff` text | `#ffffff`, `#111111` text | « Lire l'article » |
 | `--shadow-photo` | soft, 18 % | deep, 45 % | The sharp photo |
-| `--topic-<slug>` | two colours per topic (`environment`, `science`, `culture`, `politics`, `economy`, `tech`, `sport`, `health`, `default`) | same | Gradient when an article has no image: `linear-gradient(160deg, var(--topic-<slug>))` |
+| `--topic-<slug>` | two colours per topic (`environment`, `science`, `culture`, `politics`, `economy`, `tech`, `sport`, `health`, `default`) | same | Gradient when an article has no image, and of a chosen topic tile: `linear-gradient(160deg, var(--topic-<slug>))` |
+| `--tile-veil` | `rgb(0 0 0 / 0.35)` | same | Veil over a chosen topic tile's gradient (white text ≥ 4.95:1 on every topic) |
+| `--tile-ink` | `#ffffff` | same | Text of a chosen topic tile |
 
 These tokens are in place ahead of the redesign; the feed screen does not use them yet.

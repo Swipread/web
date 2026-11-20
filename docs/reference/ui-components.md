@@ -65,7 +65,7 @@ Label, input, hint and error, wired together for assistive technology.
 
 ## Chip
 
-Toggle pill used by the topic pickers (onboarding, source topics). Props: `selected` (sets `aria-pressed` and shows a marker), `marker` (what is shown when selected, a check mark by default; the source picker shows the topic's rank), plus button attributes. A disabled chip is dimmed and shows a `not-allowed` cursor.
+Toggle pill used by the source topics picker (administration). Props: `selected` (sets `aria-pressed` and shows a marker), `marker` (what is shown when selected, a check mark by default; the source picker shows the topic's rank), plus button attributes. A disabled chip is dimmed and shows a `not-allowed` cursor.
 
 ## ConfirmDialog
 
