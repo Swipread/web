@@ -53,7 +53,7 @@ Titles and summaries are always the publisher's, never shortened or rewritten.
 
 From top to bottom on a phone: a top bar with the symbol, the name and « Pour vous »; the photo; source, topic and reading time; the title; the summary (three lines at most); why the article is recommended (« Proche de vos lectures », « D'après vos centres d'intérêt », « Pour découvrir autre chose »); four round actions (J'aime, Sauvegarder, Partager, Pas intéressé); a full-width « Lire l'article chez [source] » pill; the tab bar.
 
-On a computer the ambiance fills the window, the reading column is centred (about 600 px) and the navigation stays at the bottom, as on a phone.
+On a computer the ambiance fills the window and the navigation stays at the bottom, as on a phone. From 1024 px wide, on a landscape screen, the article takes two columns, so a horizontal screen is used in its width: the 16:9 photo on the left, the text on the right (source, a larger title bounded by the window's height, summary, reason, actions, reading pill), the pair centred vertically within 1240 px. An article without an image keeps the single centred column.
 
 **Without an image**, the field is a two-colour gradient of the article's topic (`--topic-<slug>`); the photo slot disappears, the title moves up and grows.
 
