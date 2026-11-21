@@ -6,17 +6,26 @@
   pointer-events: none;
 }
 
+/*
+ * Handover without a dip: the current layer fades in on top; the one it replaces stays full underneath and only fades
+ * out once covered (a short tail after the full duration), so the neutral base never shows between two articles,
+ * whichever way the reader swipes.
+ */
 .layer {
   position: absolute;
   inset: 0;
+  z-index: 1;
   width: 100%;
   height: 100%;
   opacity: 0;
-  transition: opacity var(--duration-ambient) var(--ease-out-expo);
+  /* Once covered, the replaced layer fades out over a short tail rather than in one step. */
+  transition: opacity var(--duration-base) linear var(--duration-ambient);
 }
 
 .on {
+  z-index: 2;
   opacity: 1;
+  transition: opacity var(--duration-ambient) var(--ease-out-expo);
 }
 
 /* Overscan beyond the blur's reach (about 3 × its radius) so the field never fades at the window's edge. */
@@ -50,11 +59,14 @@
 }
 
 .layer.base {
+  z-index: 0;
   opacity: 1;
 }
 
 .veil {
   position: absolute;
   inset: 0;
+  /* Above the layers, whose handover stacks them at z-index 1 and 2. */
+  z-index: 3;
   background: var(--ambient-veil);
 }
