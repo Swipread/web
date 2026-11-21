@@ -16,7 +16,7 @@
 .title {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-heavy);
-  line-height: var(--line-height-tight);
+  line-height: 1.05;
   letter-spacing: var(--letter-spacing-title);
 }
 
