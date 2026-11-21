@@ -196,3 +196,50 @@
     transform: none;
   }
 }
+
+/*
+ * Wide landscape screens (the user's choice, 2026-11-21): two columns, so a horizontal screen is used in its width rather than
+ * squashed into a phone column: the 16:9 photo on the left, the text on the right, the pair centred vertically.
+ * An article without an image keeps the single centred column.
+ */
+@media (min-width: 1024px) and (min-aspect-ratio: 5/4) {
+  .card:not(.noImage) {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    grid-template-rows: repeat(5, auto);
+    column-gap: var(--space-7);
+    align-content: center;
+    /* Held at this width: wider would blow small publisher images (franceinfo serves 432px) past sharpness. */
+    max-width: var(--feed-wide-width);
+    padding-inline: var(--space-7);
+  }
+
+  .card:not(.noImage) .photo {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    align-self: center;
+  }
+
+  .card:not(.noImage) > :not(.photo) {
+    grid-column: 2;
+  }
+
+  .card:not(.noImage) .meta {
+    margin-top: 0;
+  }
+
+  .card:not(.noImage) .reason {
+    justify-self: start;
+  }
+
+  /* Larger, but bounded by the window's height too, so a long title still fits a low window. */
+  .card:not(.noImage) .title {
+    font-size: clamp(1.75rem, min(2.4vw, 4.6dvh), 2.25rem);
+  }
+
+  /* The four actions as one group at the start of the column, not four dots spread over its width. */
+  .card:not(.noImage) .bottom > [role='group'] {
+    justify-content: flex-start;
+    gap: var(--space-4);
+  }
+}
