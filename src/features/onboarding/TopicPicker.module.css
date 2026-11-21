@@ -1,7 +1,7 @@
 .grid {
   display: grid;
-  /* Two columns even on a 375px phone. */
-  grid-template-columns: repeat(auto-fill, minmax(min(9rem, 100%), 1fr));
+  /* Two columns even on a 375px phone, four at most, so a one-word topic never hyphenates on a wide screen. */
+  grid-template-columns: repeat(auto-fill, minmax(max(min(9rem, 100%), calc((100% - 3 * var(--space-3)) / 4)), 1fr));
   gap: var(--space-3);
   margin: 0;
   padding: 0;
@@ -27,9 +27,14 @@
   color: var(--color-text);
   text-align: start;
   cursor: pointer;
+  /*
+   * The label switches between ink and white in one step, when the light is about half in (expo reaches ~0.55 at a
+   * tenth of its time): there ink and white both keep ~4.3:1 on the half-lit ground, where a colour fade would pass
+   * through the ground's own value.
+   */
   transition:
     background-color var(--duration-fast) var(--ease-standard),
-    color var(--duration-base) var(--ease-out-expo),
+    color 0s linear calc(var(--duration-ambient) * 0.1),
     transform var(--duration-fast) var(--ease-out-expo);
 }
 

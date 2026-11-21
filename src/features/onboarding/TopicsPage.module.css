@@ -3,7 +3,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
-  max-width: 48rem;
+  /* The same 48rem content column and left edge as the app's pages: the padding sits outside it. */
+  max-width: calc(48rem + 2 * var(--space-5));
   margin: 0 auto;
   padding: var(--space-5) var(--space-5) 0;
 }
@@ -15,7 +16,8 @@
 }
 
 .title {
-  font-size: clamp(var(--font-size-xl), 5vw, var(--font-size-2xl));
+  /* The app's page-title step: 1.75rem on phones, 2.5rem from 769px. */
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-heavy);
   line-height: 1.05;
   letter-spacing: var(--letter-spacing-title);
@@ -65,7 +67,12 @@
 }
 
 @media (min-width: 769px) {
+  .title {
+    font-size: var(--font-size-2xl);
+  }
+
   .page {
+    max-width: calc(48rem + 2 * var(--space-6));
     padding: var(--space-6) var(--space-6) 0;
   }
 
