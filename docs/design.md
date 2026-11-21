@@ -72,7 +72,7 @@ Main text meets WCAG AAA (7:1) in both themes, secondary text AA everywhere and 
 
 ## Motion
 
-One authored moment: when the active article changes, the ambiance layers crossfade (`--duration-ambient`, 700 ms, `--ease-out-expo`) and the incoming photo settles from 96 % scale. Everything else is short state feedback (pressed actions scale to 92 %). With `prefers-reduced-motion`, the light changes at once and nothing moves.
+One authored moment: when the active article changes, the new ambiance layer fades in on top of the old one (`--duration-ambient`, 700 ms, `--ease-out-expo`) while the old one stays full underneath, then goes out over a short 250 ms tail, so the light never dips between two articles; the incoming photo settles from 96 % scale and 60 % opacity at the same time. The sign-in panel uses the same handover for the topics' colours taking turns. A chosen topic tile lights up over the same 700 ms, its label switching from ink to white in one step about a tenth of the way in, so it never passes through the ground's own value. Everything else is short state feedback (pressed actions scale to 92 %, the toast enters from 8 px above). With `prefers-reduced-motion`, the light changes at once, the sign-in panel holds its first colour and nothing moves.
 
 ## Voice
 
