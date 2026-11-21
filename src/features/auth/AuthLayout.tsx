@@ -16,7 +16,7 @@ export function AuthLayout({ title, subtitle, children }: Props) {
   const lights = LIGHTS.map((slug) => <span key={slug} className={`${styles.light} ${topicFieldClass(slug)}`} />)
   return (
     <div className={styles.layout}>
-      <section className={styles.presentation}>
+      <header className={styles.presentation}>
         <div className={styles.field} aria-hidden="true">
           {lights}
         </div>
@@ -27,7 +27,7 @@ export function AuthLayout({ title, subtitle, children }: Props) {
           </p>
           <p className={styles.tagline}>Des articles qui vous ressemblent, un défilement à la fois.</p>
         </div>
-      </section>
+      </header>
       <main className={styles.formSide}>
         <div className={styles.formInner}>
           <h1 className={styles.title}>{title}</h1>
