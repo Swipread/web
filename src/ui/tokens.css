@@ -66,6 +66,8 @@
   --tabbar-height: 64px;
   --feed-topbar-height: 56px;
   --feed-column-width: 600px;
+  /* The two-column feed on wide landscape screens (photo and text side by side). */
+  --feed-wide-width: 1240px;
 
   /* Motion */
   --duration-fast: 150ms;
