@@ -40,6 +40,13 @@
   opacity: 0.88;
 }
 
+/* « Not yet »: the primary rests as the pale secondary until it can act, the same everywhere. */
+.primary:disabled {
+  background: var(--color-fill);
+  color: var(--color-text-secondary);
+  opacity: 1;
+}
+
 .secondary {
   background: var(--color-fill);
   color: var(--color-text);

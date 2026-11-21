@@ -21,7 +21,7 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   box-shadow: var(--shadow-card);
-  animation: enter var(--duration-base) var(--ease-standard);
+  animation: enter var(--duration-base) var(--ease-out-expo);
 }
 
 @keyframes enter {

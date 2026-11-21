@@ -29,3 +29,10 @@
   display: flex;
   gap: var(--space-3);
 }
+
+/* The app's page-title step: 1.75rem on phones, 2.5rem from 769px (Profil and the topic question share it). */
+@media (min-width: 769px) {
+  .title {
+    font-size: var(--font-size-2xl);
+  }
+}
