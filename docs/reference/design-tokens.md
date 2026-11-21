@@ -56,6 +56,7 @@ The dark values apply under `@media (prefers-color-scheme: dark)`; there is no m
 | `--tabbar-height` | `64px` | Bottom tab bar (every screen size), plus the safe area |
 | `--feed-topbar-height` | `56px` | The feed's top bar (symbol, « Pour vous ») |
 | `--feed-column-width` | `600px` | Width of the feed's reading column |
+| `--feed-wide-width` | `1240px` | Width of the two-column feed on wide landscape screens |
 
 Breakpoints are plain media queries (not tokens): `900px` (auth pages stack), `768px` (tighter page padding, forms go single-column, no keyboard hint in the feed), `600px` (article rows use a smaller thumbnail), `480px` (dialog buttons stack).
 
