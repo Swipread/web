@@ -49,6 +49,8 @@
   position: relative;
   z-index: 1;
   height: 100%;
+  /* Slides measure themselves on the scroller (cqh), whatever wraps them. */
+  container-type: size;
   overflow-y: auto;
   overscroll-behavior: contain;
   scroll-snap-type: y mandatory;
@@ -60,7 +62,7 @@
 }
 
 .slide {
-  height: 100%;
+  height: 100cqh;
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }

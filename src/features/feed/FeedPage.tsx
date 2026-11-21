@@ -38,8 +38,7 @@ export function FeedPage() {
   const [failedImages, setFailedImages] = useState<ReadonlySet<string>>(() => new Set())
   const markImageFailed = (articleId: string) => setFailedImages((failed) => new Set(failed).add(articleId))
 
-  const getSlide = (index: number) =>
-    scrollerRef.current?.querySelector<HTMLElement>(`[data-index="${index}"]`) ?? null
+  const getSlide = (index: number) => scrollerRef.current?.querySelector<HTMLElement>(`[data-index="${index}"]`) ?? null
 
   const scrollToIndex = useCallback((index: number) => {
     const slide = scrollerRef.current?.querySelector<HTMLElement>(`[data-index="${index}"]`)
@@ -152,43 +151,40 @@ export function FeedPage() {
           />
         </div>
       ) : (
-        <div
-          ref={scrollerRef}
-          className={styles.scroller}
-          role="feed"
-          aria-label="Articles recommandés"
-          aria-busy={isFetchingNextPage}
-        >
-          {items.map((card, index) => (
-            <article
-              key={card.articleId}
-              data-index={index}
-              tabIndex={-1}
-              className={styles.slide}
-              aria-labelledby={`card-title-${card.articleId}`}
-              aria-posinset={index + 1}
-              aria-setsize={hasNextPage ? -1 : items.length}
-            >
-              <ArticleCard
-                card={card}
-                titleId={`card-title-${card.articleId}`}
-                withImage={hasImage(card, failedImages)}
-                current={index === currentIndex}
-                eager={index === 0}
-                onImageError={() => markImageFailed(card.articleId)}
-                onOpen={() => trackOpen(card, index)}
-                actions={
-                  <ArticleActions
-                    card={card}
-                    onToggleLike={() => toggleLike(card, index)}
-                    onToggleSave={() => toggleSave(card, index)}
-                    onShare={() => void share(card, index)}
-                    onHide={() => hide(card, index)}
-                  />
-                }
-              />
-            </article>
-          ))}
+        <div ref={scrollerRef} className={styles.scroller}>
+          {/* The feed role holds the articles only; the loading / end slide follows outside it. */}
+          <div role="feed" aria-label="Articles recommandés" aria-busy={isFetchingNextPage}>
+            {items.map((card, index) => (
+              <article
+                key={card.articleId}
+                data-index={index}
+                tabIndex={-1}
+                className={styles.slide}
+                aria-labelledby={`card-title-${card.articleId}`}
+                aria-posinset={index + 1}
+                aria-setsize={hasNextPage ? -1 : items.length}
+              >
+                <ArticleCard
+                  card={card}
+                  titleId={`card-title-${card.articleId}`}
+                  withImage={hasImage(card, failedImages)}
+                  current={index === currentIndex}
+                  eager={index === 0}
+                  onImageError={() => markImageFailed(card.articleId)}
+                  onOpen={() => trackOpen(card, index)}
+                  actions={
+                    <ArticleActions
+                      card={card}
+                      onToggleLike={() => toggleLike(card, index)}
+                      onToggleSave={() => toggleSave(card, index)}
+                      onShare={() => void share(card, index)}
+                      onHide={() => hide(card, index)}
+                    />
+                  }
+                />
+              </article>
+            ))}
+          </div>
           <div data-index={items.length} tabIndex={-1} className={`${styles.slide} ${styles.endSlide}`}>
             {isFetchNextPageError ? (
               <ErrorState
@@ -199,10 +195,7 @@ export function FeedPage() {
             ) : hasNextPage ? (
               <Spinner label="Chargement des articles suivants…" />
             ) : (
-              <EmptyState
-                title="Vous êtes à jour"
-                description="Revenez un peu plus tard pour de nouveaux articles."
-              />
+              <EmptyState title="Vous êtes à jour" description="Revenez un peu plus tard pour de nouveaux articles." />
             )}
           </div>
         </div>
